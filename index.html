@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Литвин игра</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="menu">
+  <h1>🔥 ЛИТВИН: ПУТЬ К ХАЙПУ 🔥</h1>
+
+  <input id="name" placeholder="Имя">
+  <input id="room" placeholder="Код комнаты">
+
+  <div class="colors">
+    <div class="color red" onclick="setColor('red')"></div>
+    <div class="color blue" onclick="setColor('blue')"></div>
+    <div class="color yellow" onclick="setColor('yellow')"></div>
+    <div class="color purple" onclick="setColor('purple')"></div>
+  </div>
+
+  <button onclick="join()">ВОЙТИ</button>
+  <button onclick="start()">НАЧАТЬ</button>
+</div>
+
+<div id="game" style="display:none;">
+  <img src="assets/board.jpg" id="board">
+  <button onclick="rollDice()">🎲 Бросить</button>
+  <div id="players"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
