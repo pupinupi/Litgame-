@@ -3,105 +3,74 @@ const socket = io();
 let room = "";
 let color = "";
 
-// 🎨 цвет
-function setColor(c) {
-  color = c;
-}
+const path = [
+  {x:59,y:358},{x:59,y:281},{x:54,y:214},{x:56,y:150},{x:59,y:89},
+  {x:125,y:65},{x:200,y:65},{x:299,y:68},{x:380,y:71},{x:484,y:64},
+  {x:555,y:76},{x:554,y:153},{x:552,y:212},{x:550,y:271},{x:544,y:352},
+  {x:467,y:367},{x:387,y:366},{x:301,y:360},{x:218,y:358},{x:144,y:353}
+];
 
-// 🚪 вход
-function join() {
-  const name = document.getElementById("name").value;
-  room = document.getElementById("room").value;
+const tokens = {};
 
-  if (!name || !room || !color) {
-    alert("Заполни всё!");
-    return;
+function getToken(p){
+  if(!tokens[p.id]){
+    const t=document.createElement("div");
+    t.style.position="absolute";
+    t.style.width="20px";
+    t.style.height="20px";
+    t.style.borderRadius="50%";
+    t.style.background=p.color;
+    t.style.boxShadow="0 0 10px white";
+    document.body.appendChild(t);
+    tokens[p.id]=t;
   }
-
-  socket.emit("join_room", { name, room, color });
+  return tokens[p.id];
 }
 
-// ▶ старт
-function start() {
-  if (!room) return alert("Сначала зайди в комнату!");
-  socket.emit("start_game", room);
+function moveToken(p){
+  const token=getToken(p);
+  let i=p.prevPosition;
+
+  function step(){
+    if(i===p.position) return;
+    i=(i+1)%path.length;
+
+    const pos=path[i];
+
+    token.style.left=pos.x+"px";
+    token.style.top=pos.y+"px";
+
+    setTimeout(step,200);
+  }
+  step();
 }
 
-// 🎲 кубик
-function rollDice() {
-  const sound = new Audio("dice.mp3");
-  sound.play();
+function setColor(c){color=c;}
 
-  socket.emit("roll_dice", room);
+function join(){
+  const name=document.getElementById("name").value;
+  room=document.getElementById("room").value;
+  socket.emit("join_room",{name,room,color});
 }
 
-// 🎮 старт игры
-socket.on("game_started", () => {
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("game").style.display = "block";
+function start(){socket.emit("start_game",room);}
+
+function rollDice(){
+  new Audio("dice.mp3").play();
+  socket.emit("roll_dice",room);
+}
+
+socket.on("game_started",()=>{
+  menu.style.display="none";
+  game.style.display="block";
 });
 
-// 👥 игроки
-socket.on("update_players", renderPlayers);
-socket.on("game_update", renderPlayers);
+socket.on("game_update",(g)=>{
+  players.innerHTML=g.players.map(p=>`${p.name}: ${p.hype}`).join("<br>");
 
-// 🎲 кубик результат
-socket.on("dice_result", (dice) => {
-  alert("Выпало: " + dice);
+  g.players.forEach(p=>moveToken(p));
 });
 
-// 👥 отрисовка игроков
-function renderPlayers(players) {
-  const div = document.getElementById("players");
-
-  div.innerHTML = players.map(p =>
-    `<div style="color:${p.color}">
-      ${p.name} — ${p.hype} хайпа
-    </div>`
-  ).join("");
-}
-
-// =====================
-// 📍 СБОР КООРДИНАТ (FIX)
-// =====================
-
-let coords = [];
-
-// создаём окно
-let coordBox = document.createElement("div");
-document.body.appendChild(coordBox);
-
-coordBox.style.position = "fixed";
-coordBox.style.right = "10px";
-coordBox.style.top = "10px";
-coordBox.style.background = "black";
-coordBox.style.color = "lime";
-coordBox.style.padding = "10px";
-coordBox.style.fontSize = "12px";
-coordBox.style.maxHeight = "300px";
-coordBox.style.overflow = "auto";
-coordBox.innerHTML = "Координаты:<br>";
-
-// ждём пока появится поле
-setInterval(() => {
-  const board = document.getElementById("board");
-  if (!board) return;
-
-  // чтобы не навешивалось 100 раз
-  if (board.dataset.ready) return;
-  board.dataset.ready = true;
-
-  board.addEventListener("click", (e) => {
-    const rect = board.getBoundingClientRect();
-
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
-
-    coords.push({ x, y });
-
-    coordBox.innerHTML += `x:${x} y:${y}<br>`;
-
-    console.log("COORDS:", JSON.stringify(coords));
-  });
-
-}, 500);
+socket.on("dice_result",(d)=>{
+  alert("🎲 "+d);
+});
