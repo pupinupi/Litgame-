@@ -16,6 +16,7 @@ function createPlayer(id, name, color) {
     name,
     color,
     position: 0,
+    prevPosition: 0,
     hype: 0,
     skip: false
   };
@@ -25,11 +26,7 @@ io.on("connection", (socket) => {
 
   socket.on("join_room", ({ name, room, color }) => {
     if (!rooms[room]) {
-      rooms[room] = {
-        players: [],
-        turn: 0,
-        started: false
-      };
+      rooms[room] = { players: [], turn: 0 };
     }
 
     const game = rooms[room];
@@ -42,18 +39,10 @@ io.on("connection", (socket) => {
     socket.join(room);
 
     io.to(room).emit("update_players", game.players);
-
-    console.log("JOIN:", name, room);
   });
 
   socket.on("start_game", (room) => {
-    if (!rooms[room]) return;
-
-    rooms[room].started = true;
-
-    io.to(room).emit("game_started", rooms[room]);
-
-    console.log("GAME START:", room);
+    io.to(room).emit("game_started");
   });
 
   socket.on("roll_dice", (room) => {
@@ -61,7 +50,6 @@ io.on("connection", (socket) => {
     if (!game) return;
 
     const player = game.players[game.turn];
-    if (!player) return;
 
     if (player.skip) {
       player.skip = false;
@@ -72,6 +60,7 @@ io.on("connection", (socket) => {
 
     const dice = Math.floor(Math.random() * 6) + 1;
 
+    player.prevPosition = player.position;
     player.position += dice;
 
     if (player.position >= 20) {
@@ -91,30 +80,34 @@ io.on("connection", (socket) => {
 
 });
 
-function applyCell(player) {
-  const cell = player.position;
+function applyCell(p) {
+  const map = [
+    "start","h3","h2","scandal","risk","h2","scandal","h3","h5","minus15",
+    "skip","h3","risk","h3","skip","h2","scandal","h8","minus10","h4"
+  ];
 
-  if (cell === 1) player.hype += 10;
-  if (cell === 2) player.hype += 3;
-  if (cell === 3) player.hype -= 2;
-  if (cell === 4) player.hype -= 5;
-  if (cell === 5) player.skip = true;
-  if (cell === 6) player.hype += 2;
-  if (cell === 7) player.hype -= 3;
-  if (cell === 8) player.hype += 5;
-  if (cell === 9) player.hype += 8;
-  if (cell === 10) player.hype -= 15;
-  if (cell === 11) player.skip = true;
-  if (cell === 12) player.hype += 3;
-  if (cell === 13) player.hype -= 5;
-  if (cell === 14) player.hype += 3;
-  if (cell === 15) player.skip = true;
-  if (cell === 16) player.hype += 2;
-  if (cell === 17) player.hype -= 4;
-  if (cell === 18) player.hype += 8;
-  if (cell === 19) player.hype -= 10;
+  const cell = map[p.position];
+
+  if (cell === "start") p.hype += 10;
+  if (cell === "h2") p.hype += 2;
+  if (cell === "h3") p.hype += 3;
+  if (cell === "h4") p.hype += 4;
+  if (cell === "h5") p.hype += 5;
+  if (cell === "h8") p.hype += 8;
+
+  if (cell === "minus10") p.hype -= 10;
+  if (cell === "minus15") p.hype -= 15;
+
+  if (cell === "skip") p.skip = true;
+
+  if (cell === "risk") {
+    const r = Math.floor(Math.random() * 6) + 1;
+    p.hype += r <= 3 ? -5 : 5;
+  }
+
+  if (cell === "scandal") {
+    p.hype -= Math.floor(Math.random() * 5) + 1;
+  }
 }
 
-server.listen(3000, () => {
-  console.log("Server running on 3000");
-});
+server.listen(3000, () => console.log("Server started"));
