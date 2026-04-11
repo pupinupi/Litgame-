@@ -60,3 +60,49 @@ function renderPlayers(players) {
     </div>`
   ).join("");
 }
+
+// =====================
+// 📍 СБОР КООРДИНАТ
+// =====================
+
+let coords = [];
+
+// создаём окно для координат
+let coordBox = document.createElement("div");
+document.body.appendChild(coordBox);
+
+coordBox.style.position = "fixed";
+coordBox.style.right = "10px";
+coordBox.style.top = "10px";
+coordBox.style.background = "black";
+coordBox.style.color = "lime";
+coordBox.style.padding = "10px";
+coordBox.style.fontSize = "12px";
+coordBox.style.maxHeight = "300px";
+coordBox.style.overflow = "auto";
+coordBox.innerHTML = "Координаты:<br>";
+
+// ловим клики ТОЛЬКО по полю
+document.addEventListener("click", (e) => {
+  const board = document.getElementById("board");
+  if (!board) return;
+
+  const rect = board.getBoundingClientRect();
+
+  // проверка: клик именно по картинке
+  if (
+    e.clientX < rect.left ||
+    e.clientX > rect.right ||
+    e.clientY < rect.top ||
+    e.clientY > rect.bottom
+  ) return;
+
+  const x = Math.round(e.clientX - rect.left);
+  const y = Math.round(e.clientY - rect.top);
+
+  coords.push({ x, y });
+
+  coordBox.innerHTML += `x:${x} y:${y}<br>`;
+
+  console.log(coords); // ← смотри тут JSON
+});
