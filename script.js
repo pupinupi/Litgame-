@@ -7,7 +7,11 @@ let color = "";
 const diceSound = new Audio('dice.mp3');
 const scandalSound = new Audio('scandal.mp3');
 
-// 🎲 показать результат кубика
+// 📍 координаты
+let coordMode = true;
+let coords = [];
+
+// 🎲 показать кубик
 function showDice(dice) {
   let diceDiv = document.getElementById("dice");
 
@@ -18,6 +22,7 @@ function showDice(dice) {
   }
 
   diceDiv.innerHTML = "🎲 Выпало: " + dice;
+
   diceDiv.style.position = "absolute";
   diceDiv.style.top = "20px";
   diceDiv.style.left = "50%";
@@ -37,11 +42,6 @@ function join() {
   const name = document.getElementById("name").value;
   room = document.getElementById("room").value;
 
-  if (!name || !room || !color) {
-    alert("Заполни всё!");
-    return;
-  }
-
   socket.emit("join_room", { name, room, color });
 }
 
@@ -50,7 +50,7 @@ function start() {
   socket.emit("start_game", room);
 }
 
-// 🎲 бросок
+// 🎲 кубик
 function rollDice() {
   diceSound.play();
   socket.emit("roll_dice", room);
@@ -62,14 +62,13 @@ socket.on("game_started", () => {
   document.getElementById("game").style.display = "block";
 });
 
-// 👥 обновление игроков
+// 👥 игроки
 socket.on("update_players", (players) => {
-  updatePlayers(players);
+  renderPlayers(players);
 });
 
-// 🔄 обновление игры
 socket.on("game_update", (game) => {
-  updatePlayers(game.players);
+  renderPlayers(game.players);
   renderTokens(game.players);
 });
 
@@ -78,22 +77,20 @@ socket.on("dice_result", (dice) => {
   showDice(dice);
 });
 
-// 👥 список игроков + хайп
-function updatePlayers(players) {
+// 👥 список игроков
+function renderPlayers(players) {
   const div = document.getElementById("players");
 
-  div.innerHTML = players.map(p => {
-    return `
-      <div style="color:${p.color}; font-size:18px;">
-        ${p.name}: ${p.hype} хайпа
-      </div>
-    `;
-  }).join("");
+  div.innerHTML = players.map(p =>
+    `<div style="color:${p.color}">
+      ${p.name}: ${p.hype} хайпа
+    </div>`
+  ).join("");
 }
 
-// 🎯 координаты клеток (упрощенно пока)
+// 🎯 путь (потом заменим на твой)
 const path = [
-  {x: 500, y: 900}, // старт
+  {x: 500, y: 900},
   {x: 500, y: 800},
   {x: 500, y: 700},
   {x: 500, y: 600},
@@ -115,11 +112,8 @@ const path = [
   {x: 300, y: 600}
 ];
 
-// 🎮 отрисовка фишек
+// 🎮 фишки
 function renderTokens(players) {
-  let board = document.getElementById("board");
-
-  // удалить старые фишки
   document.querySelectorAll(".token").forEach(t => t.remove());
 
   players.forEach(p => {
@@ -133,15 +127,62 @@ function renderTokens(players) {
     token.style.height = "20px";
     token.style.borderRadius = "50%";
     token.style.background = p.color;
+
     token.style.left = pos.x + "px";
     token.style.top = pos.y + "px";
+
     token.style.boxShadow = "0 0 10px white";
 
     document.body.appendChild(token);
   });
 }
 
-// 💥 звук скандала (если понадобится позже)
+// 📍 КООРДИНАТЫ (КЛИК ПО ПОЛЮ)
+document.addEventListener("click", (e) => {
+  const board = document.getElementById("board");
+  if (!board) return;
+
+  const rect = board.getBoundingClientRect();
+
+  const x = Math.round(e.clientX - rect.left);
+  const y = Math.round(e.clientY - rect.top);
+
+  coords.push({ x, y });
+
+  showCoords(x, y);
+});
+
+// 📍 вывод координат
+function showCoords(x, y) {
+  let box = document.getElementById("coordBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "coordBox";
+    document.body.appendChild(box);
+
+    box.style.position = "absolute";
+    box.style.right = "10px";
+    box.style.top = "10px";
+    box.style.background = "black";
+    box.style.color = "lime";
+    box.style.padding = "10px";
+    box.style.fontSize = "14px";
+    box.style.maxHeight = "300px";
+    box.style.overflow = "auto";
+  }
+
+  box.innerHTML += `x:${x} y:${y}<br>`;
+}
+
+// 📋 копирование в буфер
+function copyCoords() {
+  console.log(coords);
+  navigator.clipboard.writeText(JSON.stringify(coords));
+  alert("Координаты скопированы!");
+}
+
+// 🔥 скандал звук (потом используем)
 function playScandal() {
   scandalSound.play();
 }
