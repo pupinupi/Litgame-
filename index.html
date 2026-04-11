@@ -2,31 +2,33 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Литвин игра</title>
+<title>Литвин Путь к Хайпу</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="menu">
-  <h1>🔥 ЛИТВИН: ПУТЬ К ХАЙПУ 🔥</h1>
+  <h1>🔥 ПУТЬ К ХАЙПУ 🔥</h1>
 
   <input id="name" placeholder="Имя">
-  <input id="room" placeholder="Код комнаты">
+  <input id="room" placeholder="Комната">
 
-  <div class="colors">
-    <div class="color red" onclick="setColor('red')"></div>
-    <div class="color blue" onclick="setColor('blue')"></div>
-    <div class="color yellow" onclick="setColor('yellow')"></div>
-    <div class="color purple" onclick="setColor('purple')"></div>
+  <div>
+    <button onclick="setColor('red')">Красный</button>
+    <button onclick="setColor('blue')">Синий</button>
+    <button onclick="setColor('yellow')">Жёлтый</button>
+    <button onclick="setColor('purple')">Фиолетовый</button>
   </div>
 
-  <button onclick="join()">ВОЙТИ</button>
-  <button onclick="start()">НАЧАТЬ</button>
+  <button onclick="join()">Войти</button>
+  <button onclick="start()">Старт</button>
 </div>
 
 <div id="game" style="display:none;">
- <img src="board.jpg">
-  <button onclick="rollDice()">🎲 Бросить</button>
+  <img id="board" src="board.jpg" width="600">
+
+  <button onclick="rollDice()">🎲 Кубик</button>
+
   <div id="players"></div>
 </div>
 
