@@ -62,12 +62,12 @@ function renderPlayers(players) {
 }
 
 // =====================
-// 📍 СБОР КООРДИНАТ
+// 📍 СБОР КООРДИНАТ (FIX)
 // =====================
 
 let coords = [];
 
-// создаём окно для координат
+// создаём окно
 let coordBox = document.createElement("div");
 document.body.appendChild(coordBox);
 
@@ -82,27 +82,26 @@ coordBox.style.maxHeight = "300px";
 coordBox.style.overflow = "auto";
 coordBox.innerHTML = "Координаты:<br>";
 
-// ловим клики ТОЛЬКО по полю
-document.addEventListener("click", (e) => {
+// ждём пока появится поле
+setInterval(() => {
   const board = document.getElementById("board");
   if (!board) return;
 
-  const rect = board.getBoundingClientRect();
+  // чтобы не навешивалось 100 раз
+  if (board.dataset.ready) return;
+  board.dataset.ready = true;
 
-  // проверка: клик именно по картинке
-  if (
-    e.clientX < rect.left ||
-    e.clientX > rect.right ||
-    e.clientY < rect.top ||
-    e.clientY > rect.bottom
-  ) return;
+  board.addEventListener("click", (e) => {
+    const rect = board.getBoundingClientRect();
 
-  const x = Math.round(e.clientX - rect.left);
-  const y = Math.round(e.clientY - rect.top);
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
 
-  coords.push({ x, y });
+    coords.push({ x, y });
 
-  coordBox.innerHTML += `x:${x} y:${y}<br>`;
+    coordBox.innerHTML += `x:${x} y:${y}<br>`;
 
-  console.log(coords); // ← смотри тут JSON
-});
+    console.log("COORDS:", JSON.stringify(coords));
+  });
+
+}, 500);
