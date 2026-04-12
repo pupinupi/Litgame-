@@ -3,68 +3,75 @@ const socket = io();
 let room = "";
 let color = "";
 
-const path = [
-  {x:100,y:900},{x:100,y:700},{x:100,y:500},{x:100,y:300},{x:100,y:100},
-  {x:300,y:100},{x:500,y:100},{x:700,y:100},{x:900,y:100},
-  {x:900,y:300},{x:900,y:500},{x:900,y:700},{x:900,y:900},
-  {x:700,y:900},{x:500,y:900},{x:300,y:900},
-  {x:200,y:800},{x:300,y:700},{x:400,y:600},{x:500,y:500}
-];
+// 📢 вывод на экран
+function log(text){
+  document.getElementById("debug").innerHTML = text;
+}
 
-const tokens = {};
+// 🎨 выбор цвета
+function setColor(c){
+  color = c;
+  log("Выбран цвет: " + c);
+}
 
-function setColor(c){ color = c; }
-
+// 🚪 вход
 function join(){
-  const name = nameInput.value;
-  room = roomInput.value;
+  const name = document.getElementById("name").value;
+  const roomInput = document.getElementById("room").value;
+
+  if(!name || !roomInput || !color){
+    log("❌ Заполни всё");
+    return;
+  }
+
+  room = roomInput;
+
+  log("✅ Вход: " + name + " / " + room);
 
   socket.emit("join_room",{name,room,color});
 }
 
+// ▶ старт
 function start(){
+  if(!room){
+    log("❌ Сначала войди");
+    return;
+  }
+
+  log("🚀 Старт игры");
+
   socket.emit("start_game",room);
 }
 
+// 🎲 кубик
 function rollDice(){
-  new Audio("dice.mp3").play();
+  log("🎲 Бросок кубика");
+
   socket.emit("roll_dice",room);
 }
 
+// 👥 список игроков
 socket.on("update_players",(players)=>{
-  playersList.innerHTML = players.map(p =>
-    `<div style="color:${p.color}">${p.name}</div>`
-  ).join("");
+  const list = document.getElementById("playersList");
+
+  if(list){
+    list.innerHTML = players.map(p =>
+      `<div style="color:${p.color}">${p.name}</div>`
+    ).join("");
+  }
+
+  log("👥 Игроков: " + players.length);
 });
 
+// 🎮 старт игры
 socket.on("game_started",()=>{
-  menu.style.display="none";
-  game.style.display="block";
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").style.display="block";
+
+  log("🎮 Игра началась");
 });
 
-socket.on("game_update",(g)=>{
-  players.innerHTML = g.players.map(p =>
-    `<div>${p.name}: ${p.hype}</div>`
-  ).join("");
-
-  g.players.forEach(p=>{
-    if(!tokens[p.id]){
-      const t=document.createElement("div");
-      t.className="token";
-      t.style.background=p.color;
-
-      boardWrap.appendChild(t);
-      tokens[p.id]=t;
-
-      t.style.left = path[0].x + "px";
-      t.style.top = path[0].y + "px";
-    }
-
-    tokens[p.id].style.left = path[p.position].x + "px";
-    tokens[p.id].style.top = path[p.position].y + "px";
-  });
-});
-
+// 🎲 результат
 socket.on("dice_result",(d)=>{
-  alert("🎲 Выпало: "+d);
+  log("🎲 Выпало: " + d);
 });
