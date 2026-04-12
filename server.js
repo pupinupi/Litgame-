@@ -51,26 +51,12 @@ io.on("connection", (socket) => {
 
     const player = game.players[game.turn];
 
-    if (player.skip) {
-      player.skip = false;
-      game.turn = (game.turn + 1) % game.players.length;
-      io.to(room).emit("game_update", game);
-      return;
-    }
-
     const dice = Math.floor(Math.random() * 6) + 1;
 
     player.prevPosition = player.position;
-    player.position += dice;
+    player.position = (player.position + dice) % 20;
 
-    if (player.position >= 20) {
-      player.position = 0;
-      player.hype += 7;
-    }
-
-    applyCell(player);
-
-    if (player.hype < 0) player.hype = 0;
+    player.hype += 2; // пока простой вариант
 
     game.turn = (game.turn + 1) % game.players.length;
 
@@ -80,34 +66,4 @@ io.on("connection", (socket) => {
 
 });
 
-function applyCell(p) {
-  const map = [
-    "start","h3","h2","scandal","risk","h2","scandal","h3","h5","minus15",
-    "skip","h3","risk","h3","skip","h2","scandal","h8","minus10","h4"
-  ];
-
-  const cell = map[p.position];
-
-  if (cell === "start") p.hype += 10;
-  if (cell === "h2") p.hype += 2;
-  if (cell === "h3") p.hype += 3;
-  if (cell === "h4") p.hype += 4;
-  if (cell === "h5") p.hype += 5;
-  if (cell === "h8") p.hype += 8;
-
-  if (cell === "minus10") p.hype -= 10;
-  if (cell === "minus15") p.hype -= 15;
-
-  if (cell === "skip") p.skip = true;
-
-  if (cell === "risk") {
-    const r = Math.floor(Math.random() * 6) + 1;
-    p.hype += r <= 3 ? -5 : 5;
-  }
-
-  if (cell === "scandal") {
-    p.hype -= Math.floor(Math.random() * 5) + 1;
-  }
-}
-
-server.listen(3000, () => console.log("Server started"));
+server.listen(3000, () => console.log("Server running"));
