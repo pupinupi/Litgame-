@@ -281,6 +281,7 @@ function finishTurn(p){
 // ===== UI =====
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
+  const size = board.offsetWidth;
 
   players.forEach((p,i)=>{
     let el = document.getElementById(p.id);
@@ -294,11 +295,10 @@ function renderPlayers(){
 
     const c = cells[p.position];
 
-    el.style.left = (c.x + i*10) + 'px';
-    el.style.top = c.y + 'px';
+    el.style.left = (c.x * size + i*8) + 'px';
+    el.style.top = (c.y * size) + 'px';
   });
 }
-
 function renderHypeBars(){
   const box = document.getElementById('hypeBars');
   box.innerHTML = '';
