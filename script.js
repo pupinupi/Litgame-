@@ -15,45 +15,59 @@ const tokens = {};
 function getToken(p){
   if(!tokens[p.id]){
     const t=document.createElement("div");
-    t.style.position="absolute";
-    t.style.width="20px";
-    t.style.height="20px";
-    t.style.borderRadius="50%";
+    t.className="token";
     t.style.background=p.color;
-    t.style.boxShadow="0 0 10px white";
-    document.body.appendChild(t);
+
+    document.getElementById("boardWrap").appendChild(t);
     tokens[p.id]=t;
   }
   return tokens[p.id];
 }
 
 function moveToken(p){
-  const token=getToken(p);
-  let i=p.prevPosition;
+  const token = getToken(p);
+  let i = p.prevPosition;
+
+  const board = document.getElementById("board");
+
+  const scaleX = board.offsetWidth / 1024;
+  const scaleY = board.offsetHeight / 1024;
 
   function step(){
-    if(i===p.position) return;
-    i=(i+1)%path.length;
+    if(i === p.position) return;
 
-    const pos=path[i];
+    i = (i + 1) % path.length;
 
-    token.style.left=pos.x+"px";
-    token.style.top=pos.y+"px";
+    const pos = path[i];
 
-    setTimeout(step,200);
+    token.style.transition = "all 0.25s linear";
+    token.style.left = (pos.x * scaleX) + "px";
+    token.style.top = (pos.y * scaleY) + "px";
+
+    setTimeout(step, 250);
   }
+
   step();
 }
 
-function setColor(c){color=c;}
+function setColor(c){ color = c; }
 
 function join(){
   const name=document.getElementById("name").value;
   room=document.getElementById("room").value;
+
+  if(!name || !room || !color){
+    alert("Заполни всё!");
+    return;
+  }
+
   socket.emit("join_room",{name,room,color});
 }
 
-function start(){socket.emit("start_game",room);}
+function start(){
+  if(!room) return alert("Сначала войди!");
+  socket.emit("start_game",room);
+}
 
 function rollDice(){
   new Audio("dice.mp3").play();
@@ -66,11 +80,13 @@ socket.on("game_started",()=>{
 });
 
 socket.on("game_update",(g)=>{
-  players.innerHTML=g.players.map(p=>`${p.name}: ${p.hype}`).join("<br>");
+  players.innerHTML = g.players
+    .map(p=>`<div style="color:${p.color}">${p.name}: ${p.hype}</div>`)
+    .join("");
 
   g.players.forEach(p=>moveToken(p));
 });
 
 socket.on("dice_result",(d)=>{
-  alert("🎲 "+d);
+  alert("🎲 Выпало: "+d);
 });
