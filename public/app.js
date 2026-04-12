@@ -80,29 +80,29 @@ socket.on('diceRolled', ({ playerId, dice }) => {
 
 // ===== КЛЕТКИ =====
 const cells = [
-  { x: 0.10, y: 0.85, type:'start' },
-  { x: 0.10, y: 0.70, type:'plus', value:3 },
-  { x: 0.10, y: 0.55, type:'plus', value:2 },
-  { x: 0.08, y: 0.35, type:'scandal' },
-  { x: 0.10, y: 0.15, type:'risk' },
+  { x:0.1057, y:0.5857, type:'start' },
+  { x:0.1071, y:0.4557, type:'plus', value:3 },
+  { x:0.1029, y:0.3486, type:'plus', value:2 },
+  { x:0.1057, y:0.2357, type:'scandal' },
+  { x:0.1014, y:0.13,   type:'risk' },
 
-  { x: 0.25, y: 0.08, type:'plus', value:2 },
-  { x: 0.40, y: 0.08, type:'scandal' },
-  { x: 0.55, y: 0.08, type:'plus', value:3 },
-  { x: 0.70, y: 0.08, type:'plus', value:5 },
-  { x: 0.85, y: 0.08, type:'minus', value:10 },
+  { x:0.2214, y:0.0843, type:'plus', value:2 },
+  { x:0.3471, y:0.09,   type:'scandal' },
+  { x:0.5043, y:0.0886, type:'plus', value:3 },
+  { x:0.6514, y:0.0857, type:'plus', value:5 },
+  { x:0.77,   y:0.1,    type:'minus', value:10 },
 
-  { x: 0.92, y: 0.20, type:'minusSkip', value:8 },
-  { x: 0.92, y: 0.35, type:'plus', value:3 },
-  { x: 0.92, y: 0.50, type:'risk' },
-  { x: 0.92, y: 0.65, type:'plus', value:3 },
-  { x: 0.90, y: 0.85, type:'skip' },
+  { x:0.9157, y:0.1129, type:'minusSkip', value:8 },
+  { x:0.9043, y:0.2471, type:'plus', value:3 },
+  { x:0.91,   y:0.3429, type:'risk' },
+  { x:0.9029, y:0.4486, type:'plus', value:3 },
+  { x:0.89,   y:0.5786, type:'skip' },
 
-  { x: 0.75, y: 0.90, type:'plus', value:2 },
-  { x: 0.60, y: 0.90, type:'scandal' },
-  { x: 0.45, y: 0.90, type:'plus', value:8 },
-  { x: 0.30, y: 0.90, type:'minus', value:10 },
-  { x: 0.15, y: 0.90, type:'plus', value:4 }
+  { x:0.7886, y:0.6,    type:'plus', value:2 },
+  { x:0.6329, y:0.6014, type:'scandal' },
+  { x:0.4929, y:0.6014, type:'plus', value:8 },
+  { x:0.3571, y:0.6,    type:'minus', value:10 },
+  { x:0.2143, y:0.6014, type:'plus', value:4 }
 ];
 // ===== ДВИЖЕНИЕ =====
 function movePlayer(steps){
@@ -281,7 +281,7 @@ function finishTurn(p){
 // ===== UI =====
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
-  const size = board.offsetWidth;
+  const rect = board.getBoundingClientRect();
 
   players.forEach((p,i)=>{
     let el = document.getElementById(p.id);
@@ -292,6 +292,13 @@ function renderPlayers(){
       el.id = p.id;
       board.appendChild(el);
     }
+
+    const c = cells[p.position];
+
+    el.style.left = (c.x * rect.width + i*10) + 'px';
+    el.style.top  = (c.y * rect.height) + 'px';
+  });
+}
 
     const c = cells[p.position];
 
