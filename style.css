@@ -23,7 +23,20 @@ button {
   border: none;
 }
 
+#boardWrap {
+  position: relative;
+  display: inline-block;
+}
+
 #board {
   width: 90vw;
   max-width: 500px;
+}
+
+.token {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px white;
 }
