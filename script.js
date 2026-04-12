@@ -100,26 +100,34 @@ socket.on("dice_result",(d)=>{
   log("Выпало: " + d);
 });
 
-// 🎯 СБОР КООРДИНАТ С КЛИКА
+// 📍 СБОР КООРДИНАТ — 100% рабочий вариант
 
 const coords = [];
 
-const board = document.getElementById("board");
+// ждём пока страница загрузится
+window.addEventListener("load", () => {
 
-board.addEventListener("click", function(e){
+  const board = document.getElementById("board");
 
-  const rect = board.getBoundingClientRect();
+  if(!board){
+    alert("❌ board не найден");
+    return;
+  }
 
-  // координаты внутри картинки
-  const x = Math.round(e.clientX - rect.left);
-  const y = Math.round(e.clientY - rect.top);
+  board.addEventListener("click", (e) => {
 
-  coords.push({x, y});
+    const rect = board.getBoundingClientRect();
 
-  // показываем на экране
-  log("📍 x:" + x + " y:" + y);
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
 
-  // выводим весь список
-  console.log(coords);
+    coords.push({x, y});
+
+    // показываем прямо на экране
+    document.getElementById("debug").innerHTML =
+      "📍 x:" + x + " y:" + y + "<br><br>" +
+      coords.map(c => `x:${c.x} y:${c.y}`).join("<br>");
+
+  });
 
 });
