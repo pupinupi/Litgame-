@@ -1,133 +1,261 @@
+Апп
+
+const scandalSound = new Audio('scandal.mp3');
+scandalSound.volume = 0.8;
+
+const diceSound = new Audio('dice.mp3');
+diceSound.volume = 0.7;
+
 const socket = io();
 
-let room = "";
-let color = "";
+let players = [];
+let currentTurnId = null;
+let username, roomCode, color;
 
-const boardWrap = document.getElementById("boardWrap");
+let isAnimating = false;
+let gameOver = false;
 
-const path = [
-  {x:59,y:358},{x:59,y:281},{x:54,y:214},{x:56,y:150},{x:59,y:89},
-  {x:125,y:65},{x:200,y:65},{x:299,y:68},{x:380,y:71},{x:484,y:64},
-  {x:555,y:76},{x:554,y:153},{x:552,y:212},{x:550,y:271},{x:544,y:352},
-  {x:467,y:367},{x:387,y:366},{x:301,y:360},{x:218,y:358},{x:144,y:353}
-];
-
-const tokens = {};
-
-function log(text){
-  const el = document.getElementById("debug");
-
-  el.innerHTML = text + "<br><br>" +
-    coords.map(c => `x:${c.x} y:${c.y}`).join("<br>");
-}
-
-function setColor(c){
-  color = c;
-  log("Цвет: " + c);
-}
-
-function join(){
-  const name = document.getElementById("name").value;
-  const r = document.getElementById("room").value;
-
-  room = r;
-
-  socket.emit("join_room",{name,room,color});
-  log("Вход в комнату");
-}
-
-function start(){
-  socket.emit("start_game",room);
-}
-
-function rollDice(){
-  socket.emit("roll_dice",room);
-}
-
-// 🔥 создание фишки
-function createToken(p){
-  const t = document.createElement("div");
-  t.className = "token";
-  t.style.background = p.color;
-
-  boardWrap.appendChild(t);
-
-  t.style.left = path[0].x + "px";
-  t.style.top = path[0].y + "px";
-
-  tokens[p.id] = t;
-}
-
-// 🚶 движение
-function moveToken(p){
-  const t = tokens[p.id];
-  if(!t) return;
-
-  const pos = path[p.position];
-  if(!pos) return;
-
-  t.style.left = pos.x + "px";
-  t.style.top = pos.y + "px";
-}
-
-// 👥 лобби
-socket.on("update_players",(players)=>{
-  document.getElementById("playersList").innerHTML =
-    players.map(p=>`<div style="color:${p.color}">${p.name}</div>`).join("");
+// --- ВЫБОР ФИШКИ ---
+document.querySelectorAll('.chip').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+    color = btn.dataset.color;
+  };
 });
 
-// 🎮 старт
-socket.on("game_started",()=>{
-  document.getElementById("menu").style.display="none";
-  document.getElementById("game").style.display="block";
-});
+// --- ВХОД ---
+document.getElementById('joinBtn').onclick = () => {
+  username = document.getElementById('username').value;
+  roomCode = document.getElementById('roomCode').value;
 
-// 🎲 игра
-socket.on("game_update",(g)=>{
-
-  document.getElementById("players").innerHTML =
-    g.players.map(p=>`${p.name}: ${p.hype}`).join("<br>");
-
-  g.players.forEach(p=>{
-    if(!tokens[p.id]) createToken(p);
-    moveToken(p);
-  });
-
-});
-
-// 🎲 кубик
-socket.on("dice_result",(d)=>{
-  log("Выпало: " + d);
-});
-
-// 📍 СБОР КООРДИНАТ — 100% рабочий вариант
-
-const coords = [];
-
-// ждём пока страница загрузится
-window.addEventListener("load", () => {
-
-  const board = document.getElementById("board");
-
-  if(!board){
-    alert("❌ board не найден");
+  if (!username || !roomCode || !color) {
+    alert("Заполни всё");
     return;
   }
 
-  board.addEventListener("click", (e) => {
+  socket.emit('joinRoom', { username, roomCode, color });
+};
 
-    const rect = board.getBoundingClientRect();
+// --- СТАРТ ---
+document.getElementById('startBtn').onclick = () => {
+  socket.emit('startGame', roomCode);
+};
 
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
+// --- КУБИК ---
+document.getElementById('rollBtn').onclick = () => {
+  if (gameOver || isAnimating) return;
+  if (currentTurnId !== socket.id) return;
 
-    coords.push({x, y});
+  socket.emit('rollDice', roomCode);
+};
 
-    // показываем прямо на экране
-    document.getElementById("debug").innerHTML =
-      "📍 x:" + x + " y:" + y + "<br><br>" +
-      coords.map(c => `x:${c.x} y:${c.y}`).join("<br>");
-
-  });
-
+// --- СОКЕТЫ ---
+socket.on('updatePlayers', pl => {
+  players = pl;
+  renderPlayers();
+  renderHypeBars();
+  renderLobbyPlayers();
 });
+
+socket.on('playerSkipped', (playerId) => {
+  if(playerId === socket.id){
+    showModal('🛑 Пропуск хода!');
+    document.getElementById('rollBtn').disabled = true;
+  }
+});
+
+socket.on('gameStarted', () => {
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+});
+
+socket.on('nextTurn', id => {
+  currentTurnId = id;
+
+  document.getElementById('rollBtn').disabled = id !== socket.id || gameOver;
+
+  renderPlayers();
+});
+
+socket.on('diceRolled', ({ playerId, dice }) => {
+  if (playerId !== socket.id) return;
+
+  const diceEl = document.getElementById('diceResult');
+
+  diceSound.currentTime = 0;
+  diceSound.play();
+
+  diceEl.innerText = "🎲 " + dice;
+
+  movePlayer(dice);
+});
+
+// --- КЛЕТКИ ---
+const cells = [
+  { x: 82, y: 587, type: 'start' },
+  { x: 97, y: 464, type: 'plus', value: 3 },
+  { x: 86, y: 348, type: 'plus', value: 2 },
+  { x: 93, y: 224, type: 'scandal' },
+  { x: 87, y: 129, type: 'risk' },
+  { x: 219, y: 101, type: 'plus', value: 2 },
+  { x: 364, y: 107, type: 'scandal' },
+  { x: 494, y: 95, type: 'plus', value: 3 },
+  { x: 652, y: 96, type: 'plus', value: 5 },
+  { x: 815, y: 89, type: 'minus', value: 10 },
+  { x: 930, y: 135, type: 'minusSkip', value: 8 },
+  { x: 936, y: 247, type: 'plus', value: 3 },
+  { x: 936, y: 357, type: 'risk' },
+  { x: 941, y: 480, type: 'plus', value: 3 },
+  { x: 937, y: 610, type: 'skip' },
+  { x: 794, y: 624, type: 'plus', value: 2 },
+  { x: 636, y: 635, type: 'scandal' },
+  { x: 517, y: 627, type: 'plus', value: 8 },
+  { x: 355, y: 619, type: 'minus', value: 10 },
+  { x: 210, y: 626, type: 'plus', value: 4 }
+];
+
+// --- ДВИЖЕНИЕ ---
+function movePlayer(steps) {
+  const me = players.find(p => p.id === socket.id);
+  if (!me) return;
+
+  isAnimating = true;
+  let count = 0;
+
+  function step() {
+    if (count >= steps) {
+      isAnimating = false;
+      handleCell(me);
+      return;
+    }
+
+    const prev = me.position;
+    me.position = (me.position + 1) % cells.length;
+
+    if (me.position === 0 && prev !== 0) {
+      me.hype += 7;
+      showModal('🔁 +7 хайпа за круг');
+    }
+
+    renderPlayers();
+    count++;
+    setTimeout(step, 300);
+  }
+
+  step();
+}
+
+// --- ОБРАБОТКА КЛЕТКИ ---
+function handleCell(p) {
+  const cell = cells[p.position];
+  let text = '';
+
+  switch (cell.type) {
+    case 'start': p.hype += 10; text = '🚀 +10'; break;
+    case 'plus': p.hype += cell.value; text = `➕ ${cell.value}`; break;
+    case 'minus': p.hype = Math.max(0, p.hype - cell.value); text = `➖ ${cell.value}`; break;
+    case 'skip': p.skipNext = true; text = '🛑 Пропуск'; break;case 'minusSkip': p.hype = Math.max(0, p.hype - cell.value); p.skipNext = true; text = '🛑 Суд'; break;
+    case 'risk': showRiskModal(p); return;
+    case 'scandal': showScandalModal(p); return;
+  }
+
+  renderHypeBars();
+  if (text) showModal(text);
+
+  socket.emit('playerMoved', {
+    roomCode,
+    position: p.position,
+    hype: p.hype,
+    skipNext: p.skipNext
+  });
+}
+
+// --- UI ---
+function renderPlayers() {
+  const b = document.getElementById('gameBoard');
+
+  players.forEach((p, i) => {
+    let el = document.getElementById(p.id);
+
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'player';
+      el.id = p.id;
+      el.style.background = p.color;
+      b.appendChild(el);
+    }
+
+    const c = cells[p.position];
+    el.style.left = (c.x + i * 10) + 'px';
+    el.style.top = c.y + 'px';
+  });
+}
+
+function renderHypeBars() {
+  const container = document.getElementById('hypeBars');
+  container.innerHTML = '';
+
+  players.forEach(p => {
+    const bar = document.createElement('div');
+    bar.className = 'hypeBar';
+
+    const fill = document.createElement('div');
+    fill.className = 'hypeFill';
+    fill.style.width = Math.min(p.hype, 70) / 70 * 100 + '%';
+
+    bar.innerHTML = `<div>${p.username}: ${p.hype}/70</div>`;
+    bar.appendChild(fill);
+
+    container.appendChild(bar);
+  });
+}
+
+function renderLobbyPlayers() {
+  const list = document.getElementById('playersList');
+  list.innerHTML = players.map(p => `<div style="color:${p.color}">${p.username}</div>`).join('');
+}
+
+function showModal(text) {
+  const m = document.getElementById('modal');
+  m.innerHTML = `<div class="modalContent">${text}</div>`;
+  m.classList.add('active');
+
+  setTimeout(() => m.classList.remove('active'), 2000);
+}
+
+// --- РИСК ---
+function showRiskModal(p) {
+  const dice = Math.floor(Math.random() * 6) + 1;
+  const val = dice <= 3 ? -5 : 5;
+
+  p.hype = Math.max(0, p.hype + val);
+  showModal(`🎲 ${val}`);
+
+  renderHypeBars();
+
+  socket.emit('playerMoved', {
+    roomCode,
+    position: p.position,
+    hype: p.hype,
+    skipNext: p.skipNext
+  });
+}
+
+// --- СКАНДАЛ ---
+function showScandalModal(p) {
+  scandalSound.currentTime = 0;
+  scandalSound.play();
+
+  p.hype = Math.max(0, p.hype - 3);
+  showModal('💥 Скандал -3');
+
+  renderHypeBars();
+
+  socket.emit('playerMoved', {
+    roomCode,
+    position: p.position,
+    hype: p.hype,
+    skipNext: p.skipNext
+  });
+}
