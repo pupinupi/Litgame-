@@ -10,30 +10,27 @@ app.use(express.static(__dirname));
 
 let rooms = {};
 
-function createPlayer(id, name, color) {
+function createPlayer(id, name, color){
   return {
     id,
     name,
     color,
     position: 0,
-    prevPosition: 0,
-    hype: 0,
-    skip: false
+    hype: 0
   };
 }
 
-io.on("connection", (socket) => {
+io.on("connection", (socket)=>{
 
-  socket.on("join_room", ({ name, room, color }) => {
-    if (!rooms[room]) {
+  socket.on("join_room", ({name,room,color})=>{
+    if(!rooms[room]){
       rooms[room] = { players: [], turn: 0 };
     }
 
     const game = rooms[room];
+    if(game.players.length >= 4) return;
 
-    if (game.players.length >= 4) return;
-
-    const player = createPlayer(socket.id, name, color);
+    const player = createPlayer(socket.id,name,color);
     game.players.push(player);
 
     socket.join(room);
@@ -41,22 +38,20 @@ io.on("connection", (socket) => {
     io.to(room).emit("update_players", game.players);
   });
 
-  socket.on("start_game", (room) => {
+  socket.on("start_game",(room)=>{
     io.to(room).emit("game_started");
   });
 
-  socket.on("roll_dice", (room) => {
+  socket.on("roll_dice",(room)=>{
     const game = rooms[room];
-    if (!game) return;
+    if(!game) return;
 
     const player = game.players[game.turn];
 
-    const dice = Math.floor(Math.random() * 6) + 1;
+    const dice = Math.floor(Math.random()*6)+1;
 
-    player.prevPosition = player.position;
     player.position = (player.position + dice) % 20;
-
-    player.hype += 2; // пока простой вариант
+    player.hype += 2;
 
     game.turn = (game.turn + 1) % game.players.length;
 
@@ -66,4 +61,4 @@ io.on("connection", (socket) => {
 
 });
 
-server.listen(3000, () => console.log("Server running"));
+server.listen(3000,()=>console.log("RUNNING"));
