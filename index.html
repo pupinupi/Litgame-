@@ -1,43 +1,65 @@
+Индекс 
+
 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Путь к хайпу</title>
+<title>🔥 Литвин: Путь к хайпу</title>
+
 <link rel="stylesheet" href="style.css">
+
+<script src="/socket.io/socket.io.js"></script>
+<script defer src="app.js"></script>
 </head>
 <body>
 
-<div id="menu">
-  <h1>🔥 ПУТЬ К ХАЙПУ 🔥</h1>
+<!-- ЛОББИ -->
+<div id="lobby">
+  <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ 🔥</h1>
 
-  <input id="name" placeholder="Имя">
-  <input id="room" placeholder="Комната">
+  <input id="username" placeholder="Имя">
+  <input id="roomCode" placeholder="Код комнаты">
 
-  <button onclick="setColor('red')">🔴</button>
-  <button onclick="setColor('blue')">🔵</button>
-  <button onclick="setColor('yellow')">🟡</button>
-  <button onclick="setColor('purple')">🟣</button>
-
-  <button onclick="join()">Войти</button>
-  <button onclick="start()">Старт</button>
-
-  <div id="playersList"></div>
-  <div id="debug"></div>
-</div>
-
-<div id="game" style="display:none;">
-  <div id="boardWrap">
-    <img id="board" src="board.jpg">
+  <div class="chips">
+    <div class="chip red" data-color="red"></div>
+    <div class="chip blue" data-color="blue"></div>
+    <div class="chip yellow" data-color="yellow"></div>
+    <div class="chip purple" data-color="purple"></div>
   </div>
 
-  <button onclick="rollDice()">🎲 Бросить</button>
+  <div class="buttons">
+    <button id="joinBtn">ВОЙТИ</button>
+    <button id="startBtn">НАЧАТЬ</button>
+  </div>
 
-  <div id="players"></div>
+  <div id="playersList"></div>
+
+  <div class="rules">
+    <h2>📜 Правила</h2>
+    <p>🎲 Бросай кубик</p>
+    <p>🔥 Собери 70 хайпа</p>
+    <p>💥 Скандалы уменьшают хайп</p>
+    <p>⚠️ Риск: +5 или -5</p>
+    <p>🛑 Суд: пропуск хода</p>
+  </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="script.js"></script>
+<!-- ИГРА -->
+<div id="game">
+  <div id="hypeBars"></div>
+
+  <div id="gameBoard">
+    <img src="board.jpg">
+  </div>
+
+  <div id="diceResult"></div>
+
+  <button id="rollBtn">🎲 БРОСИТЬ</button>
+</div>
+
+<!-- МОДАЛКА -->
+<div id="modal"></div>
 
 </body>
 </html>
