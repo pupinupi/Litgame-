@@ -6,65 +6,23 @@ body {
   font-family: Arial;
 }
 
-h1 {
-  color: cyan;
-  text-shadow: 0 0 20px cyan;
-}
-
-/* 🎨 выбор цвета */
-#colors {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 10px;
-}
-
-.color {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.red { background: red; }
-.blue { background: blue; }
-.yellow { background: yellow; }
-.purple { background: purple; }
-
-/* 📋 список игроков */
-#playersList {
-  margin: 10px;
-}
-
-/* 🎮 поле */
 #boardWrap {
   position: relative;
   width: 1024px;
+  height: 1024px;
   margin: auto;
 }
 
 #board {
   width: 1024px;
+  height: 1024px;
+  display: block;
 }
 
-/* 🎯 фишки */
 .token {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-}
-
-/* 📊 шкала хайпа */
-#hypeBar {
-  width: 300px;
-  height: 20px;
-  background: #333;
-  margin: 10px auto;
-}
-
-#hypeFill {
-  height: 100%;
-  width: 0%;
-  background: cyan;
+  box-shadow: 0 0 10px white;
 }
