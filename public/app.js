@@ -80,28 +80,30 @@ socket.on('diceRolled', ({ playerId, dice }) => {
 
 // ===== КЛЕТКИ =====
 const cells = [
-  { x:111,y:596,type:'start'},
-  { x:114,y:454,type:'plus',value:3},
-  { x:106,y:363,type:'plus',value:2},
-  { x:91,y:239,type:'scandal'},
-  { x:101,y:143,type:'risk'},
-  { x:226,y:100,type:'plus',value:2},
-  { x:374,y:101,type:'scandal'},
-  { x:509,y:107,type:'plus',value:3},
-  { x:653,y:106,type:'plus',value:5},
-  { x:789,y:103,type:'minus',value:10},
-  { x:933,y:128,type:'minusSkip',value:8},
-  { x:938,y:252,type:'plus',value:3},
-  { x:948,y:356,type:'risk'},
-  { x:943,y:480,type:'plus',value:3},
-  { x:923,y:598,type:'skip'},
-  { x:794,y:619,type:'plus',value:2},
-  { x:644,y:617,type:'scandal'},
-  { x:513,y:617,type:'plus',value:8},
-  { x:351,y:624,type:'minus',value:10},
-  { x:232,y:620,type:'plus',value:4}
-];
+  { x: 0.10, y: 0.85, type:'start' },
+  { x: 0.10, y: 0.70, type:'plus', value:3 },
+  { x: 0.10, y: 0.55, type:'plus', value:2 },
+  { x: 0.08, y: 0.35, type:'scandal' },
+  { x: 0.10, y: 0.15, type:'risk' },
 
+  { x: 0.25, y: 0.08, type:'plus', value:2 },
+  { x: 0.40, y: 0.08, type:'scandal' },
+  { x: 0.55, y: 0.08, type:'plus', value:3 },
+  { x: 0.70, y: 0.08, type:'plus', value:5 },
+  { x: 0.85, y: 0.08, type:'minus', value:10 },
+
+  { x: 0.92, y: 0.20, type:'minusSkip', value:8 },
+  { x: 0.92, y: 0.35, type:'plus', value:3 },
+  { x: 0.92, y: 0.50, type:'risk' },
+  { x: 0.92, y: 0.65, type:'plus', value:3 },
+  { x: 0.90, y: 0.85, type:'skip' },
+
+  { x: 0.75, y: 0.90, type:'plus', value:2 },
+  { x: 0.60, y: 0.90, type:'scandal' },
+  { x: 0.45, y: 0.90, type:'plus', value:8 },
+  { x: 0.30, y: 0.90, type:'minus', value:10 },
+  { x: 0.15, y: 0.90, type:'plus', value:4 }
+];
 // ===== ДВИЖЕНИЕ =====
 function movePlayer(steps){
   const me = players.find(p => p.id === socket.id);
