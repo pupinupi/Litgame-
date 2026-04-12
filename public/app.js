@@ -358,3 +358,51 @@ function showWin(name){
 
   m.classList.add('active');
 }
+
+// ===== 📍 РЕЖИМ СБОРА КООРДИНАТ =====
+
+let collectMode = true; // ВКЛ/ВЫКЛ
+let collected = [];
+
+const board = document.getElementById('gameBoard');
+
+board.addEventListener('click', (e) => {
+  if (!collectMode) return;
+
+  const rect = board.getBoundingClientRect();
+
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+
+  const point = {
+    x: +x.toFixed(4),
+    y: +y.toFixed(4)
+  };
+
+  collected.push(point);
+
+  console.log("📍", point);
+
+  // визуальная точка
+  const dot = document.createElement('div');
+  dot.style.position = 'absolute';
+  dot.style.left = (x * rect.width) + 'px';
+  dot.style.top = (y * rect.height) + 'px';
+  dot.style.width = '8px';
+  dot.style.height = '8px';
+  dot.style.background = 'red';
+  dot.style.borderRadius = '50%';
+  dot.style.boxShadow = '0 0 10px red';
+
+  board.appendChild(dot);
+
+});
+
+// 👉 КНОПКА СКОПИРОВАТЬ
+window.copyCoords = function(){
+  console.log("=== ВСЕ КООРДИНАТЫ ===");
+  console.log(JSON.stringify(collected, null, 2));
+
+  navigator.clipboard.writeText(JSON.stringify(collected, null, 2));
+  alert("Скопировано!");
+};
