@@ -1,4 +1,4 @@
-Апп
+
 
 const scandalSound = new Audio('scandal.mp3');
 scandalSound.volume = 0.8;
