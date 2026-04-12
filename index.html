@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,29 +8,38 @@
 </head>
 <body>
 
+<!-- 🔥 ЛОББИ -->
 <div id="menu">
   <h1>🔥 ПУТЬ К ХАЙПУ 🔥</h1>
 
   <input id="name" placeholder="Имя">
   <input id="room" placeholder="Комната">
 
-  <div>
-    <button onclick="setColor('red')">🔴</button>
-    <button onclick="setColor('blue')">🔵</button>
-    <button onclick="setColor('yellow')">🟡</button>
-    <button onclick="setColor('purple')">🟣</button>
+  <div id="colors">
+    <div onclick="setColor('red')" class="color red"></div>
+    <div onclick="setColor('blue')" class="color blue"></div>
+    <div onclick="setColor('yellow')" class="color yellow"></div>
+    <div onclick="setColor('purple')" class="color purple"></div>
   </div>
 
-  <button onclick="join()">ВОЙТИ</button>
-  <button onclick="start()">СТАРТ</button>
+  <button onclick="join()">Войти</button>
+
+  <h3>Игроки:</h3>
+  <div id="playersList"></div>
+
+  <button onclick="start()">Начать игру</button>
 </div>
 
+<!-- 🎮 ИГРА -->
 <div id="game" style="display:none;">
+  <div id="hypeBar"><div id="hypeFill"></div></div>
+
   <div id="boardWrap">
     <img id="board" src="board.jpg">
   </div>
 
   <button onclick="rollDice()">🎲 Бросить</button>
+
   <div id="players"></div>
 </div>
 
