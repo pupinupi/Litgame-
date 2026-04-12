@@ -14,8 +14,11 @@ const path = [
 
 const tokens = {};
 
-function log(t){
-  document.getElementById("debug").innerHTML = t;
+function log(text){
+  const el = document.getElementById("debug");
+
+  el.innerHTML = text + "<br><br>" +
+    coords.map(c => `x:${c.x} y:${c.y}`).join("<br>");
 }
 
 function setColor(c){
@@ -95,4 +98,28 @@ socket.on("game_update",(g)=>{
 // 🎲 кубик
 socket.on("dice_result",(d)=>{
   log("Выпало: " + d);
+});
+
+// 🎯 СБОР КООРДИНАТ С КЛИКА
+
+const coords = [];
+
+const board = document.getElementById("board");
+
+board.addEventListener("click", function(e){
+
+  const rect = board.getBoundingClientRect();
+
+  // координаты внутри картинки
+  const x = Math.round(e.clientX - rect.left);
+  const y = Math.round(e.clientY - rect.top);
+
+  coords.push({x, y});
+
+  // показываем на экране
+  log("📍 x:" + x + " y:" + y);
+
+  // выводим весь список
+  console.log(coords);
+
 });
