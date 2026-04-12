@@ -1,64 +1,97 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
+Сервер
 
+const express = require('express');
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 
 let rooms = {};
 
-function createPlayer(id, name, color){
-  return {
-    id,
-    name,
-    color,
-    position: 0,
-    hype: 0
-  };
-}
+io.on('connection', (socket) => {
 
-io.on("connection", (socket)=>{
-
-  socket.on("join_room", ({name,room,color})=>{
-    if(!rooms[room]){
-      rooms[room] = { players: [], turn: 0 };
+  socket.on('joinRoom', ({username, roomCode, color}) => {
+    if(!rooms[roomCode]){
+      rooms[roomCode] = { players: [], turn: 0 };
     }
 
-    const game = rooms[room];
-    if(game.players.length >= 4) return;
+    const player = {
+      id: socket.id,
+      username,
+      color,
+      position: 0,
+      hype: 0,
+      skipNext: false
+    };
 
-    const player = createPlayer(socket.id,name,color);
-    game.players.push(player);
+    rooms[roomCode].players.push(player);
+    socket.join(roomCode);
 
-    socket.join(room);
-
-    io.to(room).emit("update_players", game.players);
+    io.to(roomCode).emit('updatePlayers', rooms[roomCode].players);
   });
 
-  socket.on("start_game",(room)=>{
-    io.to(room).emit("game_started");
+  socket.on('startGame', (roomCode)=>{
+    const room = rooms[roomCode];
+    if(!room || room.players.length === 0) return;
+
+    room.turn = 0;
+
+    io.to(roomCode).emit('gameStarted');
+    io.to(roomCode).emit('nextTurn', room.players[0].id);
   });
 
-  socket.on("roll_dice",(room)=>{
-    const game = rooms[room];
-    if(!game) return;
+  socket.on('rollDice', (roomCode)=>{
+    const room = rooms[roomCode];
+    if(!room) return;
 
-    const player = game.players[game.turn];
+    const player = room.players[room.turn];
+
+    // ❌ не твой ход
+    if(player.id !== socket.id) return;
+
+    // 🛑 ПРОПУСК ХОДА
+    if(player.skipNext){
+      io.to(roomCode).emit('playerSkipped', player.id);
+
+      player.skipNext = false;
+      nextTurn(roomCode);
+      return;
+    }
 
     const dice = Math.floor(Math.random()*6)+1;
 
-    player.position = (player.position + dice) % 20;
-    player.hype += 2;
-
-    game.turn = (game.turn + 1) % game.players.length;
-
-    io.to(room).emit("dice_result", dice);
-    io.to(room).emit("game_update", game);
+    io.to(roomCode).emit('diceRolled', { playerId: player.id, dice });
   });
+
+  socket.on('playerMoved', ({roomCode, position, hype, skipNext})=>{
+    const room = rooms[roomCode];
+    if(!room) return;
+
+    const player = room.players.find(p=>p.id===socket.id);
+    if(!player) return;
+
+    player.position = position;
+    player.hype = hype;
+    player.skipNext = skipNext;
+
+    io.to(roomCode).emit('updatePlayers', room.players);
+
+    nextTurn(roomCode);
+  });
+
+  function nextTurn(roomCode){
+    const room = rooms[roomCode];
+    if(!room) return;
+
+    room.turn = (room.turn + 1) % room.players.length;
+
+    const nextPlayer = room.players[room.turn];
+
+    io.to(roomCode).emit('nextTurn', nextPlayer.id);
+  }
 
 });
 
-server.listen(3000,()=>console.log("RUNNING"));
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, ()=>console.log("🚀 Server started on port " + PORT));
