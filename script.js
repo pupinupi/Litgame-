@@ -3,138 +3,96 @@ const socket = io();
 let room = "";
 let color = "";
 
-// 📍 координаты (пока базовые — потом заменим на твои точные)
+const boardWrap = document.getElementById("boardWrap");
+
 const path = [
-  {x:100,y:900},{x:100,y:700},{x:100,y:500},{x:100,y:300},{x:100,y:100},
-  {x:300,y:100},{x:500,y:100},{x:700,y:100},{x:900,y:100},
-  {x:900,y:300},{x:900,y:500},{x:900,y:700},{x:900,y:900},
-  {x:700,y:900},{x:500,y:900},{x:300,y:900},
-  {x:200,y:800},{x:300,y:700},{x:400,y:600},{x:500,y:500}
+  {x:59,y:358},{x:59,y:281},{x:54,y:214},{x:56,y:150},{x:59,y:89},
+  {x:125,y:65},{x:200,y:65},{x:299,y:68},{x:380,y:71},{x:484,y:64},
+  {x:555,y:76},{x:554,y:153},{x:552,y:212},{x:550,y:271},{x:544,y:352},
+  {x:467,y:367},{x:387,y:366},{x:301,y:360},{x:218,y:358},{x:144,y:353}
 ];
 
-// 🎯 фишки
 const tokens = {};
 
-// 📢 лог на экран
-function log(text){
-  document.getElementById("debug").innerHTML = text;
+function log(t){
+  document.getElementById("debug").innerHTML = t;
 }
 
-// 🎨 выбор цвета
 function setColor(c){
   color = c;
-  log("Выбран цвет: " + c);
+  log("Цвет: " + c);
 }
 
-// 🚪 вход
 function join(){
   const name = document.getElementById("name").value;
-  const roomInput = document.getElementById("room").value;
+  const r = document.getElementById("room").value;
 
-  if(!name || !roomInput || !color){
-    log("❌ Заполни всё");
-    return;
-  }
-
-  room = roomInput;
-
-  log("✅ Вход: " + name + " / " + room);
+  room = r;
 
   socket.emit("join_room",{name,room,color});
+  log("Вход в комнату");
 }
 
-// ▶ старт
 function start(){
-  if(!room){
-    log("❌ Сначала войди");
-    return;
-  }
-
-  log("🚀 Старт игры");
-
   socket.emit("start_game",room);
 }
 
-// 🎲 кубик
 function rollDice(){
-  log("🎲 Бросок кубика");
-
   socket.emit("roll_dice",room);
 }
 
-// 🟢 СОЗДАНИЕ ФИШКИ
-function createToken(player){
+// 🔥 создание фишки
+function createToken(p){
   const t = document.createElement("div");
-
   t.className = "token";
-  t.style.background = player.color;
+  t.style.background = p.color;
 
-  document.getElementById("boardWrap").appendChild(t);
+  boardWrap.appendChild(t);
 
-  // ставим на старт
   t.style.left = path[0].x + "px";
   t.style.top = path[0].y + "px";
 
-  tokens[player.id] = t;
+  tokens[p.id] = t;
 }
 
-// 🚶 ДВИЖЕНИЕ
-function moveToken(player){
-  const t = tokens[player.id];
-  const pos = path[player.position];
+// 🚶 движение
+function moveToken(p){
+  const t = tokens[p.id];
+  if(!t) return;
 
-  if(!t || !pos) return;
+  const pos = path[p.position];
+  if(!pos) return;
 
   t.style.left = pos.x + "px";
   t.style.top = pos.y + "px";
 }
 
-// 👥 список игроков (лобби)
+// 👥 лобби
 socket.on("update_players",(players)=>{
-  const list = document.getElementById("playersList");
-
-  if(list){
-    list.innerHTML = players.map(p =>
-      `<div style="color:${p.color}">${p.name}</div>`
-    ).join("");
-  }
-
-  log("👥 Игроков: " + players.length);
+  document.getElementById("playersList").innerHTML =
+    players.map(p=>`<div style="color:${p.color}">${p.name}</div>`).join("");
 });
 
-// 🎮 старт игры
+// 🎮 старт
 socket.on("game_started",()=>{
   document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
-
-  log("🎮 Игра началась");
 });
 
-// 🔥 ОБНОВЛЕНИЕ ИГРЫ (ФИШКИ ТУТ)
+// 🎲 игра
 socket.on("game_update",(g)=>{
 
-  // список очков
-  const playersDiv = document.getElementById("players");
+  document.getElementById("players").innerHTML =
+    g.players.map(p=>`${p.name}: ${p.hype}`).join("<br>");
 
-  playersDiv.innerHTML = g.players.map(p =>
-    `<div style="color:${p.color}">
-      ${p.name}: ${p.hype}
-    </div>`
-  ).join("");
-
-  // фишки
-  g.players.forEach(p => {
-
-    if(!tokens[p.id]){
-      createToken(p);
-    }
-
+  g.players.forEach(p=>{
+    if(!tokens[p.id]) createToken(p);
     moveToken(p);
   });
 
 });
 
-// 🎲 результат
+// 🎲 кубик
 socket.on("dice_result",(d)=>{
-  log("🎲 Выпало: " + d);
+  log("Выпало: " + d);
 });
