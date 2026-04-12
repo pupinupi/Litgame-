@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Литвин игра</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="lobby">
+  <h2>ЛОББИ</h2>
+
+  <input id="username" placeholder="Имя">
+  <input id="roomCode" placeholder="Комната">
+
+  <div>
+    <button class="chip" data-color="red">🔴</button>
+    <button class="chip" data-color="blue">🔵</button>
+    <button class="chip" data-color="green">🟢</button>
+    <button class="chip" data-color="yellow">🟡</button>
+  </div>
+
+  <button id="joinBtn">Войти</button>
+  <button id="startBtn">Старт</button>
+
+  <div id="playersList"></div>
+</div>
+
+<div id="game" style="display:none">
+
+  <div id="hypeBars"></div>
+
+  <button id="rollBtn">🎲 Бросить</button>
+  <div id="diceResult"></div>
+
+  <div id="gameBoard"></div>
+
+</div>
+
+<div id="modal"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
