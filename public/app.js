@@ -156,9 +156,9 @@ function handleCell(p){
   }
 
   if(c.type === 'risk'){
-    let dice = Math.floor(Math.random()*6)+1;
-    p.hype += (dice<=3 ? -5 : 5);
-  }
+  showRisk(p);
+  return;
+}
 
   if(c.type === 'scandal'){
     showScandal(p);
@@ -294,3 +294,47 @@ function renderLobbyPlayers(){
 setTimeout(() => {
   renderPlayers();
 }, 300);
+
+let currentRisk = null;
+
+function showRisk(p){
+  currentRisk = p;
+
+  document.getElementById('riskResult').innerText = "";
+  document.getElementById('riskRollBtn').style.display = "inline-block";
+  document.getElementById('riskCloseBtn').style.display = "none";
+
+  document.getElementById('riskModal').style.display = "flex";
+}
+
+function rollRisk(){
+  const dice = Math.floor(Math.random()*6)+1;
+  const result = dice <= 3 ? -5 : 5;
+
+  currentRisk.hype = Math.max(0, currentRisk.hype + result);
+
+  document.getElementById('riskResult').innerText =
+    `🎲 ${dice} → ${result > 0 ? "+" : ""}${result} хайпа`;
+
+  document.getElementById('riskRollBtn').style.display = "none";
+  document.getElementById('riskCloseBtn').style.display = "inline-block";
+
+  renderHypeBars();
+}
+
+function closeRisk(){
+
+  if(currentRisk.hype >= 70){
+    gameOver = true;
+    alert("🏆 Победа: " + currentRisk.username);
+  }
+
+  document.getElementById('riskModal').style.display = "none";
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position: currentRisk.position,
+    hype: currentRisk.hype,
+    skipNext: currentRisk.skipNext
+  });
+}
