@@ -287,14 +287,21 @@ function renderPlayers(){
     if(!el){
       el = document.createElement('div');
       el.className = `player ${p.color}`;
+
+if (p.id === currentTurnId) {
+  el.classList.add("activePlayer");
+}
       el.id = p.id;
       board.appendChild(el);
     }
 
     const c = cells[p.position];
 
-    el.style.left = (c.x * rect.width) + 'px';
-    el.style.top  = (c.y * rect.height) + 'px';
+    const angle = (i / players.length) * Math.PI * 2;
+const offset = 12;
+
+el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
+el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
   });
 }
 
