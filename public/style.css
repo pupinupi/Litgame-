@@ -125,3 +125,39 @@ body {
   from { transform: scale(0.7); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+.riskCard {
+  background: #001018;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+
+  border: 2px solid #00cfff;
+  box-shadow:
+    0 0 20px #00cfff,
+    0 0 40px #00cfff;
+
+  animation: pop 0.3s ease;
+}
+
+.riskTitle {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #00cfff;
+}
+
+#riskRules {
+  margin-bottom: 15px;
+}
+
+#riskResult {
+  font-size: 20px;
+  margin: 15px 0;
+}
+
+.riskCard button {
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 10px;
+  border: none;
+}
