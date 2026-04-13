@@ -72,3 +72,56 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
+.modal {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index: 100;
+}
+
+.scandalCard {
+  background: #140000;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+
+  border: 2px solid red;
+  box-shadow:
+    0 0 20px red,
+    0 0 40px #ff0000,
+    0 0 60px #ff3300;
+
+  animation: pop 0.3s ease;
+}
+
+.scandalTitle {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #ff4d4d;
+}
+
+#scandalText {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.scandalCard button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: red;
+  color: white;
+  font-size: 16px;
+}
+
+@keyframes pop {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
