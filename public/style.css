@@ -377,3 +377,63 @@ body {
     opacity:1;
   }
 }
+
+/* ===== ЭКРАН ПОБЕДЫ ===== */
+#winScreen{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.winContent{
+  text-align:center;
+  animation:winPop 0.6s ease;
+}
+
+.winTitle{
+  font-size:60px;
+  font-weight:900;
+  color:gold;
+  text-shadow:
+    0 0 20px gold,
+    0 0 40px orange,
+    0 0 80px red;
+  animation:pulse 1s infinite alternate;
+}
+
+#winName{
+  font-size:30px;
+  margin:20px 0;
+  color:white;
+}
+
+.winContent button{
+  padding:15px 30px;
+  font-size:18px;
+  border:none;
+  border-radius:15px;
+  background:gold;
+  font-weight:bold;
+}
+
+/* Анимации */
+@keyframes winPop{
+  from{transform:scale(0.5);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+@keyframes pulse{
+  from{transform:scale(1)}
+  to{transform:scale(1.1)}
+}
+
+/* Конфетти */
+#confetti{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
