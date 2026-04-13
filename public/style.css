@@ -5,20 +5,49 @@ body {
   font-family: Arial;
 }
 
+/* ===== ИГРА ===== */
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== ХАЙП ===== */
+#hypeBars {
+  width: 90vw;
+  max-width: 700px;
+  font-weight: bold;
+}
+
+.hypeBarBg {
+  background: #111;
+  height: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: 0 0 10px #00cfff;
+}
+
+.hypeFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00cfff, #00ffff);
+  box-shadow: 0 0 15px #00cfff;
+}
+
 /* ===== ПОЛЕ ===== */
 #gameBoardWrapper {
   position: relative;
   width: 90vw;
   max-width: 700px;
-  margin: auto;
 }
 
 #gameBoard {
-  position: relative;
   width: 100%;
   aspect-ratio: 1/1;
   background: url('board.jpg') no-repeat center;
   background-size: cover;
+  position: relative;
 }
 
 /* ===== ФИШКИ ===== */
@@ -28,7 +57,6 @@ body {
   border-radius: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 5;
   box-shadow: 0 0 10px white;
 }
 
@@ -37,51 +65,21 @@ body {
 .green { background: green; }
 .yellow { background: yellow; }
 
-/* ===== ХАЙП ===== */
-#hypeBars {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto 15px auto;
-
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.hypeBarBg {
-  background: #111;
-  height: 18px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 0 12px #00cfff;
-  margin-bottom: 8px;
-}
-
-.hypeFill {
-  height: 100%;
-  background: linear-gradient(90deg, #00cfff, #00ffff);
-  box-shadow: 0 0 15px #00cfff;
-}
-
+/* ===== КУБИК ===== */
 #controls {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-}
-
-/* ===== КНОПКА ===== */
-#rollBtn {
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 10px;
+  gap: 8px;
 }
 
 #diceResult {
   font-size: 20px;
   font-weight: bold;
 }
-/* ===== МОДАЛКИ ЦЕНТР ===== */
+
+/* ===== МОДАЛКИ ===== */
 .modal {
   position: absolute;
   top: 50%;
@@ -93,62 +91,18 @@ body {
 
 /* ===== СКАНДАЛ ===== */
 .scandalCard {
-  background: #140000;
-  padding: 25px;
+  background: #2a0000;
+  padding: 20px;
   border-radius: 15px;
   border: 2px solid red;
   box-shadow: 0 0 40px red;
-  animation: pop 0.3s ease;
-}
-
-.scandalTitle {
-  font-size: 24px;
-  color: #ff4d4d;
-}
-
-.scandalCard button {
-  background: red;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
 }
 
 /* ===== РИСК ===== */
 .riskCard {
   background: #001018;
-  padding: 25px;
+  padding: 20px;
   border-radius: 15px;
   border: 2px solid #00cfff;
   box-shadow: 0 0 40px #00cfff;
-  animation: pop 0.3s ease;
-}
-
-.riskTitle {
-  font-size: 24px;
-  color: #00cfff;
-}
-
-/* ===== АНИМАЦИИ ===== */
-@keyframes pop {
-  from { transform: scale(0.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* ===== ТРЯСКА ===== */
-@keyframes shake {
-  0% { transform: translate(-50%, -50%) translateX(0); }
-  25% { transform: translate(-50%, -50%) translateX(-5px); }
-  50% { transform: translate(-50%, -50%) translateX(5px); }
-  75% { transform: translate(-50%, -50%) translateX(-5px); }
-  100% { transform: translate(-50%, -50%) translateX(0); }
-}
-
-.modal.shake {
-  animation: shake 0.3s;
-}
-
-/* ===== АКТИВНЫЙ ИГРОК ===== */
-.activePlayer {
-  box-shadow: 0 0 10px white, 0 0 25px #00cfff;
 }
