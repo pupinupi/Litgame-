@@ -29,11 +29,11 @@
 
 <div id="game" style="display:none">
 
-  <div id="game" style="display:none">
-    <div id="hypeBars"></div>
+  <!-- 🔥 ХАЙП СВЕРХУ -->
+  <div id="hypeBars"></div>
 
+  <!-- 🎮 ПОЛЕ -->
   <div id="gameBoardWrapper">
-
     <div id="gameBoard"></div>
 
     <!-- СКАНДАЛ -->
@@ -41,7 +41,7 @@
       <div class="scandalCard">
         <div class="scandalTitle">🔥 СКАНДАЛ</div>
         <div id="scandalText"></div>
-        <button onclick="closeScandal()">OK</button>
+        <button onclick="closeModal('scandalModal')">OK</button>
       </div>
     </div>
 
@@ -57,19 +57,18 @@
 
         <div id="riskResult"></div>
 
-        <button id="riskRollBtn" onclick="rollRisk()">🎲 Бросить</button>
-        <button id="riskCloseBtn" onclick="closeRisk()" style="display:none;">OK</button>
+        <button onclick="rollRisk()">🎲 Бросить</button>
+        <button onclick="closeRisk()">OK</button>
       </div>
     </div>
 
   </div>
 
+  <!-- 🎲 КУБИК ВНИЗУ -->
   <div id="controls">
     <button id="rollBtn">🎲 Бросить кубик</button>
     <div id="diceResult"></div>
   </div>
-
-  <div id="modal"></div>
 
 </div>
 
