@@ -1,107 +1,214 @@
-// ===== ЗАЩИТА ОТ ОШИБОК =====
+const socket = io();
+
+let players = [];
+let currentTurnId = null;
+
+let username, roomCode, color;
+
+let isAnimating = false;
+let gameOver = false;
+
+// ===== ЗАЩИТА =====
 window.onerror = function(msg, url, line){
-  alert("❌ Ошибка: " + msg + " (строка " + line + ")");
+  alert("Ошибка: " + msg);
 };
 
-// ===== ЖДЕМ ЗАГРУЗКУ =====
-window.onload = function(){
+// ===== ЗАПУСК =====
+window.onload = () => {
 
-  alert("✅ JS загрузился");
+// ===== ВЫБОР ФИШКИ =====
+document.querySelectorAll('.chip').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+    color = btn.dataset.color;
+  };
+});
 
-  const socket = io();
+// ===== ВХОД =====
+document.getElementById('joinBtn').onclick = () => {
+  username = document.getElementById('username').value.trim();
+  roomCode = document.getElementById('roomCode').value.trim();
 
-  let username = "";
-  let roomCode = "";
-  let color = "";
-
-  // ===== ВЫБОР ЦВЕТА =====
-  const chips = document.querySelectorAll('.chip');
-
-  if (chips.length === 0) {
-    alert("❌ Нет кнопок выбора цвета (.chip)");
+  if (!username || !roomCode || !color) {
+    alert("Заполни всё");
+    return;
   }
 
-  chips.forEach(btn => {
-    btn.onclick = () => {
-      chips.forEach(c => c.classList.remove('selected'));
-      btn.classList.add('selected');
-      color = btn.dataset.color;
+  socket.emit('joinRoom', { username, roomCode, color });
+};
 
-      alert("🎨 выбран цвет: " + color);
-    };
-  });
+// ===== СТАРТ =====
+document.getElementById('startBtn').onclick = () => {
+  socket.emit('startGame', roomCode);
+};
 
-  // ===== КНОПКА ВХОД =====
-  const joinBtn = document.getElementById('joinBtn');
+// ===== КУБИК =====
+document.getElementById('rollBtn').onclick = () => {
+  if (gameOver || isAnimating) return;
+  if (currentTurnId !== socket.id) return;
 
-  if (!joinBtn) {
-    alert("❌ Кнопка joinBtn не найдена");
-  }
+  socket.emit('rollDice', roomCode);
+};
 
-  joinBtn.onclick = () => {
+};
 
-    username = document.getElementById('username')?.value.trim();
-    roomCode = document.getElementById('roomCode')?.value.trim();
+// ===== СОКЕТЫ =====
+socket.on('updatePlayers', pl => {
+  players = pl;
+  renderPlayers();
+  renderHypeBars();
+  renderLobbyPlayers();
+});
 
-    if (!username || !roomCode || !color) {
-      alert("❌ Заполни имя, комнату и выбери цвет");
+socket.on('gameStarted', () => {
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+});
+
+socket.on('nextTurn', id => {
+  currentTurnId = id;
+  document.getElementById('rollBtn').disabled =
+    id !== socket.id || gameOver;
+});
+
+socket.on('diceRolled', ({ playerId, dice }) => {
+  document.getElementById('diceResult').innerText = "🎲 " + dice;
+  if (playerId === socket.id) movePlayer(dice);
+});
+
+// ===== ТВОИ КООРДИНАТЫ =====
+const cells = [
+  { x:0.1057,y:0.5857,type:'start'},
+  { x:0.1071,y:0.4557,type:'plus',value:3},
+  { x:0.1029,y:0.3486,type:'plus',value:2},
+  { x:0.1057,y:0.2357,type:'scandal'},
+  { x:0.1014,y:0.13,type:'risk'},
+  { x:0.2214,y:0.0843,type:'plus',value:2},
+  { x:0.3471,y:0.09,type:'scandal'},
+  { x:0.5043,y:0.0886,type:'plus',value:3},
+  { x:0.6514,y:0.0857,type:'plus',value:5},
+  { x:0.77,y:0.1,type:'minus',value:10},
+  { x:0.9157,y:0.1129,type:'minusSkip',value:8},
+  { x:0.9043,y:0.2471,type:'plus',value:3},
+  { x:0.91,y:0.3429,type:'risk'},
+  { x:0.9029,y:0.4486,type:'plus',value:3},
+  { x:0.89,y:0.5786,type:'skip'},
+  { x:0.7886,y:0.6,type:'plus',value:2},
+  { x:0.6329,y:0.6014,type:'scandal'},
+  { x:0.4929,y:0.6014,type:'plus',value:8},
+  { x:0.3571,y:0.6,type:'minus',value:10},
+  { x:0.2143,y:0.6014,type:'plus',value:4}
+];
+
+// ===== ДВИЖЕНИЕ =====
+function movePlayer(steps){
+  const me = players.find(p => p.id === socket.id);
+  if (!me) return;
+
+  isAnimating = true;
+  let i = 0;
+
+  function step(){
+    if(i >= steps){
+      isAnimating = false;
+      handleCell(me);
       return;
     }
 
-    alert("🚪 Вход в комнату...");
+    const prev = me.position;
+    me.position = (me.position + 1) % cells.length;
 
-    socket.emit('joinRoom', { username, roomCode, color });
-  };
+    if(prev === cells.length - 1 && me.position === 0){
+      me.hype += 7;
+    }
 
-  // ===== КНОПКА СТАРТ =====
-  const startBtn = document.getElementById('startBtn');
-
-  if (!startBtn) {
-    alert("❌ Кнопка startBtn не найдена");
+    renderPlayers();
+    i++;
+    setTimeout(step, 300);
   }
 
-  startBtn.onclick = () => {
-    alert("🎮 Старт игры");
-    socket.emit('startGame', roomCode);
-  };
+  step();
+}
 
-  // ===== СОКЕТЫ =====
-  socket.on('connect', () => {
-    alert("🟢 Подключено к серверу");
-  });
+// ===== КЛЕТКА =====
+function handleCell(p){
+  const c = cells[p.position];
 
-  socket.on('updatePlayers', players => {
-    alert("👥 Игроков: " + players.length);
-  });
+  if(c.type === 'start') p.hype += 10;
+  if(c.type === 'plus') p.hype += c.value;
+  if(c.type === 'minus') p.hype = Math.max(0, p.hype - c.value);
 
-  socket.on('colorTaken', () => {
-    alert("❌ Цвет занят");
-  });
-
-  socket.on('gameStarted', () => {
-  alert("🚀 Получен сигнал старта");
-
-  const lobby = document.getElementById('lobby');
-  const game = document.getElementById('game');
-
-  if (!lobby) {
-    alert("❌ lobby не найден");
-    return;
+  if(c.type === 'minusSkip'){
+    p.hype = Math.max(0, p.hype - c.value);
+    p.skipNext = true;
   }
 
-  if (!game) {
-    alert("❌ game не найден");
-    return;
+  if(c.type === 'skip') p.skipNext = true;
+
+  if(c.type === 'risk'){
+    let dice = Math.floor(Math.random()*6)+1;
+    p.hype += (dice<=3 ? -5 : 5);
   }
 
-  lobby.style.display = "none";
+  if(c.type === 'scandal'){
+    const vals = [-1,-2,-3,-4,-5];
+    p.hype += vals[Math.floor(Math.random()*vals.length)];
+  }
 
-  // ЖЁСТКО показываем игру
-  game.style.display = "flex";
-  game.style.visibility = "visible";
-  game.style.opacity = "1";
+  p.hype = Math.max(0, p.hype);
 
-  alert("✅ Переключили экран");
-});
+  renderHypeBars();
 
-};
+  if(p.hype >= 70){
+    gameOver = true;
+    alert("ПОБЕДА: " + p.username);
+  }
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position:p.position,
+    hype:p.hype,
+    skipNext:p.skipNext
+  });
+}
+
+// ===== UI =====
+function renderPlayers(){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+
+  players.forEach((p,i)=>{
+    let el = document.getElementById(p.id);
+
+    if(!el){
+      el = document.createElement('div');
+      el.className = `player ${p.color}`;
+      el.id = p.id;
+      board.appendChild(el);
+    }
+
+    const c = cells[p.position];
+
+    el.style.left = (c.x * rect.width + i*10) + 'px';
+    el.style.top  = (c.y * rect.height) + 'px';
+  });
+}
+
+function renderHypeBars(){
+  const box = document.getElementById('hypeBars');
+  box.innerHTML = '';
+
+  players.forEach(p=>{
+    box.innerHTML += `
+      <div>${p.username}: ${p.hype}/70</div>
+    `;
+  });
+}
+
+function renderLobbyPlayers(){
+  const list = document.getElementById('playersList');
+  list.innerHTML = players.map(p =>
+    `<div style="color:${p.color}">${p.username}</div>`
+  ).join('');
+}
