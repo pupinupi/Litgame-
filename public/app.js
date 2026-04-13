@@ -271,9 +271,9 @@ function finishTurn(p){
   renderHypeBars();
 
   if(p.hype >= 70){
-    gameOver = true;
-    alert("🏆 Победа: " + p.username);
-  }
+  gameOver = true;
+  showWin(p.username);
+}
 
   socket.emit('playerMoved',{
     roomCode,
@@ -330,4 +330,42 @@ function renderHypeBars(){
       </div>
     `;
   });
+}
+
+function showWin(name){
+  const win = document.getElementById('winScreen');
+  document.getElementById('winName').innerText = name;
+
+  win.style.display = 'flex';
+
+  startConfetti();
+}
+
+/* 🎉 Конфетти */
+function startConfetti(){
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    s:Math.random()*6+2,
+    vy:Math.random()*3+2
+  }));
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.fillStyle='hsl('+Math.random()*360+',100%,60%)';
+      ctx.fillRect(p.x,p.y,p.s,p.s);
+      p.y+=p.vy;
+      if(p.y>canvas.height)p.y=0;
+    });
+    requestAnimationFrame(draw);
+  }
+
+  draw();
 }
