@@ -196,8 +196,8 @@ function renderPlayers(){
 
     const c = cells[p.position];
 
-    el.style.left = (c.x * rect.width + i*10) + 'px';
-    el.style.top  = (c.y * rect.height) + 'px';
+    el.style.left = (c.x * rect.width) + 'px';
+el.style.top  = (c.y * rect.height) + 'px';
   });
 }
 
