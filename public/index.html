@@ -9,12 +9,48 @@
 <body>
 
 <div id="lobby">
-  <h2>ЛОББИ</h2>
 
-  <input id="username" placeholder="Имя">
-  <input id="roomCode" placeholder="Комната">
+  <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
 
-  <div>
+  <div class="lobbyBox">
+
+    <input id="username" placeholder="Введите имя">
+    <input id="roomCode" placeholder="Код комнаты">
+
+    <div class="chips">
+      <button class="chip" data-color="red">🔴</button>
+      <button class="chip" data-color="blue">🔵</button>
+      <button class="chip" data-color="green">🟢</button>
+      <button class="chip" data-color="yellow">🟡</button>
+    </div>
+
+    <button id="joinBtn" class="mainBtn">🚪 Войти</button>
+    <button id="startBtn" class="mainBtn start">🚀 Начать игру</button>
+
+    <div id="playersList"></div>
+
+  </div>
+
+  <!-- 📜 ПРАВИЛА -->
+  <div class="rulesBox">
+    <h2>📜 Правила игры</h2>
+
+    <p><b>Цель:</b> первым набрать <span class="highlight">70 хайпа</span></p>
+
+    <p>🎲 Бросай кубик и двигайся по полю</p>
+    <p>➕ Получай хайп на бонусных клетках</p>
+    <p>💥 Попал на скандал — потеряешь хайп</p>
+    <p>⚡ Риск — шанс выиграть или проиграть</p>
+    <p>🚫 Суд — пропусти ход</p>
+
+    <p><b>Дополнительно:</b></p>
+    <p>🔁 За круг: +7 хайпа</p>
+    <p>🚀 Старт: +10 хайпа</p>
+
+    <p class="winRule">🏆 Побеждает тот, кто первым достигнет 70</p>
+  </div>
+
+</div>
     <button class="chip" data-color="red">🔴</button>
     <button class="chip" data-color="blue">🔵</button>
     <button class="chip" data-color="green">🟢</button>
