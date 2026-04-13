@@ -11,6 +11,13 @@ let gameOver = false;
 let currentScandal = null;
 let currentRisk = null;
 
+// 🔊 ЗВУКИ
+const diceSound = new Audio("dice.mp3");
+const scandalSound = new Audio("scandal.mp3");
+
+diceSound.volume = 0.5;
+scandalSound.volume = 0.6;
+
 // ===== ЗАЩИТА =====
 window.onerror = function(msg){
   alert("Ошибка: " + msg);
@@ -18,6 +25,11 @@ window.onerror = function(msg){
 
 // ===== ЗАПУСК =====
 window.onload = () => {
+
+// разблокировка звука (важно для телефона)
+document.body.addEventListener('click', () => {
+  diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
+}, { once: true });
 
 // выбор фишки
 document.querySelectorAll('.chip').forEach(btn => {
@@ -78,11 +90,31 @@ socket.on('nextTurn', id => {
   currentTurnId = id;
   document.getElementById('rollBtn').disabled =
     id !== socket.id || gameOver;
+
+  renderPlayers();
 });
 
+// 🎲 КУБИК С АНИМАЦИЕЙ + ЗВУКОМ
 socket.on('diceRolled', ({ playerId, dice }) => {
-  document.getElementById('diceResult').innerText = "🎲 " + dice;
-  if (playerId === socket.id) movePlayer(dice);
+
+  diceSound.currentTime = 0;
+  diceSound.play();
+
+  const el = document.getElementById('diceResult');
+
+  let i = 0;
+
+  const anim = setInterval(()=>{
+    el.innerText = "🎲 " + (Math.floor(Math.random()*6)+1);
+    i++;
+    if(i > 10){
+      clearInterval(anim);
+      el.innerText = "🎲 " + dice;
+
+      if (playerId === socket.id) movePlayer(dice);
+    }
+  }, 80);
+
 });
 
 // ===== КООРДИНАТЫ =====
@@ -141,6 +173,9 @@ function movePlayer(steps){
 
 // ===== КЛЕТКА =====
 function handleCell(p){
+
+  highlightCell(p.position);
+
   const c = cells[p.position];
 
   if(c.type === 'start') p.hype += 10;
@@ -229,6 +264,9 @@ function closeRisk(){
 // ===== СКАНДАЛ =====
 function showScandal(p){
 
+  scandalSound.currentTime = 0;
+  scandalSound.play();
+
   const cards = [
     {text:"🔥 перегрел аудиторию (-1)", val:-1},
     {text:"🫣 громкий заголовок (-2)", val:-2},
@@ -276,6 +314,27 @@ function closeScandal(){
   });
 }
 
+// ===== ПОДСВЕТКА КЛЕТКИ =====
+function highlightCell(index){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+  const c = cells[index];
+
+  const glow = document.createElement('div');
+  glow.style.position = 'absolute';
+  glow.style.left = (c.x * rect.width - 10) + 'px';
+  glow.style.top = (c.y * rect.height - 10) + 'px';
+  glow.style.width = '30px';
+  glow.style.height = '30px';
+  glow.style.borderRadius = '50%';
+  glow.style.boxShadow = '0 0 20px yellow';
+  glow.style.pointerEvents = 'none';
+
+  board.appendChild(glow);
+
+  setTimeout(()=> glow.remove(), 500);
+}
+
 // ===== UI =====
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
@@ -287,21 +346,23 @@ function renderPlayers(){
     if(!el){
       el = document.createElement('div');
       el.className = `player ${p.color}`;
-
-if (p.id === currentTurnId) {
-  el.classList.add("activePlayer");
-}
       el.id = p.id;
       board.appendChild(el);
+    }
+
+    el.className = `player ${p.color}`;
+
+    if (p.id === currentTurnId) {
+      el.classList.add("activePlayer");
     }
 
     const c = cells[p.position];
 
     const angle = (i / players.length) * Math.PI * 2;
-const offset = 12;
+    const offset = 12;
 
-el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
-el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
+    el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
+    el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
   });
 }
 
