@@ -9,6 +9,7 @@ let isAnimating = false;
 let gameOver = false;
 
 let currentScandal = null;
+let currentRisk = null;
 
 // ===== ЗАЩИТА =====
 window.onerror = function(msg){
@@ -138,7 +139,7 @@ function movePlayer(steps){
   step();
 }
 
-// ===== ЛОГИКА КЛЕТОК =====
+// ===== КЛЕТКА =====
 function handleCell(p){
   const c = cells[p.position];
 
@@ -156,9 +157,9 @@ function handleCell(p){
   }
 
   if(c.type === 'risk'){
-  showRisk(p);
-  return;
-}
+    showRisk(p);
+    return;
+  }
 
   if(c.type === 'scandal'){
     showScandal(p);
@@ -182,6 +183,49 @@ function handleCell(p){
   });
 }
 
+// ===== РИСК =====
+function showRisk(p){
+  currentRisk = p;
+
+  document.getElementById('riskResult').innerText = "";
+  document.getElementById('riskRollBtn').style.display = "inline-block";
+  document.getElementById('riskCloseBtn').style.display = "none";
+
+  document.getElementById('riskModal').style.display = "flex";
+}
+
+function rollRisk(){
+  const dice = Math.floor(Math.random()*6)+1;
+  const result = dice <= 3 ? -5 : 5;
+
+  currentRisk.hype = Math.max(0, currentRisk.hype + result);
+
+  document.getElementById('riskResult').innerText =
+    `🎲 ${dice} → ${result > 0 ? "+" : ""}${result} хайпа`;
+
+  document.getElementById('riskRollBtn').style.display = "none";
+  document.getElementById('riskCloseBtn').style.display = "inline-block";
+
+  renderHypeBars();
+}
+
+function closeRisk(){
+
+  if(currentRisk.hype >= 70){
+    gameOver = true;
+    alert("🏆 Победа: " + currentRisk.username);
+  }
+
+  document.getElementById('riskModal').style.display = "none";
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position: currentRisk.position,
+    hype: currentRisk.hype,
+    skipNext: currentRisk.skipNext
+  });
+}
+
 // ===== СКАНДАЛ =====
 function showScandal(p){
 
@@ -189,10 +233,10 @@ function showScandal(p){
     {text:"🔥 перегрел аудиторию (-1)", val:-1},
     {text:"🫣 громкий заголовок (-2)", val:-2},
     {text:"😱 это монтаж (-3)", val:-3},
-    {text:"#️⃣ меня взломали (всем -3)", all:-3},
+    {text:"#️⃣ всем -3", all:-3},
     {text:"😮 подписчики в шоке (-4)", val:-4},
     {text:"🤫 удаляй пока не поздно (-5)", val:-5},
-    {text:"🙄 это контент (-5 и пропуск)", val:-5, skip:true}
+    {text:"🙄 контент (-5 + пропуск)", val:-5, skip:true}
   ];
 
   const card = cards[Math.floor(Math.random()*cards.length)];
@@ -223,11 +267,6 @@ function closeScandal(){
   document.getElementById('scandalModal').style.display = "none";
 
   renderHypeBars();
-
-  if(player.hype >= 70){
-    gameOver = true;
-    alert("🏆 Победа: " + player.username);
-  }
 
   socket.emit('playerMoved',{
     roomCode,
@@ -294,47 +333,3 @@ function renderLobbyPlayers(){
 setTimeout(() => {
   renderPlayers();
 }, 300);
-
-let currentRisk = null;
-
-function showRisk(p){
-  currentRisk = p;
-
-  document.getElementById('riskResult').innerText = "";
-  document.getElementById('riskRollBtn').style.display = "inline-block";
-  document.getElementById('riskCloseBtn').style.display = "none";
-
-  document.getElementById('riskModal').style.display = "flex";
-}
-
-function rollRisk(){
-  const dice = Math.floor(Math.random()*6)+1;
-  const result = dice <= 3 ? -5 : 5;
-
-  currentRisk.hype = Math.max(0, currentRisk.hype + result);
-
-  document.getElementById('riskResult').innerText =
-    `🎲 ${dice} → ${result > 0 ? "+" : ""}${result} хайпа`;
-
-  document.getElementById('riskRollBtn').style.display = "none";
-  document.getElementById('riskCloseBtn').style.display = "inline-block";
-
-  renderHypeBars();
-}
-
-function closeRisk(){
-
-  if(currentRisk.hype >= 70){
-    gameOver = true;
-    alert("🏆 Победа: " + currentRisk.username);
-  }
-
-  document.getElementById('riskModal').style.display = "none";
-
-  socket.emit('playerMoved',{
-    roomCode,
-    position: currentRisk.position,
-    hype: currentRisk.hype,
-    skipNext: currentRisk.skipNext
-  });
-}
