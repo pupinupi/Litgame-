@@ -56,6 +56,12 @@ document.getElementById('rollBtn').onclick = () => {
 // ===== СОКЕТЫ =====
 socket.on('updatePlayers', pl => {
   players = pl;
+
+  // 👉 если игрок новый — ставим на старт
+  players.forEach(p => {
+    if (p.position === undefined) p.position = 0;
+  });
+
   renderPlayers();
   renderHypeBars();
   renderLobbyPlayers();
@@ -212,3 +218,7 @@ function renderLobbyPlayers(){
     `<div style="color:${p.color}">${p.username}</div>`
   ).join('');
 }
+
+setTimeout(() => {
+  renderPlayers();
+}, 300);
