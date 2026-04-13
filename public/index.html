@@ -5,6 +5,7 @@
 <title>Литвин игра</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div id="lobby">
@@ -27,45 +28,52 @@
 </div>
 
 <div id="game" style="display:none">
-  
 
- <div id="hypeBars"></div>
+  <div id="hypeBars"></div>
 
-<div id="gameBoard"></div>
+  <div id="gameBoardWrapper">
 
-<div id="controls">
-  <button id="rollBtn">🎲 Бросить кубик</button>
-  <div id="diceResult"></div>
+    <div id="gameBoard"></div>
+
+    <!-- СКАНДАЛ -->
+    <div id="scandalModal" class="modal">
+      <div class="scandalCard">
+        <div class="scandalTitle">🔥 СКАНДАЛ</div>
+        <div id="scandalText"></div>
+        <button onclick="closeScandal()">OK</button>
+      </div>
+    </div>
+
+    <!-- РИСК -->
+    <div id="riskModal" class="modal">
+      <div class="riskCard">
+        <div class="riskTitle">⚡ РИСК</div>
+
+        <div id="riskRules">
+          1–3 → −5 хайпа<br>
+          4–6 → +5 хайпа
+        </div>
+
+        <div id="riskResult"></div>
+
+        <button id="riskRollBtn" onclick="rollRisk()">🎲 Бросить</button>
+        <button id="riskCloseBtn" onclick="closeRisk()" style="display:none;">OK</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="controls">
+    <button id="rollBtn">🎲 Бросить кубик</button>
+    <div id="diceResult"></div>
+  </div>
+
+  <div id="modal"></div>
+
 </div>
-
-<div id="modal"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="app.js"></script>
 
 </body>
 </html>
-
-<div id="scandalModal" class="modal">
-  <div class="scandalCard">
-    <div class="scandalTitle">🔥 СКАНДАЛ</div>
-    <div id="scandalText"></div>
-    <button onclick="closeScandal()">OK</button>
-  </div>
-</div>
-
-<div id="riskModal" class="modal">
-  <div class="riskCard">
-    <div class="riskTitle">⚡ РИСК</div>
-
-    <div id="riskRules">
-      1–3 → −5 хайпа<br>
-      4–6 → +5 хайпа
-    </div>
-
-    <div id="riskResult"></div>
-
-    <button id="riskRollBtn" onclick="rollRisk()">🎲 Бросить</button>
-    <button id="riskCloseBtn" onclick="closeRisk()" style="display:none;">OK</button>
-  </div>
-</div>
