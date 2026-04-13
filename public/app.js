@@ -8,8 +8,8 @@ let username, roomCode, color;
 let isAnimating = false;
 let gameOver = false;
 
-let currentScandal = null;
 let currentRisk = null;
+let currentScandal = null;
 
 // 🔊 ЗВУКИ
 const diceSound = new Audio("dice.mp3");
@@ -18,57 +18,64 @@ const scandalSound = new Audio("scandal.mp3");
 diceSound.volume = 0.5;
 scandalSound.volume = 0.6;
 
-// ===== ЗАЩИТА =====
-window.onerror = function(msg){
-  alert("Ошибка: " + msg);
-};
+// =========================
+// 🔥 УНИВЕРСАЛЬНЫЕ МОДАЛКИ
+// =========================
+function openModal(id){
+  const el = document.getElementById(id);
+  el.style.display = "flex";
+  el.classList.add("shake");
+  setTimeout(() => el.classList.remove("shake"), 300);
+}
 
-// ===== ЗАПУСК =====
+function closeModal(id){
+  document.getElementById(id).style.display = "none";
+}
+
+// =========================
+// ЗАПУСК
+// =========================
 window.onload = () => {
 
-// разблокировка звука (важно для телефона)
-document.body.addEventListener('click', () => {
-  diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
-}, { once: true });
+  document.body.addEventListener('click', () => {
+    diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
+  }, { once: true });
 
-// выбор фишки
-document.querySelectorAll('.chip').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-    btn.classList.add('selected');
-    color = btn.dataset.color;
+  document.querySelectorAll('.chip').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      color = btn.dataset.color;
+    };
+  });
+
+  document.getElementById('joinBtn').onclick = () => {
+    username = document.getElementById('username').value.trim();
+    roomCode = document.getElementById('roomCode').value.trim();
+
+    if (!username || !roomCode || !color) {
+      alert("Заполни всё");
+      return;
+    }
+
+    socket.emit('joinRoom', { username, roomCode, color });
   };
-});
 
-// вход
-document.getElementById('joinBtn').onclick = () => {
-  username = document.getElementById('username').value.trim();
-  roomCode = document.getElementById('roomCode').value.trim();
+  document.getElementById('startBtn').onclick = () => {
+    socket.emit('startGame', roomCode);
+  };
 
-  if (!username || !roomCode || !color) {
-    alert("Заполни всё");
-    return;
-  }
+  document.getElementById('rollBtn').onclick = () => {
+    if (gameOver || isAnimating) return;
+    if (currentTurnId !== socket.id) return;
 
-  socket.emit('joinRoom', { username, roomCode, color });
+    socket.emit('rollDice', roomCode);
+  };
 };
 
-// старт
-document.getElementById('startBtn').onclick = () => {
-  socket.emit('startGame', roomCode);
-};
-
-// кубик
-document.getElementById('rollBtn').onclick = () => {
-  if (gameOver || isAnimating) return;
-  if (currentTurnId !== socket.id) return;
-
-  socket.emit('rollDice', roomCode);
-};
-
-};
-
-// ===== СОКЕТЫ =====
+// =========================
+// SOCKET
+// =========================
 socket.on('updatePlayers', pl => {
   players = pl;
 
@@ -94,7 +101,9 @@ socket.on('nextTurn', id => {
   renderPlayers();
 });
 
-// 🎲 КУБИК С АНИМАЦИЕЙ + ЗВУКОМ
+// =========================
+// 🎲 КУБИК
+// =========================
 socket.on('diceRolled', ({ playerId, dice }) => {
 
   diceSound.currentTime = 0;
@@ -104,20 +113,21 @@ socket.on('diceRolled', ({ playerId, dice }) => {
 
   let i = 0;
 
-  const anim = setInterval(()=>{
-    el.innerText = "🎲 " + (Math.floor(Math.random()*6)+1);
+  const anim = setInterval(() => {
+    el.innerText = "🎲 " + (Math.floor(Math.random() * 6) + 1);
     i++;
-    if(i > 10){
+    if (i > 10) {
       clearInterval(anim);
       el.innerText = "🎲 " + dice;
 
       if (playerId === socket.id) movePlayer(dice);
     }
   }, 80);
-
 });
 
-// ===== КООРДИНАТЫ =====
+// =========================
+// КООРДИНАТЫ
+// =========================
 const cells = [
   { x:0.1057,y:0.5857,type:'start'},
   { x:0.1071,y:0.4557,type:'plus',value:3},
@@ -141,7 +151,9 @@ const cells = [
   { x:0.2143,y:0.6014,type:'plus',value:4}
 ];
 
-// ===== ДВИЖЕНИЕ =====
+// =========================
+// ДВИЖЕНИЕ
+// =========================
 function movePlayer(steps){
   const me = players.find(p => p.id === socket.id);
   if (!me) return;
@@ -150,7 +162,7 @@ function movePlayer(steps){
   let i = 0;
 
   function step(){
-    if(i >= steps){
+    if (i >= steps){
       isAnimating = false;
       handleCell(me);
       return;
@@ -159,7 +171,7 @@ function movePlayer(steps){
     const prev = me.position;
     me.position = (me.position + 1) % cells.length;
 
-    if(prev === cells.length - 1 && me.position === 0){
+    if (prev === cells.length - 1 && me.position === 0){
       me.hype += 7;
     }
 
@@ -171,32 +183,34 @@ function movePlayer(steps){
   step();
 }
 
-// ===== КЛЕТКА =====
+// =========================
+// КЛЕТКА
+// =========================
 function handleCell(p){
 
   highlightCell(p.position);
 
   const c = cells[p.position];
 
-  if(c.type === 'start') p.hype += 10;
-  if(c.type === 'plus') p.hype += c.value;
-  if(c.type === 'minus') p.hype = Math.max(0, p.hype - c.value);
+  if (c.type === 'start') p.hype += 10;
+  if (c.type === 'plus') p.hype += c.value;
+  if (c.type === 'minus') p.hype = Math.max(0, p.hype - c.value);
 
-  if(c.type === 'minusSkip'){
+  if (c.type === 'minusSkip'){
     p.hype = Math.max(0, p.hype - c.value);
     p.skipNext = true;
   }
 
-  if(c.type === 'skip'){
+  if (c.type === 'skip'){
     p.skipNext = true;
   }
 
-  if(c.type === 'risk'){
+  if (c.type === 'risk'){
     showRisk(p);
     return;
   }
 
-  if(c.type === 'scandal'){
+  if (c.type === 'scandal'){
     showScandal(p);
     return;
   }
@@ -205,7 +219,7 @@ function handleCell(p){
 
   renderHypeBars();
 
-  if(p.hype >= 70){
+  if (p.hype >= 70){
     gameOver = true;
     alert("🏆 Победа: " + p.username);
   }
@@ -218,15 +232,37 @@ function handleCell(p){
   });
 }
 
-// ===== РИСК =====
+// =========================
+// 💥 СКАНДАЛ
+// =========================
+function showScandal(p){
+
+  scandalSound.currentTime = 0;
+  scandalSound.play();
+
+  currentScandal = p;
+
+  document.getElementById('scandalText').innerText =
+    [
+      "🔥 перегрел аудиторию -1",
+      "🫣 громкий заголовок -2",
+      "😱 это монтаж -3",
+      "#️⃣ всем -3",
+      "😮 шок -4",
+      "🤫 удаляй -5",
+      "🙄 контент -5 + пропуск"
+    ][Math.floor(Math.random()*7)];
+
+  openModal('scandalModal');
+}
+
+// =========================
+// ⚡ РИСК
+// =========================
 function showRisk(p){
   currentRisk = p;
-
   document.getElementById('riskResult').innerText = "";
-  document.getElementById('riskRollBtn').style.display = "inline-block";
-  document.getElementById('riskCloseBtn').style.display = "none";
-
-  document.getElementById('riskModal').style.display = "flex";
+  openModal('riskModal');
 }
 
 function rollRisk(){
@@ -236,22 +272,13 @@ function rollRisk(){
   currentRisk.hype = Math.max(0, currentRisk.hype + result);
 
   document.getElementById('riskResult').innerText =
-    `🎲 ${dice} → ${result > 0 ? "+" : ""}${result} хайпа`;
-
-  document.getElementById('riskRollBtn').style.display = "none";
-  document.getElementById('riskCloseBtn').style.display = "inline-block";
+    `🎲 ${dice} → ${result}`;
 
   renderHypeBars();
 }
 
 function closeRisk(){
-
-  if(currentRisk.hype >= 70){
-    gameOver = true;
-    alert("🏆 Победа: " + currentRisk.username);
-  }
-
-  document.getElementById('riskModal').style.display = "none";
+  closeModal('riskModal');
 
   socket.emit('playerMoved',{
     roomCode,
@@ -261,86 +288,15 @@ function closeRisk(){
   });
 }
 
-// ===== СКАНДАЛ =====
-function showScandal(p){
-
-  scandalSound.currentTime = 0;
-  scandalSound.play();
-
-  const cards = [
-    {text:"🔥 перегрел аудиторию (-1)", val:-1},
-    {text:"🫣 громкий заголовок (-2)", val:-2},
-    {text:"😱 это монтаж (-3)", val:-3},
-    {text:"#️⃣ всем -3", all:-3},
-    {text:"😮 подписчики в шоке (-4)", val:-4},
-    {text:"🤫 удаляй пока не поздно (-5)", val:-5},
-    {text:"🙄 контент (-5 + пропуск)", val:-5, skip:true}
-  ];
-
-  const card = cards[Math.floor(Math.random()*cards.length)];
-  currentScandal = { card, player: p };
-
-  document.getElementById('scandalText').innerText = card.text;
-  document.getElementById('scandalModal').style.display = "flex";
-}
-
-function closeScandal(){
-
-  const { card, player } = currentScandal;
-
-  if(card.val){
-    player.hype = Math.max(0, player.hype + card.val);
-  }
-
-  if(card.all){
-    players.forEach(pl=>{
-      pl.hype = Math.max(0, pl.hype + card.all);
-    });
-  }
-
-  if(card.skip){
-    player.skipNext = true;
-  }
-
-  document.getElementById('scandalModal').style.display = "none";
-
-  renderHypeBars();
-
-  socket.emit('playerMoved',{
-    roomCode,
-    position: player.position,
-    hype: player.hype,
-    skipNext: player.skipNext
-  });
-}
-
-// ===== ПОДСВЕТКА КЛЕТКИ =====
-function highlightCell(index){
-  const board = document.getElementById('gameBoard');
-  const rect = board.getBoundingClientRect();
-  const c = cells[index];
-
-  const glow = document.createElement('div');
-  glow.style.position = 'absolute';
-  glow.style.left = (c.x * rect.width - 10) + 'px';
-  glow.style.top = (c.y * rect.height - 10) + 'px';
-  glow.style.width = '30px';
-  glow.style.height = '30px';
-  glow.style.borderRadius = '50%';
-  glow.style.boxShadow = '0 0 20px yellow';
-  glow.style.pointerEvents = 'none';
-
-  board.appendChild(glow);
-
-  setTimeout(()=> glow.remove(), 500);
-}
-
-// ===== UI =====
+// =========================
+// UI
+// =========================
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
   const rect = board.getBoundingClientRect();
 
   players.forEach((p,i)=>{
+
     let el = document.getElementById(p.id);
 
     if(!el){
@@ -352,7 +308,7 @@ function renderPlayers(){
 
     el.className = `player ${p.color}`;
 
-    if (p.id === currentTurnId) {
+    if (p.id === currentTurnId){
       el.classList.add("activePlayer");
     }
 
@@ -374,16 +330,10 @@ function renderHypeBars(){
     const percent = Math.min(p.hype,70)/70*100;
 
     box.innerHTML += `
-      <div style="margin:5px 0; width:250px;">
-        <div>${p.username}: ${p.hype}/70</div>
-        <div style="background:#111;height:10px;border-radius:5px;">
-          <div style="
-            background:#00cfff;
-            height:10px;
-            width:${percent}%;
-            box-shadow:0 0 10px #00cfff;
-            border-radius:5px;
-          "></div>
+      <div>
+        <div class="hypeText">${p.username}: ${p.hype}/70</div>
+        <div class="hypeBarBg">
+          <div class="hypeFill" style="width:${percent}%"></div>
         </div>
       </div>
     `;
@@ -397,16 +347,24 @@ function renderLobbyPlayers(){
   ).join('');
 }
 
-const modal = document.getElementById('scandalModal');
-modal.style.display = "flex";
-modal.classList.add("shake");
+// =========================
+// 🔥 ПОДСВЕТКА
+// =========================
+function highlightCell(index){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+  const c = cells[index];
 
-setTimeout(() => modal.classList.remove("shake"), 300);
-}
-document.getElementById('riskModal').style.display = "flex";
-}
+  const glow = document.createElement('div');
+  glow.style.position = 'absolute';
+  glow.style.left = (c.x * rect.width - 10) + 'px';
+  glow.style.top = (c.y * rect.height - 10) + 'px';
+  glow.style.width = '30px';
+  glow.style.height = '30px';
+  glow.style.borderRadius = '50%';
+  glow.style.boxShadow = '0 0 20px yellow';
+  glow.style.pointerEvents = 'none';
 
-// фикс старта
-setTimeout(() => {
-  renderPlayers();
-}, 300);
+  board.appendChild(glow);
+  setTimeout(()=>glow.remove(), 500);
+}
