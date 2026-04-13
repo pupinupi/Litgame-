@@ -254,6 +254,12 @@ function showScandal(p){
   openModal('scandalModal');
 }
 
+document.body.style.background = "#220000";
+setTimeout(()=>document.body.style.background = "black", 200);
+
+if(navigator.vibrate){
+  navigator.vibrate(200);
+}
 // =========================
 // ⚡ РИСК
 // =========================
@@ -320,6 +326,8 @@ function renderPlayers(){
   });
 }
 
+let lastHype = {};
+
 function renderHypeBars(){
   const box = document.getElementById('hypeBars');
   box.innerHTML = '';
@@ -327,17 +335,25 @@ function renderHypeBars(){
   players.forEach(p=>{
     const percent = Math.min(p.hype,70)/70*100;
 
+    let flashClass = "";
+
+    if(lastHype[p.id] !== undefined){
+      if(p.hype > lastHype[p.id]) flashClass = "hypeFlashPlus";
+      if(p.hype < lastHype[p.id]) flashClass = "hypeFlashMinus";
+    }
+
+    lastHype[p.id] = p.hype;
+
     box.innerHTML += `
       <div>
         <div class="hypeText">${p.username}: ${p.hype}/70</div>
-        <div class="hypeBarBg">
+        <div class="hypeBarBg ${flashClass}">
           <div class="hypeFill" style="width:${percent}%"></div>
         </div>
       </div>
     `;
   });
 }
-
 function renderLobbyPlayers(){
   const list = document.getElementById('playersList');
   list.innerHTML = players.map(p =>
