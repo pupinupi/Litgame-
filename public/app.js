@@ -206,8 +206,21 @@ function renderHypeBars(){
   box.innerHTML = '';
 
   players.forEach(p=>{
+    const percent = Math.min(p.hype,70)/70*100;
+
     box.innerHTML += `
-      <div>${p.username}: ${p.hype}/70</div>
+      <div style="margin:5px 0; width:250px;">
+        <div>${p.username}: ${p.hype}/70</div>
+        <div style="background:#111;height:10px;border-radius:5px;">
+          <div style="
+            background:#00cfff;
+            height:10px;
+            width:${percent}%;
+            box-shadow:0 0 10px #00cfff;
+            border-radius:5px;
+          "></div>
+        </div>
+      </div>
     `;
   });
 }
