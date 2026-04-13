@@ -173,14 +173,14 @@ function movePlayer(steps){
       me.hype += 7;
     }
 
-    renderPlayers();
+    updateMyPlayer(); // 🔥 вместо renderPlayers()
+
     i++;
-    setTimeout(step, 300);
+    setTimeout(step, 120);
   }
 
   step();
 }
-
 // =========================
 // КЛЕТКА
 // =========================
@@ -381,4 +381,20 @@ function highlightCell(index){
 
   board.appendChild(glow);
   setTimeout(()=>glow.remove(), 500);
+}
+
+function updateMyPlayer(){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+
+  const me = players.find(p => p.id === socket.id);
+  if (!me) return;
+
+  const el = document.getElementById(me.id);
+  if (!el) return;
+
+  const c = cells[me.position];
+
+  el.style.left = (c.x * rect.width) + 'px';
+  el.style.top  = (c.y * rect.height) + 'px';
 }
