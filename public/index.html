@@ -2,12 +2,14 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Литвин игра</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Литвин: Путь к хайпу</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<!-- ================= ЛОББИ ================= -->
 <div id="lobby">
 
   <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
@@ -27,8 +29,6 @@
     <button id="joinBtn" class="mainBtn">🚪 Войти</button>
     <button id="startBtn" class="mainBtn start">🚀 Начать игру</button>
 
-    <div id="playersList"></div>
-
   </div>
 
   <!-- 📜 ПРАВИЛА -->
@@ -37,72 +37,70 @@
 
     <p><b>Цель:</b> первым набрать <span class="highlight">70 хайпа</span></p>
 
-    <p>🎲 Бросай кубик и двигайся по полю</p>
-    <p>➕ Получай хайп на бонусных клетках</p>
-    <p>💥 Попал на скандал — потеряешь хайп</p>
-    <p>⚡ Риск — шанс выиграть или проиграть</p>
-    <p>🚫 Суд — пропусти ход</p>
+    <p>🎲 Бросай кубик и двигайся</p>
+    <p>➕ Бонусы дают хайп</p>
+    <p>💥 Скандал — потеря хайпа</p>
+    <p>⚡ Риск — шанс +5 или −5</p>
+    <p>🚫 Суд — пропуск хода</p>
 
-    <p><b>Дополнительно:</b></p>
-    <p>🔁 За круг: +7 хайпа</p>
-    <p>🚀 Старт: +10 хайпа</p>
+    <p>🔁 За круг: +7</p>
+    <p>🚀 Старт: +10</p>
 
-    <p class="winRule">🏆 Побеждает тот, кто первым достигнет 70</p>
+    <p class="winRule">🏆 Побеждает первый с 70 хайпа</p>
   </div>
 
-
-
-  <button id="joinBtn">Войти</button>
-  <button id="startBtn">Старт</button>
-
-  <div id="playersList"></div>
 </div>
 
-<div id="game" style="display:none">
+<!-- ================= ИГРА ================= -->
+<div id="game" style="display:none;">
 
-  <!-- 🔥 ХАЙП СВЕРХУ -->
+  <!-- ХАЙП -->
   <div id="hypeBars"></div>
 
-  <!-- 🎮 ПОЛЕ -->
-  <div id="gameBoardWrapper">
-    <div id="gameBoard"></div>
+  <!-- ОГОНЬ -->
+  <div class="fireLayer"></div>
 
-    <!-- СКАНДАЛ -->
-    <div id="scandalModal" class="modal">
-      <div class="scandalCard">
-        <div class="scandalTitle">🔥 СКАНДАЛ</div>
-        <div id="scandalText"></div>
-        <button onclick="closeModal('scandalModal')">OK</button>
-      </div>
-    </div>
+  <!-- ПОЛЕ -->
+  <div id="gameBoard"></div>
 
-    <!-- РИСК -->
-    <div id="riskModal" class="modal">
-      <div class="riskCard">
-        <div class="riskTitle">⚡ РИСК</div>
-
-        <div id="riskRules">
-          1–3 → −5 хайпа<br>
-          4–6 → +5 хайпа
-        </div>
-
-        <div id="riskResult"></div>
-
-        <button onclick="rollRisk()">🎲 Бросить</button>
-        <button onclick="closeRisk()">OK</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- 🎲 КУБИК ВНИЗУ -->
+  <!-- УПРАВЛЕНИЕ -->
   <div id="controls">
     <button id="rollBtn">🎲 Бросить кубик</button>
     <div id="diceResult"></div>
   </div>
 
+  <!-- МОДАЛКИ -->
+  <div id="modal"></div>
+
 </div>
 
+<!-- ================= СКАНДАЛ ================= -->
+<div id="scandalModal" class="modal">
+  <div class="scandalCard">
+    <div class="scandalTitle">🔥 СКАНДАЛ</div>
+    <div id="scandalText"></div>
+    <button onclick="closeScandal()">OK</button>
+  </div>
+</div>
+
+<!-- ================= РИСК ================= -->
+<div id="riskModal" class="modal">
+  <div class="riskCard">
+    <div class="riskTitle">⚡ РИСК</div>
+
+    <div id="riskRules">
+      1–3 → −5 хайпа<br>
+      4–6 → +5 хайпа
+    </div>
+
+    <div id="riskResult"></div>
+
+    <button id="riskRollBtn">🎲 Бросить</button>
+    <button id="riskCloseBtn" style="display:none;">OK</button>
+  </div>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="app.js"></script>
 
