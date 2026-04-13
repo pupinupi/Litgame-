@@ -79,10 +79,29 @@ window.onload = function(){
   });
 
   socket.on('gameStarted', () => {
-    alert("🚀 Игра началась");
+  alert("🚀 Получен сигнал старта");
 
-    document.getElementById('lobby').style.display = 'none';
-    document.getElementById('game').style.display = 'block';
-  });
+  const lobby = document.getElementById('lobby');
+  const game = document.getElementById('game');
+
+  if (!lobby) {
+    alert("❌ lobby не найден");
+    return;
+  }
+
+  if (!game) {
+    alert("❌ game не найден");
+    return;
+  }
+
+  lobby.style.display = "none";
+
+  // ЖЁСТКО показываем игру
+  game.style.display = "flex";
+  game.style.visibility = "visible";
+  game.style.opacity = "1";
+
+  alert("✅ Переключили экран");
+});
 
 };
