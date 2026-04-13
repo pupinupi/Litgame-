@@ -106,3 +106,105 @@ body {
   border: 2px solid #00cfff;
   box-shadow: 0 0 40px #00cfff;
 }
+
+/* ===== HUD КАК В ИГРАХ ===== */
+#hypeBars {
+  width: 95vw;
+  max-width: 750px;
+  margin: 0 auto 10px auto;
+
+  padding: 10px;
+  border-radius: 15px;
+
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 20px rgba(0,200,255,0.3);
+}
+
+/* ===== ИМЯ + ХАЙП ===== */
+.hypeText {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+/* ===== БАР ===== */
+.hypeBarBg {
+  height: 18px;
+  border-radius: 12px;
+  overflow: hidden;
+
+  background: #0a0a0a;
+
+  box-shadow:
+    inset 0 0 10px #000,
+    0 0 10px rgba(0,200,255,0.5);
+}
+
+.hypeFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00cfff, #00ffff);
+
+  box-shadow:
+    0 0 10px #00cfff,
+    0 0 20px #00ffff;
+
+  transition: width 0.4s ease;
+}
+
+/* ===== ВСПЫШКА ПРИ ИЗМЕНЕНИИ ===== */
+.hypeFlashPlus {
+  animation: flashPlus 0.4s;
+}
+
+.hypeFlashMinus {
+  animation: flashMinus 0.4s;
+}
+
+@keyframes flashPlus {
+  0% { box-shadow: 0 0 20px #00ff88; }
+  100% { box-shadow: none; }
+}
+
+@keyframes flashMinus {
+  0% { box-shadow: 0 0 20px red; }
+  100% { box-shadow: none; }
+}
+
+/* ===== КАРТОЧКИ (КАК У СТРИМЕРОВ) ===== */
+.scandalCard, .riskCard {
+  animation: cardEnter 0.3s ease;
+}
+
+@keyframes cardEnter {
+  from {
+    transform: translateY(40px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== КНОПКА КУБИКА ===== */
+#rollBtn {
+  font-size: 18px;
+  padding: 14px 24px;
+  border-radius: 15px;
+
+  background: linear-gradient(45deg, #00cfff, #0077ff);
+  border: none;
+  color: white;
+
+  box-shadow:
+    0 0 15px #00cfff;
+
+  transition: transform 0.15s;
+}
+
+#rollBtn:active {
+  transform: scale(0.95);
+}
