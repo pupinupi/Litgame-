@@ -21,10 +21,13 @@ body {
 }
 
 .player {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  box-shadow: 0 0 10px white;
 }
 
 .red { background: red; }
