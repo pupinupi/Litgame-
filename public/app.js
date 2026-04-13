@@ -397,6 +397,15 @@ function renderLobbyPlayers(){
   ).join('');
 }
 
+const modal = document.getElementById('scandalModal');
+modal.style.display = "flex";
+modal.classList.add("shake");
+
+setTimeout(() => modal.classList.remove("shake"), 300);
+}
+document.getElementById('riskModal').style.display = "flex";
+}
+
 // фикс старта
 setTimeout(() => {
   renderPlayers();
