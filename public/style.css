@@ -208,3 +208,114 @@ body {
 #rollBtn:active {
   transform: scale(0.95);
 }
+
+/* ===== ЗАГОЛОВОК ===== */
+.title {
+  font-size: 28px;
+  margin-bottom: 15px;
+
+  background: linear-gradient(90deg, #00cfff, #ff00cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== БЛОК ЛОББИ ===== */
+.lobbyBox {
+  background: rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 20px;
+
+  width: 90%;
+  max-width: 350px;
+  margin: auto;
+
+  box-shadow: 0 0 20px rgba(0,200,255,0.4);
+}
+
+/* ===== ИНПУТЫ ===== */
+.lobbyBox input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+
+  border-radius: 10px;
+  border: none;
+
+  font-size: 16px;
+}
+
+/* ===== ФИШКИ ===== */
+.chips {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
+}
+
+.chip {
+  font-size: 30px;
+  border: none;
+  background: none;
+}
+
+.chip.selected {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px white;
+}
+
+/* ===== КНОПКИ ===== */
+.mainBtn {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+
+  border-radius: 12px;
+  border: none;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  background: linear-gradient(45deg, #00cfff, #0077ff);
+  color: white;
+
+  box-shadow: 0 0 15px #00cfff;
+}
+
+.mainBtn.start {
+  background: linear-gradient(45deg, #00ff88, #00cc66);
+  box-shadow: 0 0 15px #00ff88;
+}
+
+/* ===== ИГРОКИ ===== */
+#playersList {
+  margin-top: 10px;
+}
+
+/* ===== ПРАВИЛА ===== */
+.rulesBox {
+  margin-top: 20px;
+  padding: 15px;
+
+  background: rgba(0,0,0,0.6);
+  border-radius: 15px;
+
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+.rulesBox h2 {
+  margin-bottom: 10px;
+}
+
+.highlight {
+  color: #00cfff;
+  font-weight: bold;
+}
+
+.winRule {
+  margin-top: 10px;
+  color: gold;
+  font-weight: bold;
+}
