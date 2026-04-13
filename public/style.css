@@ -50,3 +50,15 @@ body {
   border: 2px solid red;
   box-shadow: 0 0 20px red;
 }
+#hypeBars {
+  margin-bottom: 10px;
+}
+
+#controls {
+  margin-top: 15px;
+}
+
+#rollBtn {
+  padding: 10px 20px;
+  font-size: 16px;
+}
