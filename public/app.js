@@ -8,15 +8,17 @@ let username, roomCode, color;
 let isAnimating = false;
 let gameOver = false;
 
+let currentScandal = null;
+
 // ===== ЗАЩИТА =====
-window.onerror = function(msg, url, line){
+window.onerror = function(msg){
   alert("Ошибка: " + msg);
 };
 
 // ===== ЗАПУСК =====
 window.onload = () => {
 
-// ===== ВЫБОР ФИШКИ =====
+// выбор фишки
 document.querySelectorAll('.chip').forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
@@ -25,7 +27,7 @@ document.querySelectorAll('.chip').forEach(btn => {
   };
 });
 
-// ===== ВХОД =====
+// вход
 document.getElementById('joinBtn').onclick = () => {
   username = document.getElementById('username').value.trim();
   roomCode = document.getElementById('roomCode').value.trim();
@@ -38,12 +40,12 @@ document.getElementById('joinBtn').onclick = () => {
   socket.emit('joinRoom', { username, roomCode, color });
 };
 
-// ===== СТАРТ =====
+// старт
 document.getElementById('startBtn').onclick = () => {
   socket.emit('startGame', roomCode);
 };
 
-// ===== КУБИК =====
+// кубик
 document.getElementById('rollBtn').onclick = () => {
   if (gameOver || isAnimating) return;
   if (currentTurnId !== socket.id) return;
@@ -57,7 +59,6 @@ document.getElementById('rollBtn').onclick = () => {
 socket.on('updatePlayers', pl => {
   players = pl;
 
-  // 👉 если игрок новый — ставим на старт
   players.forEach(p => {
     if (p.position === undefined) p.position = 0;
   });
@@ -83,7 +84,7 @@ socket.on('diceRolled', ({ playerId, dice }) => {
   if (playerId === socket.id) movePlayer(dice);
 });
 
-// ===== ТВОИ КООРДИНАТЫ =====
+// ===== КООРДИНАТЫ =====
 const cells = [
   { x:0.1057,y:0.5857,type:'start'},
   { x:0.1071,y:0.4557,type:'plus',value:3},
@@ -137,7 +138,7 @@ function movePlayer(steps){
   step();
 }
 
-// ===== КЛЕТКА =====
+// ===== ЛОГИКА КЛЕТОК =====
 function handleCell(p){
   const c = cells[p.position];
 
@@ -150,7 +151,9 @@ function handleCell(p){
     p.skipNext = true;
   }
 
-  if(c.type === 'skip') p.skipNext = true;
+  if(c.type === 'skip'){
+    p.skipNext = true;
+  }
 
   if(c.type === 'risk'){
     let dice = Math.floor(Math.random()*6)+1;
@@ -158,8 +161,8 @@ function handleCell(p){
   }
 
   if(c.type === 'scandal'){
-    const vals = [-1,-2,-3,-4,-5];
-    p.hype += vals[Math.floor(Math.random()*vals.length)];
+    showScandal(p);
+    return;
   }
 
   p.hype = Math.max(0, p.hype);
@@ -168,7 +171,7 @@ function handleCell(p){
 
   if(p.hype >= 70){
     gameOver = true;
-    alert("ПОБЕДА: " + p.username);
+    alert("🏆 Победа: " + p.username);
   }
 
   socket.emit('playerMoved',{
@@ -176,6 +179,61 @@ function handleCell(p){
     position:p.position,
     hype:p.hype,
     skipNext:p.skipNext
+  });
+}
+
+// ===== СКАНДАЛ =====
+function showScandal(p){
+
+  const cards = [
+    {text:"🔥 перегрел аудиторию (-1)", val:-1},
+    {text:"🫣 громкий заголовок (-2)", val:-2},
+    {text:"😱 это монтаж (-3)", val:-3},
+    {text:"#️⃣ меня взломали (всем -3)", all:-3},
+    {text:"😮 подписчики в шоке (-4)", val:-4},
+    {text:"🤫 удаляй пока не поздно (-5)", val:-5},
+    {text:"🙄 это контент (-5 и пропуск)", val:-5, skip:true}
+  ];
+
+  const card = cards[Math.floor(Math.random()*cards.length)];
+  currentScandal = { card, player: p };
+
+  document.getElementById('scandalText').innerText = card.text;
+  document.getElementById('scandalModal').style.display = "flex";
+}
+
+function closeScandal(){
+
+  const { card, player } = currentScandal;
+
+  if(card.val){
+    player.hype = Math.max(0, player.hype + card.val);
+  }
+
+  if(card.all){
+    players.forEach(pl=>{
+      pl.hype = Math.max(0, pl.hype + card.all);
+    });
+  }
+
+  if(card.skip){
+    player.skipNext = true;
+  }
+
+  document.getElementById('scandalModal').style.display = "none";
+
+  renderHypeBars();
+
+  if(player.hype >= 70){
+    gameOver = true;
+    alert("🏆 Победа: " + player.username);
+  }
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position: player.position,
+    hype: player.hype,
+    skipNext: player.skipNext
   });
 }
 
@@ -197,7 +255,7 @@ function renderPlayers(){
     const c = cells[p.position];
 
     el.style.left = (c.x * rect.width) + 'px';
-el.style.top  = (c.y * rect.height) + 'px';
+    el.style.top  = (c.y * rect.height) + 'px';
   });
 }
 
@@ -232,6 +290,7 @@ function renderLobbyPlayers(){
   ).join('');
 }
 
+// фикс старта
 setTimeout(() => {
   renderPlayers();
 }, 300);
