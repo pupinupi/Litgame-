@@ -24,8 +24,6 @@ scandalSound.volume = 0.6;
 function openModal(id){
   const el = document.getElementById(id);
   el.style.display = "flex";
-  el.classList.add("shake");
-  setTimeout(() => el.classList.remove("shake"), 300);
 }
 
 function closeModal(id){
