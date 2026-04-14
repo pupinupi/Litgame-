@@ -13,15 +13,22 @@ const rooms = {};
 io.on('connection', socket => {
 
   socket.on('joinRoom', ({ username, roomCode, color }) => {
+
     if (!rooms[roomCode]) {
       rooms[roomCode] = {
         players: [],
         started: false,
-        turnIndex: 0
+        hostId: socket.id
       };
     }
 
     const room = rooms[roomCode];
+
+    // запрет дубля цвета
+    if (room.players.find(p => p.color === color)) {
+      socket.emit('joinError', 'Color taken');
+      return;
+    }
 
     const player = {
       id: socket.id,
@@ -35,8 +42,12 @@ io.on('connection', socket => {
     room.players.push(player);
     socket.join(roomCode);
 
-    // 👇 ВАЖНО: только в комнату, НЕ в игру
-    socket.emit('joinedRoom', { roomCode, players: room.players });
+    socket.emit('joinedRoom', {
+      roomCode,
+      players: room.players,
+      hostId: room.hostId
+    });
+
     io.to(roomCode).emit('updatePlayers', room.players);
   });
 
@@ -44,8 +55,9 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
+    if (socket.id !== room.hostId) return; // только хост
+
     room.started = true;
-    room.turnIndex = 0;
 
     io.to(roomCode).emit('gameStarted');
     io.to(roomCode).emit('nextTurn', room.players[0].id);
@@ -55,8 +67,8 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    const player = room.players[room.turnIndex];
-    if (!player || player.id !== socket.id) return;
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
 
     const dice = Math.floor(Math.random() * 6) + 1;
 
@@ -78,9 +90,6 @@ io.on('connection', socket => {
     p.skipNext = skipNext;
 
     io.to(roomCode).emit('updatePlayers', room.players);
-
-    room.turnIndex = (room.turnIndex + 1) % room.players.length;
-    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   });
 
 });
