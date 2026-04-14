@@ -8,25 +8,20 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
-
 const rooms = {};
 
 io.on('connection', socket => {
 
   socket.on('joinRoom', ({ username, roomCode, color }) => {
     if (!rooms[roomCode]) {
-      rooms[roomCode] = { players: [], turnIndex: 0 };
+      rooms[roomCode] = {
+        players: [],
+        started: false,
+        turnIndex: 0
+      };
     }
 
     const room = rooms[roomCode];
-
-    if (room.players.find(p => p.color === color)) {
-      socket.emit('joinError', 'Color taken');
-      return;
-    }
 
     const player = {
       id: socket.id,
@@ -40,14 +35,16 @@ io.on('connection', socket => {
     room.players.push(player);
     socket.join(roomCode);
 
-    socket.emit('joinSuccess');
+    // 👇 ВАЖНО: только в комнату, НЕ в игру
+    socket.emit('joinedRoom', { roomCode, players: room.players });
     io.to(roomCode).emit('updatePlayers', room.players);
   });
 
   socket.on('startGame', roomCode => {
     const room = rooms[roomCode];
-    if (!room || !room.players.length) return;
+    if (!room) return;
 
+    room.started = true;
     room.turnIndex = 0;
 
     io.to(roomCode).emit('gameStarted');
@@ -64,7 +61,7 @@ io.on('connection', socket => {
     const dice = Math.floor(Math.random() * 6) + 1;
 
     io.to(roomCode).emit('diceRolled', {
-      playerId: player.id,
+      playerId: socket.id,
       dice
     });
   });
@@ -73,12 +70,12 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    const player = room.players.find(p => p.id === socket.id);
-    if (!player) return;
+    const p = room.players.find(x => x.id === socket.id);
+    if (!p) return;
 
-    player.position = position;
-    player.hype = hype;
-    player.skipNext = skipNext;
+    p.position = position;
+    p.hype = hype;
+    p.skipNext = skipNext;
 
     io.to(roomCode).emit('updatePlayers', room.players);
 
@@ -88,6 +85,4 @@ io.on('connection', socket => {
 
 });
 
-server.listen(process.env.PORT || 3000, () =>
-  console.log("🚀 Server running")
-);
+server.listen(3000, () => console.log("RUN"));
