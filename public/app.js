@@ -1,18 +1,35 @@
 const socket = io();
 
 let players = [];
-let roomCode = "";
-let username = "";
-let color = "";
-let hostId = null;
+let roomCode, username, color;
 let currentTurnId = null;
-
 let isAnimating = false;
 
-/* CELLS */
-let cells = [];
+/* 🎯 ТВОИ КООРДИНАТЫ */
+const cells = [
+  {x:0.0933,y:0.5733},
+  {x:0.0833,y:0.4467},
+  {x:0.0883,y:0.3433},
+  {x:0.0983,y:0.23},
+  {x:0.085,y:0.1233},
+  {x:0.2167,y:0.0883},
+  {x:0.3483,y:0.0983},
+  {x:0.495,y:0.1017},
+  {x:0.6217,y:0.1033},
+  {x:0.785,y:0.1},
+  {x:0.9067,y:0.1317},
+  {x:0.905,y:0.2533},
+  {x:0.9067,y:0.3517},
+  {x:0.9067,y:0.465},
+  {x:0.8883,y:0.5867},
+  {x:0.7717,y:0.62},
+  {x:0.6383,y:0.6067},
+  {x:0.505,y:0.605},
+  {x:0.3533,y:0.5917},
+  {x:0.2233,y:0.605}
+];
 
-/* CHOOSE CHIP */
+/* выбор цвета */
 document.querySelectorAll('.chip').forEach(c=>{
   c.onclick=()=>{
     document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));
@@ -21,70 +38,58 @@ document.querySelectorAll('.chip').forEach(c=>{
   };
 });
 
-/* JOIN ROOM */
+/* вход */
 document.getElementById('joinBtn').onclick=()=>{
-  username=document.getElementById('username').value.trim();
-  roomCode=document.getElementById('roomCode').value.trim();
+  username=document.getElementById('username').value;
+  roomCode=document.getElementById('roomCode').value;
 
   socket.emit('joinRoom',{username,roomCode,color});
 };
 
-/* ROOM JOINED */
-socket.on('joinedRoom', data=>{
-  hostId = data.hostId;
-  roomCode = data.roomCode;
-
-  document.getElementById('roomInfo').innerText =
-    "Ты в комнате: " + roomCode;
-
-  if(socket.id === hostId){
-    document.getElementById('startBtn').classList.remove('hidden');
-  }
-});
-
-/* START GAME */
+/* старт */
 document.getElementById('startBtn').onclick=()=>{
-  socket.emit('startGame', roomCode);
+  socket.emit('startGame',roomCode);
 };
 
-/* SWITCH TO GAME */
 socket.on('gameStarted',()=>{
   document.getElementById('lobby').style.display='none';
   document.getElementById('game').style.display='block';
 });
 
-/* PLAYERS */
 socket.on('updatePlayers',p=>{
   players=p;
   render();
+  renderHype();
 });
 
-/* TURN */
 socket.on('nextTurn',id=>{
   currentTurnId=id;
 });
 
-/* DICE */
+/* кубик */
 document.getElementById('rollBtn').onclick=()=>{
   if(currentTurnId!==socket.id || isAnimating) return;
   socket.emit('rollDice',roomCode);
 };
 
 socket.on('diceRolled',({playerId,dice})=>{
+
   let i=0;
   const el=document.getElementById('diceResult');
 
   const anim=setInterval(()=>{
     el.innerText=Math.floor(Math.random()*6)+1;
+
     if(++i>10){
       clearInterval(anim);
       el.innerText=dice;
+
       if(playerId===socket.id) move(dice);
     }
   },70);
 });
 
-/* MOVE */
+/* движение */
 function move(steps){
   const me=players.find(p=>p.id===socket.id);
   if(!me) return;
@@ -109,7 +114,7 @@ function move(steps){
   step();
 }
 
-/* FINISH */
+/* конец хода */
 function finish(p){
   socket.emit('playerMoved',{
     roomCode,
@@ -119,7 +124,7 @@ function finish(p){
   });
 }
 
-/* RENDER */
+/* рендер */
 function render(){
   const board=document.getElementById('gameBoard');
 
@@ -133,7 +138,7 @@ function render(){
       board.appendChild(el);
     }
 
-    const c=cells[p.position]||cells[0];
+    const c=cells[p.position];
 
     el.style.left=c.x*100+'%';
     el.style.top=c.y*100+'%';
@@ -141,39 +146,21 @@ function render(){
   });
 }
 
-const board = document.getElementById('gameBoard');
-const output = document.getElementById('coordsOutput');
+/* хайп */
+function renderHype(){
+  const box=document.getElementById('hypeBars');
+  box.innerHTML="";
 
-board.addEventListener('click', (e) => {
+  players.forEach(p=>{
+    const percent=(p.hype/70)*100;
 
-  const rect = board.getBoundingClientRect();
-
-  const x = (e.clientX - rect.left) / rect.width;
-  const y = (e.clientY - rect.top) / rect.height;
-
-  const point = {
-    x: +x.toFixed(4),
-    y: +y.toFixed(4)
-  };
-
-  cells.push(point);
-
-  updateOutput();
-});
-
-/* обновление панели */
-function updateOutput(){
-  output.innerText = JSON.stringify(cells, null, 2);
-}
-
-/* копирование */
-function copyCoords(){
-  navigator.clipboard.writeText(JSON.stringify(cells, null, 2));
-  alert("Скопировано!");
-}
-
-/* очистка */
-function resetCoords(){
-  cells = [];
-  updateOutput();
+    box.innerHTML+=`
+      <div style="margin:5px;">
+        ${p.username}
+        <div style="height:10px;background:#222;">
+          <div style="width:${percent}%;height:100%;background:#00ffcc"></div>
+        </div>
+      </div>
+    `;
+  });
 }
