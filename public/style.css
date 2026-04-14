@@ -22,6 +22,7 @@ input{
   padding:10px;
 }
 
+/* ФИШКИ */
 .chips{
   display:flex;
   justify-content:space-between;
@@ -33,19 +34,28 @@ input{
   border-radius:50%;
 }
 
-.red{background:red}
-.blue{background:blue}
-.green{background:green}
-.yellow{background:gold}
-
 .chip.selected{
   box-shadow:0 0 15px white;
 }
 
-button{
-  width:100%;
-  margin-top:5px;
-  padding:10px;
+/* КНОПКА КУБИКА 🔥 */
+#rollBtn{
+  width:180px;
+  padding:18px;
+  margin:15px auto;
+  display:block;
+
+  font-size:20px;
+  font-weight:900;
+
+  border-radius:25px;
+  border:none;
+
+  background:linear-gradient(90deg,#00cfff,#007bff);
+
+  box-shadow:
+    0 0 20px #00cfff,
+    0 0 40px #007bff;
 }
 
 /* ПОЛЕ */
@@ -72,15 +82,38 @@ button{
   box-shadow:0 0 15px currentColor;
 }
 
-/* МОДАЛКИ */
+/* 📊 ХАЙП БАР */
+#hypeBars{
+  width:90%;
+  max-width:600px;
+  margin:auto;
+}
+
+.hypeItem{
+  margin:10px 0;
+}
+
+.hypeBar{
+  height:14px;
+  background:#222;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.hypeFill{
+  height:100%;
+  background:linear-gradient(90deg,#00ffcc,#00cfff);
+}
+
+/* 💥 МОДАЛКИ */
 .modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.8);
-  z-index:9999;
+  background:rgba(0,0,0,0.85);
+  z-index:999;
 }
 
 .modalBox{
@@ -90,24 +123,14 @@ button{
   text-align:center;
 }
 
+/* СКАНДАЛ */
 .scandal{
-  background:#400;
-  box-shadow:0 0 30px red;
+  background:linear-gradient(135deg,#2b0000,#550000);
+  box-shadow:0 0 40px red;
 }
 
+/* РИСК */
 .risk{
-  background:#003;
-  box-shadow:0 0 30px cyan;
-}
-
-/* ПОДСКАЗКА */
-#hint{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#111;
-  padding:10px 20px;
-  border-radius:20px;
-  display:none;
+  background:linear-gradient(135deg,#001a2b,#003355);
+  box-shadow:0 0 40px cyan;
 }
