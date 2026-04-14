@@ -1,128 +1,113 @@
-body {
+body{
   margin:0;
   font-family:Arial;
-  background: radial-gradient(circle,#0a0a0a,#000);
+  background:black;
   color:white;
 }
 
-/* ✨ ЛОББИ */
-.card {
+/* ЛОББИ */
+.card{
   width:300px;
   margin:auto;
   margin-top:80px;
   padding:20px;
   border-radius:20px;
-
   background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-
-  box-shadow:
-    0 0 30px #00eaff,
-    inset 0 0 10px rgba(255,255,255,0.05);
+  box-shadow:0 0 30px #00eaff;
 }
 
-/* 🎮 ПОЛЕ */
-#gameBoard {
+input{
+  width:100%;
+  margin:5px 0;
+  padding:10px;
+}
+
+.chips{
+  display:flex;
+  justify-content:space-between;
+}
+
+.chip{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+}
+
+.red{background:red}
+.blue{background:blue}
+.green{background:green}
+.yellow{background:gold}
+
+.chip.selected{
+  box-shadow:0 0 15px white;
+}
+
+button{
+  width:100%;
+  margin-top:5px;
+  padding:10px;
+}
+
+/* ПОЛЕ */
+#gameBoard{
   width:90vw;
   max-width:600px;
   height:600px;
   margin:auto;
   position:relative;
-  border-radius:25px;
-
+  border-radius:20px;
   background:url("board.jpg") center/cover;
 
   box-shadow:
     0 0 40px #ff8800,
-    0 0 80px #ff5500,
-    inset 0 0 40px rgba(255,120,0,0.3);
+    0 0 80px #ff5500;
 }
 
-/* 🔥 ПУЛЬС СВЕТА */
-#gameBoard::after {
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:25px;
-  box-shadow:0 0 60px rgba(255,100,0,0.6);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%{opacity:0.5}
-  50%{opacity:1}
-  100%{opacity:0.5}
-}
-
-/* 👤 ФИШКИ */
-.player {
+/* ФИШКИ */
+.player{
   position:absolute;
   width:20px;
   height:20px;
   border-radius:50%;
-
-  box-shadow:
-    0 0 15px currentColor,
-    0 0 25px currentColor;
+  box-shadow:0 0 15px currentColor;
 }
 
-/* 💥 SHAKE */
-.shake {
-  animation: shake 0.3s;
-}
-
-@keyframes shake {
-  0%{transform:translate(0)}
-  25%{transform:translate(-6px,6px)}
-  50%{transform:translate(6px,-6px)}
-  75%{transform:translate(-6px,-6px)}
-  100%{transform:translate(0)}
-}
-
-/* 💥 КАРТОЧКИ */
-.modal {
+/* МОДАЛКИ */
+.modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
   background:rgba(0,0,0,0.8);
+  z-index:9999;
 }
 
-.modalBox {
+.modalBox{
   width:260px;
   padding:20px;
   border-radius:20px;
-
-  background:linear-gradient(135deg,#111,#222);
-
-  box-shadow:
-    0 0 30px #ff0055,
-    0 0 60px #ff5500;
-
   text-align:center;
-
-  animation: pop 0.3s ease;
 }
 
-@keyframes pop {
-  from{transform:scale(0.7);opacity:0}
-  to{transform:scale(1);opacity:1}
+.scandal{
+  background:#400;
+  box-shadow:0 0 30px red;
 }
 
-/* 💡 ПОДСКАЗКИ */
-#hint {
+.risk{
+  background:#003;
+  box-shadow:0 0 30px cyan;
+}
+
+/* ПОДСКАЗКА */
+#hint{
   position:fixed;
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-
   background:#111;
   padding:10px 20px;
   border-radius:20px;
-
-  box-shadow:0 0 20px #00eaff;
-
-  font-size:14px;
   display:none;
 }
