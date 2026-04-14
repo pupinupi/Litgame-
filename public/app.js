@@ -164,3 +164,79 @@ function renderHype(){
     `;
   });
 }
+
+/* 💡 ПОДСКАЗКИ */
+function showHint(text){
+  const el = document.getElementById('hint');
+  el.innerText = text;
+  el.style.display = "block";
+
+  setTimeout(()=> el.style.display="none",2000);
+}
+
+/* 💥 SHAKE */
+function shakeBoard(){
+  const board = document.getElementById('gameBoard');
+  board.classList.add('shake');
+
+  setTimeout(()=>{
+    board.classList.remove('shake');
+  },300);
+}
+
+/* 💥 СКАНДАЛ */
+function showScandal(p){
+  shakeBoard();
+
+  const effects = [
+    {text:"🔥 -3 хайпа", val:-3},
+    {text:"😱 -5 хайпа", val:-5},
+    {text:"🤡 -7 хайпа", val:-7}
+  ];
+
+  const e = effects[Math.floor(Math.random()*effects.length)];
+
+  p.hype = Math.max(0, p.hype + e.val);
+
+  document.getElementById('scandalText').innerText = e.text;
+  document.getElementById('scandalModal').style.display="flex";
+
+  showHint("Скандал! " + e.text);
+}
+
+function closeScandal(){
+  document.getElementById('scandalModal').style.display="none";
+
+  const me = players.find(p=>p.id===socket.id);
+  finish(me);
+}
+
+/* ⚡ РИСК */
+function showRisk(p){
+  shakeBoard();
+
+  document.getElementById('riskModal').style.display="flex";
+  showHint("Риск! Брось кубик");
+}
+
+function rollRisk(){
+  const dice = Math.floor(Math.random()*6)+1;
+
+  const val = dice <= 3 ? -5 : 5;
+
+  const me = players.find(p=>p.id===socket.id);
+
+  me.hype = Math.max(0, me.hype + val);
+
+  document.getElementById('riskText').innerText =
+    `🎲 ${dice} → ${val}`;
+
+  showHint(val > 0 ? "Повезло!" : "Не повезло!");
+}
+
+function closeRisk(){
+  document.getElementById('riskModal').style.display="none";
+
+  const me = players.find(p=>p.id===socket.id);
+  finish(me);
+}
