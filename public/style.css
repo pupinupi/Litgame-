@@ -1,79 +1,35 @@
 body {
   margin:0;
   font-family:Arial;
-  background: radial-gradient(circle at top,#0a0a0a,#000);
+  background:black;
   color:white;
 }
 
-/* CENTER LOBBY */
-#lobby {
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-/* GLASS CARD */
-.glassCard {
-  width:320px;
+/* LOBBY */
+.card {
+  width:300px;
+  margin:auto;
+  margin-top:80px;
   padding:20px;
-  border-radius:25px;
-
-  background:rgba(255,255,255,0.06);
-  backdrop-filter: blur(20px);
-
-  border:1px solid rgba(255,255,255,0.15);
-
-  box-shadow:
-    0 0 30px #00eaff,
-    inset 0 0 10px rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;
 }
 
-/* TITLE */
-.title {
-  font-size:18px;
-  text-align:center;
-  margin-bottom:10px;
-  text-shadow:0 0 10px #00eaff;
-}
-
-/* INPUT */
 input {
   width:100%;
+  margin:5px 0;
   padding:10px;
-  margin:6px 0;
-  border:none;
-  border-radius:12px;
-  background:#111;
-  color:white;
 }
 
-/* SECTION */
-.sectionTitle {
-  margin-top:10px;
-  font-size:12px;
-  opacity:0.8;
-}
-
-/* CHIPS */
 .chips {
   display:flex;
   justify-content:space-between;
-  margin:10px 0;
 }
 
 .chip {
-  width:45px;
-  height:45px;
+  width:40px;
+  height:40px;
   border-radius:50%;
-  cursor:pointer;
-  border:1px solid rgba(255,255,255,0.2);
-  transition:0.2s;
-}
-
-.chip.selected {
-  transform:scale(1.2);
-  box-shadow:0 0 15px white;
 }
 
 .red{background:red}
@@ -81,31 +37,14 @@ input {
 .green{background:green}
 .yellow{background:gold}
 
-/* BUTTONS */
+.chip.selected {
+  box-shadow:0 0 10px white;
+}
+
 button {
   width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:15px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#joinBtn {
-  background:linear-gradient(90deg,#00eaff,#0066ff);
-}
-
-#startBtn {
-  background:linear-gradient(90deg,#00ff88,#00aa55);
-}
-
-/* RULES */
-.rules {
-  font-size:10px;
-  opacity:0.7;
-  margin-top:10px;
-  line-height:1.4;
+  margin-top:5px;
+  padding:10px;
 }
 
 /* GAME */
@@ -115,9 +54,8 @@ button {
   height:600px;
   margin:auto;
   background:url("board.jpg") center/cover;
-  border-radius:20px;
   position:relative;
-  box-shadow:0 0 40px orange;
+  border-radius:20px;
 }
 
 /* PLAYER */
@@ -126,40 +64,17 @@ button {
   width:18px;
   height:18px;
   border-radius:50%;
-  box-shadow:0 0 15px currentColor;
 }
 
-/* HIDDEN */
-.hidden {
-  display:none;
+/* SHAKE */
+.shake {
+  animation: shake 0.3s;
 }
 
-#coordPanel {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 90%;
-  max-width: 400px;
-
-  background: rgba(0,0,0,0.8);
-  border-radius: 15px;
-  padding: 10px;
-
-  z-index: 9999;
-}
-
-#coordsOutput {
-  font-size: 10px;
-  max-height: 120px;
-  overflow: auto;
-  margin-bottom: 5px;
-  color: #00eaff;
-}
-
-#coordPanel button {
-  width: 48%;
-  margin: 2px 1%;
-  padding: 8px;
+@keyframes shake {
+  0%{transform:translate(0)}
+  25%{transform:translate(-5px,5px)}
+  50%{transform:translate(5px,-5px)}
+  75%{transform:translate(-5px,-5px)}
+  100%{transform:translate(0)}
 }
