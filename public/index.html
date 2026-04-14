@@ -47,6 +47,24 @@
 
 <!-- ===== ИГРА (НЕ ТРОГАЕМ ЛОГИКУ) ===== -->
 <div id="game" style="display:none">
+  <!-- 💥 СКАНДАЛ -->
+<div id="scandalModal" class="modal">
+  <div class="modalBox">
+    <h2>💥 Скандал</h2>
+    <p id="scandalText"></p>
+    <button onclick="closeScandal()">OK</button>
+  </div>
+</div>
+
+<!-- ⚡ РИСК -->
+<div id="riskModal" class="modal">
+  <div class="modalBox">
+    <h2>⚡ Риск</h2>
+    <p id="riskResult"></p>
+    <button onclick="rollRisk()">🎲 Кинуть</button>
+    <button onclick="closeRisk()">Закрыть</button>
+  </div>
+</div>
 
   <div id="hypeBars"></div>
 
