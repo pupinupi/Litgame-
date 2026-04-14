@@ -1,257 +1,85 @@
-/* ===== ФОН ===== */
 body {
   margin: 0;
   font-family: Arial;
   color: white;
-
   background: radial-gradient(circle at top, #0a0a0a, #000);
-  overflow-x: hidden;
 }
 
-/* ===== НЕОНОВЫЙ ГЛОУ СЛОЙ ===== */
-body::before {
-  content: "";
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 20% 20%, #00cfff33, transparent 40%),
-    radial-gradient(circle at 80% 30%, #ff00cc33, transparent 40%),
-    radial-gradient(circle at 50% 80%, #ff880033, transparent 40%);
-  z-index: -1;
-}
-
-/* ===== ЗАГОЛОВОК ===== */
+/* UI */
 .title {
   font-size: 34px;
   font-weight: 900;
   margin-top: 30px;
-
-  background: linear-gradient(90deg,#00cfff,#ff00cc,#ff8800);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-  text-shadow:
-    0 0 20px #00cfff,
-    0 0 40px #ff00cc;
 }
 
-/* ===== КАРТОЧКА ===== */
 .lobbyBox {
   margin: 20px;
   padding: 25px;
-
   border-radius: 25px;
-
   background: rgba(10,10,10,0.9);
-  backdrop-filter: blur(15px);
-
-  border: 1px solid rgba(255,255,255,0.1);
-
-  box-shadow:
-    0 0 40px rgba(0,255,255,0.2),
-    inset 0 0 20px rgba(255,255,255,0.05);
 }
 
-/* ===== INPUT ===== */
 input {
   width: 100%;
-  padding: 18px;
+  padding: 15px;
   margin: 10px 0;
-
-  border-radius: 15px;
-  border: none;
-
-  font-size: 16px;
-
-  background: #111;
-  color: white;
-
-  box-shadow:
-    inset 0 0 10px rgba(0,255,255,0.2);
 }
 
-/* ===== ФИШКИ ===== */
-.chips {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-}
-
+/* chips */
 .chip {
-  width: 55px;
-  height: 55px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  border: none;
-
-  transition: 0.3s;
 }
 
-.red { background: radial-gradient(circle, #ff4444, #880000); }
-.blue { background: radial-gradient(circle, #3399ff, #003366); }
-.green { background: radial-gradient(circle, #33ff99, #006633); }
-.yellow { background: radial-gradient(circle, #ffdd33, #996600); }
+.red { background:red }
+.blue { background:blue }
+.green { background:green }
+.yellow { background:gold }
 
 .chip.selected {
   transform: scale(1.2);
-  box-shadow:
-    0 0 20px white,
-    0 0 40px currentColor;
 }
 
-/* ===== КНОПКИ ===== */
+/* buttons */
 .btn {
   width: 100%;
-  padding: 18px;
-  margin: 12px 0;
-
-  border-radius: 18px;
-  border: none;
-
-  font-size: 18px;
-  font-weight: bold;
-
-  transition: 0.2s;
+  padding: 15px;
+  margin: 10px 0;
 }
 
-/* Войти */
-.join {
-  background: linear-gradient(90deg,#00cfff,#007bff);
-  color: white;
-
-  box-shadow:
-    0 0 20px #00cfff,
-    0 0 40px #007bff;
-}
-
-/* Старт */
-.start {
-  background: linear-gradient(90deg,#00ff88,#00cc66);
-  color: black;
-
-  box-shadow:
-    0 0 20px #00ff88,
-    0 0 40px #00cc66;
-}
-
-/* НАЖАТИЕ */
-.btn:active {
-  transform: scale(0.95);
-}
-
-/* ===== СПИСОК ИГРОКОВ ===== */
-#playersList {
-  margin-top: 15px;
-  font-size: 18px;
-  text-align: left;
-}
-
-/* ===== ПРАВИЛА ===== */
-.rules {
-  margin: 20px;
-  padding: 25px;
-
-  border-radius: 25px;
-
-  background: rgba(0,0,0,0.85);
-
-  box-shadow:
-    0 0 30px rgba(255,150,0,0.3);
-}
-
-.rules h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.rules p {
-  margin: 8px 0;
-  font-size: 16px;
-}
-
-/* ===== ИГРА НЕ ТРОГАЕМ ===== */
+/* game */
 #gameBoard {
   position: relative;
   width: 90vw;
   max-width: 700px;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1;
+  background: url('board.jpg') center/cover;
   margin: auto;
-
-  background: url('board.jpg') no-repeat center;
-  background-size: cover;
 }
 
-/* ===== ИГРА: ФИКС РАСПОЛОЖЕНИЯ ===== */
-
-#game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* ХАЙП СВЕРХУ */
-#hypeBars {
-  width: 90%;
-  max-width: 700px;
-  margin-bottom: 10px;
-}
-
-/* ПОЛЕ */
-#gameBoard {
-  margin: 10px auto;
-}
-
-/* КНОПКА ВНИЗУ */
-#controls {
-  margin-top: 15px;
-  margin-bottom: 20px;
-}
-
-#rollBtn {
-  padding: 16px 30px;
-  font-size: 18px;
-  border-radius: 20px;
-
-  background: linear-gradient(90deg,#00cfff,#007bff);
-  color: white;
-  border: none;
-
-  box-shadow:
-    0 0 15px #00cfff,
-    0 0 30px #007bff;
-
-  transition: 0.2s;
-}
-
-#rollBtn:active {
-  transform: scale(0.9);
-}
-
-#gameBoard {
-  position: relative;
-  width: 90vw;
-  max-width: 700px;
-  aspect-ratio: 1/1;
-  margin: auto;
-
-  background: url('board.jpg') no-repeat center;
-  background-size: cover;
-
-  border-radius: 20px;
-
-  box-shadow:
-    0 0 30px rgba(255,100,0,0.4),
-    0 0 60px rgba(255,50,0,0.3),
-    inset 0 0 40px rgba(255,120,0,0.2);
-}
-
-/* 🔥 лёгкое "пламя" */
-#gameBoard::after {
-  content: "";
+/* players */
+.player {
   position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+/* MODALS */
+.modal {
+  position: fixed;
   inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+}
 
-  background: radial-gradient(circle at center, transparent 60%, rgba(255,80,0,0.15));
-
-  pointer-events: none;
+.modalBox {
+  background: #111;
+  padding: 20px;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 300px;
 }
