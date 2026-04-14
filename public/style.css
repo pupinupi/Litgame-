@@ -447,3 +447,140 @@ body {
     0 0 10px #00cfff,
     0 0 20px #0099ff;
 }
+
+/* ===== ЛОББИ ФОН ===== */
+#lobby {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at 50% 20%, #111 0%, #000 80%);
+}
+
+/* ===== ЗАГОЛОВОК ===== */
+#lobby h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+
+  color: #00cfff;
+
+  text-shadow:
+    0 0 10px #00cfff,
+    0 0 20px #00cfff,
+    0 0 40px #0099ff;
+}
+
+/* ===== INPUT ===== */
+#lobby input {
+  width: 260px;
+  padding: 14px;
+  margin: 8px;
+  border-radius: 12px;
+  border: none;
+
+  background: #111;
+  color: white;
+  font-size: 16px;
+
+  box-shadow: 0 0 10px #00cfff inset;
+}
+
+/* ===== КНОПКИ ===== */
+#lobby button {
+  margin: 8px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+/* Войти */
+#joinBtn {
+  background: #00cfff;
+  color: black;
+
+  box-shadow:
+    0 0 10px #00cfff,
+    0 0 20px #00cfff;
+}
+
+/* Старт */
+#startBtn {
+  background: #00ff88;
+  color: black;
+
+  box-shadow:
+    0 0 10px #00ff88,
+    0 0 20px #00ff88;
+}
+
+/* Hover */
+#lobby button:hover {
+  transform: scale(1.1);
+}
+
+/* ===== ВЫБОР ФИШЕК ===== */
+.chip {
+  font-size: 28px;
+  padding: 12px;
+  border-radius: 50%;
+  border: none;
+  background: #111;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+/* выбранная */
+.chip.selected {
+  transform: scale(1.2);
+
+  box-shadow:
+    0 0 10px white,
+    0 0 20px white;
+}
+
+/* ===== СПИСОК ИГРОКОВ ===== */
+#playersList {
+  margin-top: 20px;
+  font-size: 18px;
+
+  background: rgba(0,0,0,0.5);
+  padding: 15px;
+  border-radius: 12px;
+
+  box-shadow:
+    0 0 10px #00cfff inset;
+}
+
+/* ===== ПРАВИЛА ===== */
+.rulesBox {
+  margin-top: 25px;
+  max-width: 320px;
+
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 15px;
+
+  box-shadow:
+    0 0 15px #00cfff inset,
+    0 0 10px #00cfff;
+}
+
+.rulesBox h2 {
+  color: #00cfff;
+  margin-bottom: 10px;
+}
+
+.rulesBox p {
+  margin: 5px 0;
+  font-size: 14px;
+}
