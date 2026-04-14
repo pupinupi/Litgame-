@@ -19,11 +19,10 @@ diceSound.volume = 0.5;
 scandalSound.volume = 0.6;
 
 // =========================
-// 🔥 УНИВЕРСАЛЬНЫЕ МОДАЛКИ
+// МОДАЛКИ
 // =========================
 function openModal(id){
-  const el = document.getElementById(id);
-  el.style.display = "flex";
+  document.getElementById(id).style.display = "flex";
 }
 
 function closeModal(id){
@@ -39,6 +38,7 @@ window.onload = () => {
     diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
   }, { once: true });
 
+  // фишки
   document.querySelectorAll('.chip').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
@@ -47,6 +47,7 @@ window.onload = () => {
     };
   });
 
+  // вход
   document.getElementById('joinBtn').onclick = () => {
     username = document.getElementById('username').value.trim();
     roomCode = document.getElementById('roomCode').value.trim();
@@ -59,10 +60,12 @@ window.onload = () => {
     socket.emit('joinRoom', { username, roomCode, color });
   };
 
+  // старт
   document.getElementById('startBtn').onclick = () => {
     socket.emit('startGame', roomCode);
   };
 
+  // кубик
   document.getElementById('rollBtn').onclick = () => {
     if (gameOver || isAnimating) return;
     if (currentTurnId !== socket.id) return;
@@ -93,6 +96,7 @@ socket.on('gameStarted', () => {
 
 socket.on('nextTurn', id => {
   currentTurnId = id;
+
   document.getElementById('rollBtn').disabled =
     id !== socket.id || gameOver;
 
@@ -124,7 +128,7 @@ socket.on('diceRolled', ({ playerId, dice }) => {
 });
 
 // =========================
-// КООРДИНАТЫ
+// КЛЕТКИ
 // =========================
 const cells = [
   { x:0.1057,y:0.5857,type:'start'},
@@ -175,18 +179,16 @@ function movePlayer(steps){
 
     renderPlayers();
     i++;
-    setTimeout(step, 300);
+    setTimeout(step, 180);
   }
 
   step();
 }
 
 // =========================
-// КЛЕТКА
+// ЛОГИКА КЛЕТКИ
 // =========================
 function handleCell(p){
-
-  highlightCell(p.position);
 
   const c = cells[p.position];
 
@@ -213,6 +215,13 @@ function handleCell(p){
     return;
   }
 
+  finishTurn(p);
+}
+
+// =========================
+// ЗАВЕРШЕНИЕ ХОДА
+// =========================
+function finishTurn(p){
   p.hype = Math.max(0, p.hype);
 
   renderHypeBars();
@@ -234,24 +243,45 @@ function handleCell(p){
 // 💥 СКАНДАЛ
 // =========================
 function showScandal(p){
-
   scandalSound.currentTime = 0;
   scandalSound.play();
 
   currentScandal = p;
 
-  document.getElementById('scandalText').innerText =
-    [
-      "🔥 перегрел аудиторию -1",
-      "🫣 громкий заголовок -2",
-      "😱 это монтаж -3",
-      "#️⃣ всем -3",
-      "😮 шок -4",
-      "🤫 удаляй -5",
-      "🙄 контент -5 + пропуск"
-    ][Math.floor(Math.random()*7)];
+  const list = [
+    {text:"🔥 -1", val:-1},
+    {text:"🫣 -2", val:-2},
+    {text:"😱 -3", val:-3},
+    {text:"#️⃣ всем -3", val:-3, all:true},
+    {text:"😮 -4", val:-4},
+    {text:"🤫 -5", val:-5},
+    {text:"🙄 -5 + пропуск", val:-5, skip:true}
+  ];
+
+  const e = list[Math.floor(Math.random()*list.length)];
+  document.getElementById('scandalText').innerText = e.text;
+
+  currentScandal.effect = e;
 
   openModal('scandalModal');
+}
+
+function closeScandal(){
+  const p = currentScandal;
+  const e = p.effect;
+
+  if(e.all){
+    players.forEach(pl=>{
+      pl.hype = Math.max(0, pl.hype + e.val);
+    });
+  } else {
+    p.hype = Math.max(0, p.hype + e.val);
+  }
+
+  if(e.skip) p.skipNext = true;
+
+  closeModal('scandalModal');
+  finishTurn(p);
 }
 
 // =========================
@@ -271,19 +301,11 @@ function rollRisk(){
 
   document.getElementById('riskResult').innerText =
     `🎲 ${dice} → ${result}`;
-
-  renderHypeBars();
 }
 
 function closeRisk(){
   closeModal('riskModal');
-
-  socket.emit('playerMoved',{
-    roomCode,
-    position: currentRisk.position,
-    hype: currentRisk.hype,
-    skipNext: currentRisk.skipNext
-  });
+  finishTurn(currentRisk);
 }
 
 // =========================
@@ -304,7 +326,6 @@ function renderPlayers(){
 
     const c = cells[p.position];
 
-    // 💡 ВАЖНО: используем % вместо пикселей
     el.style.left = (c.x * 100) + '%';
     el.style.top  = (c.y * 100) + '%';
   });
@@ -319,84 +340,25 @@ function renderHypeBars(){
 
     box.innerHTML += `
       <div style="margin:15px 0;">
-        
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          font-weight:900;
-          font-size:20px;
-        ">
-          <span style="
-            color:${p.color};
-            text-shadow:0 0 10px ${p.color};
-          ">
-            ${p.username}
-          </span>
-
-          <span style="
-            font-size:24px;
-            color:#00eaff;
-            text-shadow:
-              0 0 10px #00cfff,
-              0 0 20px #00cfff,
-              0 0 30px #00ffff;
-          ">
-            ${p.hype} / 70
-          </span>
+        <div style="display:flex;justify-content:space-between;font-weight:900;font-size:20px;">
+          <span style="color:${p.color}">${p.username}</span>
+          <span style="color:#00eaff">${p.hype} / 70</span>
         </div>
 
-        <div style="
-          height:22px;
-          border-radius:12px;
-          background:#111;
-          overflow:hidden;
-          box-shadow:
-            inset 0 0 15px black,
-            0 0 10px #00cfff33;
-        ">
-
-          <div style="
-            height:100%;
-            width:${percent}%;
-            background: linear-gradient(90deg,#00cfff,#00ffcc,#00cfff);
-            box-shadow:
-              0 0 15px #00cfff,
-              0 0 30px #00cfff,
-              0 0 50px #00ffff;
-            transition:0.4s;
-          "></div>
-
+        <div style="height:22px;background:#111;border-radius:12px;overflow:hidden;">
+          <div style="height:100%;width:${percent}%;
+            background:linear-gradient(90deg,#00cfff,#00ffcc);
+            box-shadow:0 0 20px #00cfff;">
+          </div>
         </div>
-
       </div>
     `;
   });
 }
+
 function renderLobbyPlayers(){
   const list = document.getElementById('playersList');
   list.innerHTML = players.map(p =>
     `<div style="color:${p.color}">${p.username}</div>`
   ).join('');
 }
-
-// =========================
-// 🔥 ПОДСВЕТКА
-// =========================
-function highlightCell(index){
-  const board = document.getElementById('gameBoard');
-  const rect = board.getBoundingClientRect();
-  const c = cells[index];
-  const glow = document.createElement('div');
-  glow.style.position = 'absolute';
-  glow.style.left = (c.x * rect.width - 10) + 'px';
-  glow.style.top = (c.y * rect.height - 10) + 'px';
-  glow.style.width = '30px';
-  glow.style.height = '30px';
-  glow.style.borderRadius = '50%';
-  glow.style.boxShadow = '0 0 20px yellow';
-  glow.style.pointerEvents = 'none';
-
-  board.appendChild(glow);
-  setTimeout(()=>glow.remove(), 500);
-}
-  
