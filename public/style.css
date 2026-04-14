@@ -12,125 +12,61 @@ body{
   margin-top:80px;
   padding:20px;
   border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  box-shadow:0 0 30px #00eaff;
+  background:#111;
 }
 
-input{
-  width:100%;
-  margin:5px 0;
-  padding:10px;
-}
+input{width:100%;margin:5px 0;padding:10px;}
 
-/* ФИШКИ */
-.chips{
-  display:flex;
-  justify-content:space-between;
-}
+.chips{display:flex;justify-content:space-between;}
 
 .chip{
-  width:45px;
-  height:45px;
-  border-radius:50%;
+  width:45px;height:45px;border-radius:50%;
 }
 
-.chip.selected{
-  box-shadow:0 0 15px white;
-}
+.yellow{background:gold;}
+.red{background:red;}
+.blue{background:blue;}
+.purple{background:purple;}
 
-/* КНОПКА КУБИКА 🔥 */
-#rollBtn{
-  width:180px;
-  padding:18px;
-  margin:15px auto;
-  display:block;
+.chip.selected{box-shadow:0 0 15px white;}
 
-  font-size:20px;
-  font-weight:900;
-
-  border-radius:25px;
-  border:none;
-
-  background:linear-gradient(90deg,#00cfff,#007bff);
-
-  box-shadow:
-    0 0 20px #00cfff,
-    0 0 40px #007bff;
-}
-
-/* ПОЛЕ */
 #gameBoard{
   width:90vw;
   max-width:600px;
   height:600px;
   margin:auto;
-  position:relative;
-  border-radius:20px;
   background:url("board.jpg") center/cover;
-
-  box-shadow:
-    0 0 40px #ff8800,
-    0 0 80px #ff5500;
+  position:relative;
 }
 
 /* ФИШКИ */
 .player{
   position:absolute;
-  width:20px;
-  height:20px;
+  width:18px;height:18px;
   border-radius:50%;
-  box-shadow:0 0 15px currentColor;
 }
 
-/* 📊 ХАЙП БАР */
-#hypeBars{
-  width:90%;
-  max-width:600px;
-  margin:auto;
-}
-
-.hypeItem{
-  margin:10px 0;
-}
-
+/* ХАЙП */
 .hypeBar{
-  height:14px;
-  background:#222;
-  border-radius:10px;
-  overflow:hidden;
+  height:12px;background:#222;margin:5px;
 }
-
-.hypeFill{
+.fill{
   height:100%;
-  background:linear-gradient(90deg,#00ffcc,#00cfff);
+  background:#00eaff;
 }
 
-/* 💥 МОДАЛКИ */
+/* МОДАЛКИ */
 .modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.85);
-  z-index:999;
+  background:rgba(0,0,0,0.8);
 }
 
 .modalBox{
-  width:260px;
+  background:#222;
   padding:20px;
-  border-radius:20px;
-  text-align:center;
-}
-
-/* СКАНДАЛ */
-.scandal{
-  background:linear-gradient(135deg,#2b0000,#550000);
-  box-shadow:0 0 40px red;
-}
-
-/* РИСК */
-.risk{
-  background:linear-gradient(135deg,#001a2b,#003355);
-  box-shadow:0 0 40px cyan;
+  border-radius:15px;
 }
