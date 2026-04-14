@@ -17,16 +17,14 @@ io.on('connection', socket => {
     if (!rooms[roomCode]) {
       rooms[roomCode] = {
         players: [],
-        started: false,
         hostId: socket.id
       };
     }
 
     const room = rooms[roomCode];
 
-    // запрет дубля цвета
     if (room.players.find(p => p.color === color)) {
-      socket.emit('joinError', 'Color taken');
+      socket.emit('joinError', 'Цвет занят');
       return;
     }
 
@@ -55,9 +53,7 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    if (socket.id !== room.hostId) return; // только хост
-
-    room.started = true;
+    if (socket.id !== room.hostId) return;
 
     io.to(roomCode).emit('gameStarted');
     io.to(roomCode).emit('nextTurn', room.players[0].id);
@@ -66,9 +62,6 @@ io.on('connection', socket => {
   socket.on('rollDice', roomCode => {
     const room = rooms[roomCode];
     if (!room) return;
-
-    const player = room.players.find(p => p.id === socket.id);
-    if (!player) return;
 
     const dice = Math.floor(Math.random() * 6) + 1;
 
@@ -94,4 +87,4 @@ io.on('connection', socket => {
 
 });
 
-server.listen(3000, () => console.log("RUN"));
+server.listen(3000);
