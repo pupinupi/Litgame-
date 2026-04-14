@@ -2,16 +2,16 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Литвин ХАЙП</title>
+<title>Литвин Хайп</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div id="lobby">
-  <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
-
   <div class="lobbyBox">
+
+    <div class="title">🔥 ЛИТВИН GAME</div>
 
     <input id="username" placeholder="Имя">
     <input id="roomCode" placeholder="Комната">
@@ -23,17 +23,20 @@
       <button class="chip yellow" data-color="yellow"></button>
     </div>
 
-    <button id="joinBtn" class="btn join">🚪 Войти</button>
-    <button id="startBtn" class="btn start">🚀 Старт</button>
+    <button id="joinBtn" class="btn join">Войти</button>
+    <button id="startBtn" class="btn start">Старт</button>
 
-    <div id="playersList"></div>
+    <div class="rules">
+      🎲 Кубик → движение<br>
+      💥 Скандал → потеря хайпа<br>
+      ⚡ Риск → +5 / -5<br>
+      🏆 70 хайпа = победа
+    </div>
 
   </div>
 </div>
 
 <div id="game" style="display:none">
-
-  <div id="hypeBars"></div>
 
   <div id="gameBoard"></div>
 
@@ -42,22 +45,20 @@
     <div id="diceResult"></div>
   </div>
 
-  <!-- 💥 SCANDAL -->
-  <div id="scandalModal" class="modal shake">
-    <div class="modalBox glowRed">
-      <h2>💥 СКАНДАЛ</h2>
+  <!-- SCANDAL -->
+  <div id="scandalModal" class="modal">
+    <div class="modalBox">
       <p id="scandalText"></p>
       <button onclick="closeScandal()">OK</button>
     </div>
   </div>
 
-  <!-- ⚡ RISK -->
+  <!-- RISK -->
   <div id="riskModal" class="modal">
-    <div class="modalBox glowBlue">
-      <h2>⚡ РИСК</h2>
+    <div class="modalBox">
       <p id="riskResult"></p>
-      <button onclick="rollRisk()">🎲 Кинуть</button>
-      <button onclick="closeRisk()">Закрыть</button>
+      <button onclick="rollRisk()">🎲</button>
+      <button onclick="closeRisk()">OK</button>
     </div>
   </div>
 
