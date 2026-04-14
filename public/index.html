@@ -2,20 +2,19 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Литвин игра</title>
+<title>Литвин ХАЙП</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div id="lobby">
-
   <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
 
   <div class="lobbyBox">
 
-    <input id="username" placeholder="Введите имя">
-    <input id="roomCode" placeholder="Код комнаты">
+    <input id="username" placeholder="Имя">
+    <input id="roomCode" placeholder="Комната">
 
     <div class="chips">
       <button class="chip red" data-color="red"></button>
@@ -25,11 +24,11 @@
     </div>
 
     <button id="joinBtn" class="btn join">🚪 Войти</button>
-    <button id="startBtn" class="btn start">🚀 Начать</button>
+    <button id="startBtn" class="btn start">🚀 Старт</button>
 
     <div id="playersList"></div>
-  </div>
 
+  </div>
 </div>
 
 <div id="game" style="display:none">
@@ -39,23 +38,23 @@
   <div id="gameBoard"></div>
 
   <div id="controls">
-    <button id="rollBtn">🎲 Кубик</button>
+    <button id="rollBtn">🎲 КУБИК</button>
     <div id="diceResult"></div>
   </div>
 
-  <!-- 💥 СКАНДАЛ -->
-  <div id="scandalModal" class="modal">
-    <div class="modalBox">
-      <h2>💥 Скандал</h2>
+  <!-- 💥 SCANDAL -->
+  <div id="scandalModal" class="modal shake">
+    <div class="modalBox glowRed">
+      <h2>💥 СКАНДАЛ</h2>
       <p id="scandalText"></p>
       <button onclick="closeScandal()">OK</button>
     </div>
   </div>
 
-  <!-- ⚡ РИСК -->
+  <!-- ⚡ RISK -->
   <div id="riskModal" class="modal">
-    <div class="modalBox">
-      <h2>⚡ Риск</h2>
+    <div class="modalBox glowBlue">
+      <h2>⚡ РИСК</h2>
       <p id="riskResult"></p>
       <button onclick="rollRisk()">🎲 Кинуть</button>
       <button onclick="closeRisk()">Закрыть</button>
