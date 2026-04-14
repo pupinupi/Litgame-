@@ -10,10 +10,7 @@ let currentTurnId = null;
 let isAnimating = false;
 
 /* CELLS */
-const cells = Array.from({length:20}).map((_,i)=>({
-  x:0.1+(i%5)*0.2,
-  y:0.1+Math.floor(i/5)*0.2
-}));
+let cells = [];
 
 /* CHOOSE CHIP */
 document.querySelectorAll('.chip').forEach(c=>{
