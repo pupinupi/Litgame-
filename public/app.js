@@ -318,43 +318,52 @@ function renderHypeBars(){
     const percent = Math.min(p.hype, 70) / 70 * 100;
 
     box.innerHTML += `
-      <div style="margin:12px 0;">
+      <div style="margin:15px 0;">
         
         <div style="
           display:flex;
           justify-content:space-between;
-          font-weight:bold;
-          font-size:18px;
+          font-weight:900;
+          font-size:20px;
         ">
-          <span style="color:${p.color}">
+          <span style="
+            color:${p.color};
+            text-shadow:0 0 10px ${p.color};
+          ">
             ${p.username}
           </span>
+
           <span style="
-            font-size:20px;
-            color:#00cfff;
-            text-shadow:0 0 10px #00cfff;
+            font-size:24px;
+            color:#00eaff;
+            text-shadow:
+              0 0 10px #00cfff,
+              0 0 20px #00cfff,
+              0 0 30px #00ffff;
           ">
-            ${p.hype}/70
+            ${p.hype} / 70
           </span>
         </div>
 
         <div style="
+          height:22px;
+          border-radius:12px;
           background:#111;
-          height:16px;
-          border-radius:10px;
           overflow:hidden;
-          box-shadow: inset 0 0 10px black;
+          box-shadow:
+            inset 0 0 15px black,
+            0 0 10px #00cfff33;
         ">
 
           <div style="
             height:100%;
             width:${percent}%;
-            background: linear-gradient(90deg,#00cfff,#00ffcc);
+            background: linear-gradient(90deg,#00cfff,#00ffcc,#00cfff);
             box-shadow:
-              0 0 10px #00cfff,
-              0 0 20px #00cfff,
-              0 0 30px #00ffcc;
-            transition:0.3s;
+              0 0 15px #00cfff,
+              0 0 30px #00cfff,
+              0 0 50px #00ffff;
+            transition:0.4s;
           "></div>
 
         </div>
