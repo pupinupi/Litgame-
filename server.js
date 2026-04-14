@@ -17,7 +17,8 @@ io.on('connection', socket => {
     if (!rooms[roomCode]) {
       rooms[roomCode] = {
         players: [],
-        hostId: socket.id
+        hostId: socket.id,
+        turnIndex: 0
       };
     }
 
@@ -42,7 +43,6 @@ io.on('connection', socket => {
 
     socket.emit('joinedRoom', {
       roomCode,
-      players: room.players,
       hostId: room.hostId
     });
 
@@ -63,10 +63,13 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
+    const player = room.players[room.turnIndex];
+    if (!player || player.id !== socket.id) return;
+
     const dice = Math.floor(Math.random() * 6) + 1;
 
     io.to(roomCode).emit('diceRolled', {
-      playerId: socket.id,
+      playerId: player.id,
       dice
     });
   });
@@ -82,7 +85,10 @@ io.on('connection', socket => {
     p.hype = hype;
     p.skipNext = skipNext;
 
+    room.turnIndex = (room.turnIndex + 1) % room.players.length;
+
     io.to(roomCode).emit('updatePlayers', room.players);
+    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   });
 
 });
