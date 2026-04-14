@@ -140,3 +140,24 @@ function render(){
     el.style.background=p.color;
   });
 }
+
+const board = document.getElementById('gameBoard');
+
+board.addEventListener('click', (e) => {
+
+  const rect = board.getBoundingClientRect();
+
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+
+  const point = {
+    x: +x.toFixed(4),
+    y: +y.toFixed(4)
+  };
+
+  cells.push(point);
+
+  console.log("Клетка добавлена:", point);
+  console.log("ВСЕ КЛЕТКИ:", JSON.stringify(cells, null, 2));
+
+});
