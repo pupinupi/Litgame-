@@ -8,17 +8,13 @@
 
 <body>
 
-<!-- LOBBY -->
 <div id="lobby">
+  <div class="card">
 
-  <div class="glassCard">
+    <h2>🔥 ЛИТВИН: ХАЙП</h2>
 
-    <div class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</div>
-
-    <input id="username" placeholder="Имя игрока">
-    <input id="roomCode" placeholder="Код комнаты">
-
-    <div class="sectionTitle">Выбери фишку</div>
+    <input id="username" placeholder="Имя">
+    <input id="roomCode" placeholder="Комната">
 
     <div class="chips">
       <div class="chip red" data-color="red"></div>
@@ -27,39 +23,23 @@
       <div class="chip yellow" data-color="yellow"></div>
     </div>
 
-    <button id="joinBtn">🚪 Войти в комнату</button>
+    <button id="joinBtn">Войти</button>
+    <button id="startBtn">Старт</button>
 
-    <div id="roomInfo"></div>
-
-    <button id="startBtn" class="hidden">🚀 Начать игру</button>
-
-    <div class="rules">
-      🎲 Кубик — движение<br>
-      💥 Скандал — потеря хайпа<br>
-      ⚡ Риск — +5 / -5<br>
-      🏆 70 хайпа = победа
-    </div>
+    <div id="playersList"></div>
 
   </div>
 </div>
 
-<!-- GAME -->
 <div id="game" style="display:none">
 
-  <div id="playersList"></div>
-  <div id="hypeBar"></div>
+  <div id="hypeBars"></div>
 
   <div id="gameBoard"></div>
 
-  <button id="rollBtn">🎲 Кубик</button>
+  <button id="rollBtn">🎲</button>
   <div id="diceResult"></div>
 
-  <div id="coordPanel">
-  <div id="coordsOutput">[]</div>
-  <button onclick="copyCoords()">📋 Скопировать</button>
-  <button onclick="resetCoords()">🗑 Очистить</button>
-</div>
-  
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
