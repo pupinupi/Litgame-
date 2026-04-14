@@ -142,6 +142,7 @@ function render(){
 }
 
 const board = document.getElementById('gameBoard');
+const output = document.getElementById('coordsOutput');
 
 board.addEventListener('click', (e) => {
 
@@ -157,7 +158,22 @@ board.addEventListener('click', (e) => {
 
   cells.push(point);
 
-  console.log("Клетка добавлена:", point);
-  console.log("ВСЕ КЛЕТКИ:", JSON.stringify(cells, null, 2));
-
+  updateOutput();
 });
+
+/* обновление панели */
+function updateOutput(){
+  output.innerText = JSON.stringify(cells, null, 2);
+}
+
+/* копирование */
+function copyCoords(){
+  navigator.clipboard.writeText(JSON.stringify(cells, null, 2));
+  alert("Скопировано!");
+}
+
+/* очистка */
+function resetCoords(){
+  cells = [];
+  updateOutput();
+}
