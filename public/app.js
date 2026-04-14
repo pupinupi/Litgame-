@@ -324,20 +324,55 @@ function renderHypeBars(){
   const box = document.getElementById('hypeBars');
   box.innerHTML = '';
 
-  players.forEach(p=>{
-    const percent = Math.min(p.hype,70)/70*100;
+  players.forEach(p => {
+    const percent = Math.min(p.hype, 70) / 70 * 100;
 
     box.innerHTML += `
-      <div>
-        <div class="hypeText">${p.username}: ${p.hype}/70</div>
-        <div class="hypeBarBg">
-          <div class="hypeFill" style="width:${percent}%"></div>
+      <div style="margin:12px 0;">
+        
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          font-weight:bold;
+          font-size:18px;
+        ">
+          <span style="color:${p.color}">
+            ${p.username}
+          </span>
+          <span style="
+            font-size:20px;
+            color:#00cfff;
+            text-shadow:0 0 10px #00cfff;
+          ">
+            ${p.hype}/70
+          </span>
         </div>
+
+        <div style="
+          background:#111;
+          height:16px;
+          border-radius:10px;
+          overflow:hidden;
+          box-shadow: inset 0 0 10px black;
+        ">
+
+          <div style="
+            height:100%;
+            width:${percent}%;
+            background: linear-gradient(90deg,#00cfff,#00ffcc);
+            box-shadow:
+              0 0 10px #00cfff,
+              0 0 20px #00cfff,
+              0 0 30px #00ffcc;
+            transition:0.3s;
+          "></div>
+
+        </div>
+
       </div>
     `;
   });
 }
-
 function renderLobbyPlayers(){
   const list = document.getElementById('playersList');
   list.innerHTML = players.map(p =>
