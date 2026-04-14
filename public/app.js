@@ -42,7 +42,6 @@ document.querySelectorAll('.chip').forEach(c=>{
 document.getElementById('joinBtn').onclick=()=>{
   username=document.getElementById('username').value;
   roomCode=document.getElementById('roomCode').value;
-
   socket.emit('joinRoom',{username,roomCode,color});
 };
 
@@ -76,7 +75,7 @@ socket.on('diceRolled',({playerId,dice})=>{
   if(playerId===socket.id) move(dice);
 });
 
-/* движение */
+/* движение (медленнее) */
 function move(steps){
   const me=players.find(p=>p.id===socket.id);
   if(!me) return;
@@ -99,16 +98,36 @@ function move(steps){
     render();
 
     i++;
-    setTimeout(step,120);
+    setTimeout(step,220); // МЕДЛЕННЕЕ
   }
 
   step();
 }
 
-/* события */
+/* 💥 СКАНДАЛ (ТВОИ КАРТОЧКИ) */
 function showScandal(p){
-  p.hype = Math.max(0, p.hype - 5);
-  document.getElementById('scandalText').innerText="-5 хайпа";
+
+  const list = [
+    {text:"🔥 -1", val:-1},
+    {text:"🫣 -2", val:-2},
+    {text:"😱 -3", val:-3},
+    {text:"#️⃣ всем -3", val:-3, all:true},
+    {text:"😮 -4", val:-4},
+    {text:"🤫 -5", val:-5},
+    {text:"🙄 -5 + пропуск", val:-5}
+  ];
+
+  const e = list[Math.floor(Math.random()*list.length)];
+
+  if(e.all){
+    players.forEach(pl=>{
+      pl.hype = Math.max(0, pl.hype + e.val);
+    });
+  } else {
+    p.hype = Math.max(0, p.hype + e.val);
+  }
+
+  document.getElementById('scandalText').innerText = e.text;
   document.getElementById('scandalModal').style.display="flex";
 }
 
@@ -117,15 +136,21 @@ function closeScandal(){
   finish(players.find(p=>p.id===socket.id));
 }
 
-function showRisk(p){
+/* ⚡ РИСК */
+function showRisk(){
   document.getElementById('riskModal').style.display="flex";
 }
 
 function rollRisk(){
   const me=players.find(p=>p.id===socket.id);
-  const val=Math.random()>0.5?5:-5;
-  me.hype+=val;
-  document.getElementById('riskText').innerText=val;
+
+  const dice=Math.floor(Math.random()*6)+1;
+  const val=dice<=3?-5:5;
+
+  me.hype = Math.max(0, me.hype + val);
+
+  document.getElementById('riskText').innerText =
+    `🎲 ${dice} → ${val}`;
 }
 
 function closeRisk(){
@@ -165,12 +190,21 @@ function render(){
   });
 }
 
+/* 📊 ХАЙП */
 function renderHype(){
   const box=document.getElementById('hypeBars');
   box.innerHTML="";
 
   players.forEach(p=>{
-    box.innerHTML+=`${p.username}: ${p.hype}<br>`;
+    const percent = Math.min(p.hype,70)/70*100;
+
+    box.innerHTML += `
+      <div class="hypeItem">
+        <div>${p.username} (${p.hype})</div>
+        <div class="hypeBar">
+          <div class="hypeFill" style="width:${percent}%"></div>
+        </div>
+      </div>
+    `;
   });
 }
-  
