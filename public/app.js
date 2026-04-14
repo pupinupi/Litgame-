@@ -1,5 +1,3 @@
-App
-
 const socket = io();
 
 let players = [];
