@@ -180,3 +180,29 @@ input {
   background: url('board.jpg') no-repeat center;
   background-size: cover;
 }
+
+/* ===== ИГРА: ФИКС РАСПОЛОЖЕНИЯ ===== */
+
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ХАЙП СВЕРХУ */
+#hypeBars {
+  width: 90%;
+  max-width: 700px;
+  margin-bottom: 10px;
+}
+
+/* ПОЛЕ */
+#gameBoard {
+  margin: 10px auto;
+}
+
+/* КНОПКА ВНИЗУ */
+#controls {
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
