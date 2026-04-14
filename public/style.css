@@ -1,64 +1,135 @@
 body {
   margin:0;
   font-family:Arial;
-  background:black;
+  background: radial-gradient(circle at top,#0a0a0a,#000);
   color:white;
 }
 
-/* LOBBY */
-.lobbyBox {
-  width:300px;
-  margin:auto;
-  margin-top:100px;
-  padding:20px;
-  background:rgba(255,255,255,0.05);
-  border-radius:20px;
+/* CENTER LOBBY */
+#lobby {
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-/* BOARD */
+/* GLASS CARD */
+.glassCard {
+  width:320px;
+  padding:20px;
+  border-radius:25px;
+
+  background:rgba(255,255,255,0.06);
+  backdrop-filter: blur(20px);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  box-shadow:
+    0 0 30px #00eaff,
+    inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+/* TITLE */
+.title {
+  font-size:18px;
+  text-align:center;
+  margin-bottom:10px;
+  text-shadow:0 0 10px #00eaff;
+}
+
+/* INPUT */
+input {
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:12px;
+  background:#111;
+  color:white;
+}
+
+/* SECTION */
+.sectionTitle {
+  margin-top:10px;
+  font-size:12px;
+  opacity:0.8;
+}
+
+/* CHIPS */
+.chips {
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
+
+.chip {
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,0.2);
+  transition:0.2s;
+}
+
+.chip.selected {
+  transform:scale(1.2);
+  box-shadow:0 0 15px white;
+}
+
+.red{background:red}
+.blue{background:blue}
+.green{background:green}
+.yellow{background:gold}
+
+/* BUTTONS */
+button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#joinBtn {
+  background:linear-gradient(90deg,#00eaff,#0066ff);
+}
+
+#startBtn {
+  background:linear-gradient(90deg,#00ff88,#00aa55);
+}
+
+/* RULES */
+.rules {
+  font-size:10px;
+  opacity:0.7;
+  margin-top:10px;
+  line-height:1.4;
+}
+
+/* GAME */
 #gameBoard {
   width:90vw;
   max-width:600px;
   height:600px;
   margin:auto;
-  background:url("board.jpg");
-  position:relative;
+  background:url("board.jpg") center/cover;
   border-radius:20px;
-  box-shadow:0 0 30px orange;
+  position:relative;
+  box-shadow:0 0 40px orange;
 }
 
 /* PLAYER */
 .player {
   position:absolute;
-  width:20px;
-  height:20px;
+  width:18px;
+  height:18px;
   border-radius:50%;
+  box-shadow:0 0 15px currentColor;
 }
 
-/* SHAKE */
-.shake {
-  animation: shake 0.3s;
-}
-
-@keyframes shake {
-  0%{transform:translate(0,0)}
-  25%{transform:translate(-5px,5px)}
-  50%{transform:translate(5px,-5px)}
-  75%{transform:translate(-5px,-5px)}
-  100%{transform:translate(0,0)}
-}
-
-/* BAR */
-#hypeBar {
-  width:80%;
-  height:20px;
-  background:#222;
-  margin:10px auto;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-#hypeBar div {
-  height:100%;
-  background:linear-gradient(90deg,#00eaff,#00ff88);
+/* HIDDEN */
+.hidden {
+  display:none;
 }
