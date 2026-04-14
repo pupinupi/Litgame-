@@ -206,3 +206,23 @@ input {
   margin-top: 15px;
   margin-bottom: 20px;
 }
+
+#rollBtn {
+  padding: 16px 30px;
+  font-size: 18px;
+  border-radius: 20px;
+
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  color: white;
+  border: none;
+
+  box-shadow:
+    0 0 15px #00cfff,
+    0 0 30px #007bff;
+
+  transition: 0.2s;
+}
+
+#rollBtn:active {
+  transform: scale(0.9);
+}
