@@ -5,9 +5,9 @@
 <title>Литвин игра</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- ===== ЛОББИ ===== -->
 <div id="lobby">
 
   <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
@@ -25,57 +25,42 @@
     </div>
 
     <button id="joinBtn" class="btn join">🚪 Войти</button>
-    <button id="startBtn" class="btn start">🚀 Начать игру</button>
+    <button id="startBtn" class="btn start">🚀 Начать</button>
 
     <div id="playersList"></div>
   </div>
 
-  <!-- ===== ПРАВИЛА ===== -->
-  <div class="rules">
-    <h2>📜 Правила</h2>
-
-    <p><b>Цель:</b> набрать 70 хайпа</p>
-
-    <p>🎲 Бросай кубик и двигайся</p>
-    <p>💥 Скандал — теряешь хайп</p>
-    <p>⚡ Риск — +5 или -5</p>
-    <p>⛔ Пропуск хода</p>
-    <p>🔁 Круг: +7 хайпа</p>
-  </div>
-
 </div>
 
-<!-- ===== ИГРА (НЕ ТРОГАЕМ ЛОГИКУ) ===== -->
 <div id="game" style="display:none">
-  <!-- 💥 СКАНДАЛ -->
-<div id="scandalModal" class="modal">
-  <div class="modalBox">
-    <h2>💥 Скандал</h2>
-    <p id="scandalText"></p>
-    <button onclick="closeScandal()">OK</button>
-  </div>
-</div>
-
-<!-- ⚡ РИСК -->
-<div id="riskModal" class="modal">
-  <div class="modalBox">
-    <h2>⚡ Риск</h2>
-    <p id="riskResult"></p>
-    <button onclick="rollRisk()">🎲 Кинуть</button>
-    <button onclick="closeRisk()">Закрыть</button>
-  </div>
-</div>
 
   <div id="hypeBars"></div>
 
   <div id="gameBoard"></div>
 
   <div id="controls">
-    <button id="rollBtn">🎲 Бросить кубик</button>
+    <button id="rollBtn">🎲 Кубик</button>
     <div id="diceResult"></div>
   </div>
 
-  <div id="modal"></div>
+  <!-- 💥 СКАНДАЛ -->
+  <div id="scandalModal" class="modal">
+    <div class="modalBox">
+      <h2>💥 Скандал</h2>
+      <p id="scandalText"></p>
+      <button onclick="closeScandal()">OK</button>
+    </div>
+  </div>
+
+  <!-- ⚡ РИСК -->
+  <div id="riskModal" class="modal">
+    <div class="modalBox">
+      <h2>⚡ Риск</h2>
+      <p id="riskResult"></p>
+      <button onclick="rollRisk()">🎲 Кинуть</button>
+      <button onclick="closeRisk()">Закрыть</button>
+    </div>
+  </div>
 
 </div>
 
