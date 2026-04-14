@@ -24,20 +24,23 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
 
     if (room.players.find(p => p.color === color)) {
-      socket.emit('colorTaken');
+      socket.emit('joinError', 'Color taken');
       return;
     }
 
-    room.players.push({
+    const player = {
       id: socket.id,
       username,
       color,
       position: 0,
       hype: 0,
       skipNext: false
-    });
+    };
 
+    room.players.push(player);
     socket.join(roomCode);
+
+    socket.emit('joinSuccess');
     io.to(roomCode).emit('updatePlayers', room.players);
   });
 
@@ -46,6 +49,7 @@ io.on('connection', socket => {
     if (!room || !room.players.length) return;
 
     room.turnIndex = 0;
+
     io.to(roomCode).emit('gameStarted');
     io.to(roomCode).emit('nextTurn', room.players[0].id);
   });
@@ -56,13 +60,6 @@ io.on('connection', socket => {
 
     const player = room.players[room.turnIndex];
     if (!player || player.id !== socket.id) return;
-
-    if (player.skipNext) {
-      player.skipNext = false;
-      io.to(roomCode).emit('playerSkipped', player.id);
-      nextTurn(roomCode);
-      return;
-    }
 
     const dice = Math.floor(Math.random() * 6) + 1;
 
@@ -84,17 +81,13 @@ io.on('connection', socket => {
     player.skipNext = skipNext;
 
     io.to(roomCode).emit('updatePlayers', room.players);
-    nextTurn(roomCode);
-  });
-
-  function nextTurn(roomCode) {
-    const room = rooms[roomCode];
-    if (!room || !room.players.length) return;
 
     room.turnIndex = (room.turnIndex + 1) % room.players.length;
     io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
-  }
+  });
+
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log("🚀 RUN " + PORT));
+server.listen(process.env.PORT || 3000, () =>
+  console.log("🚀 Server running")
+);
