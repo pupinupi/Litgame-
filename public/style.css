@@ -1,50 +1,67 @@
 body {
-  margin: 0;
-  font-family: Arial;
-  background: radial-gradient(circle at top,#0a0a0a,#000);
+  margin:0;
+  font-family:Arial;
+  background: radial-gradient(circle,#111,#000);
   color:white;
-  overflow:hidden;
 }
 
-/* TITLE */
-.title {
-  text-align:center;
-  font-size:34px;
-  text-shadow:0 0 20px #00eaff,0 0 40px #ff00ff;
+/* LOBBY */
+#lobby {
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-/* BOX */
 .lobbyBox {
-  margin:20px;
+  width:280px;
   padding:20px;
   border-radius:20px;
-  background:rgba(0,0,0,0.8);
+
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+
+  border:1px solid rgba(255,255,255,0.1);
   box-shadow:0 0 30px #00eaff;
+}
+
+.title {
+  text-align:center;
+  margin-bottom:10px;
+  text-shadow:0 0 10px #00eaff;
 }
 
 /* INPUT */
 input {
   width:100%;
-  padding:15px;
-  margin:10px 0;
+  padding:10px;
+  margin:6px 0;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
   background:#111;
   color:white;
-  box-shadow:0 0 10px #00eaff inset;
 }
 
 /* CHIPS */
+.chips {
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
+
 .chip {
-  width:50px;
-  height:50px;
+  width:40px;
+  height:40px;
   border-radius:50%;
-  transition:0.3s;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
 }
+
 .chip.selected {
+  box-shadow:0 0 15px white;
   transform:scale(1.2);
-  box-shadow:0 0 20px white;
 }
+
 .red{background:red}
 .blue{background:blue}
 .green{background:green}
@@ -53,52 +70,51 @@ input {
 /* BUTTONS */
 .btn {
   width:100%;
-  padding:15px;
-  margin:10px 0;
+  padding:10px;
+  margin-top:8px;
   border:none;
-  border-radius:15px;
+  border-radius:10px;
   font-weight:bold;
 }
 
-.join {
-  background:linear-gradient(90deg,#00eaff,#0077ff);
-  box-shadow:0 0 20px #00eaff;
-}
-.start {
-  background:linear-gradient(90deg,#00ff88,#00cc66);
-  box-shadow:0 0 20px #00ff88;
+.join {background:#00eaff;}
+.start {background:#00ff88;}
+
+/* RULES */
+.rules {
+  font-size:10px;
+  opacity:0.7;
+  margin-top:10px;
 }
 
-/* BOARD */
+/* GAME */
 #gameBoard {
   width:90vw;
-  max-width:700px;
-  aspect-ratio:1;
+  max-width:600px;
+  height:600px;
   margin:auto;
   background:url("board.jpg") center/cover;
+  position:relative;
   border-radius:20px;
   box-shadow:0 0 40px #ff8800;
-  position:relative;
 }
 
-/* PLAYER */
+/* PLAYERS */
 .player {
   position:absolute;
-  width:20px;
-  height:20px;
+  width:18px;
+  height:18px;
   border-radius:50%;
-  transition: all 0.25s ease;
-  box-shadow:0 0 20px currentColor;
+  box-shadow:0 0 15px currentColor;
 }
 
-/* HUD */
-#diceResult {
-  font-size:30px;
+/* CONTROLS */
+#controls {
   text-align:center;
-  text-shadow:0 0 20px #fff;
+  margin-top:10px;
 }
 
-/* MODALS */
+/* MODAL */
 .modal {
   position:fixed;
   inset:0;
@@ -109,36 +125,7 @@ input {
 }
 
 .modalBox {
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
   background:#111;
-}
-
-/* GLOW */
-.glowRed { box-shadow:0 0 30px red; }
-.glowBlue { box-shadow:0 0 30px #00eaff; }
-
-/* SHAKE SCANDAL */
-.shake {
-  animation: shake 0.4s linear infinite;
-}
-
-@keyframes shake {
-  0%{transform:translate(0,0)}
-  25%{transform:translate(-5px,5px)}
-  50%{transform:translate(5px,-5px)}
-  75%{transform:translate(-5px,-5px)}
-  100%{transform:translate(0,0)}
-}
-
-/* FLASH */
-.flash {
-  animation: flash 0.6s;
-}
-
-@keyframes flash {
-  0%{filter:brightness(1)}
-  50%{filter:brightness(3)}
-  100%{filter:brightness(1)}
+  padding:20px;
+  border-radius:15px;
 }
