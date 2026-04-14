@@ -11,24 +11,42 @@
 <!-- LOBBY -->
 <div id="lobby">
 
-  <div class="lobbyBox">
-    <h2>🔥 ЛИТВИН GAME</h2>
+  <div class="glassCard">
 
-    <input id="username" placeholder="Ник">
-    <input id="roomCode" placeholder="Комната">
+    <div class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</div>
 
-    <button id="joinBtn">Войти в комнату</button>
+    <input id="username" placeholder="Имя игрока">
+    <input id="roomCode" placeholder="Код комнаты">
 
-    <div id="roomStatus"></div>
+    <div class="sectionTitle">Выбери фишку</div>
+
+    <div class="chips">
+      <div class="chip red" data-color="red"></div>
+      <div class="chip blue" data-color="blue"></div>
+      <div class="chip green" data-color="green"></div>
+      <div class="chip yellow" data-color="yellow"></div>
+    </div>
+
+    <button id="joinBtn">🚪 Войти в комнату</button>
+
+    <div id="roomInfo"></div>
+
+    <button id="startBtn" class="hidden">🚀 Начать игру</button>
+
+    <div class="rules">
+      🎲 Кубик — движение<br>
+      💥 Скандал — потеря хайпа<br>
+      ⚡ Риск — +5 / -5<br>
+      🏆 70 хайпа = победа
+    </div>
+
   </div>
-
 </div>
 
 <!-- GAME -->
 <div id="game" style="display:none">
 
   <div id="playersList"></div>
-
   <div id="hypeBar"></div>
 
   <div id="gameBoard"></div>
