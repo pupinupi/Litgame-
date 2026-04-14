@@ -1,131 +1,64 @@
 body {
   margin:0;
   font-family:Arial;
-  background: radial-gradient(circle,#111,#000);
+  background:black;
   color:white;
 }
 
 /* LOBBY */
-#lobby {
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
 .lobbyBox {
-  width:280px;
+  width:300px;
+  margin:auto;
+  margin-top:100px;
   padding:20px;
-  border-radius:20px;
-
   background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 30px #00eaff;
+  border-radius:20px;
 }
 
-.title {
-  text-align:center;
-  margin-bottom:10px;
-  text-shadow:0 0 10px #00eaff;
-}
-
-/* INPUT */
-input {
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:white;
-}
-
-/* CHIPS */
-.chips {
-  display:flex;
-  justify-content:space-between;
-  margin:10px 0;
-}
-
-.chip {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-}
-
-.chip.selected {
-  box-shadow:0 0 15px white;
-  transform:scale(1.2);
-}
-
-.red{background:red}
-.blue{background:blue}
-.green{background:green}
-.yellow{background:gold}
-
-/* BUTTONS */
-.btn {
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.join {background:#00eaff;}
-.start {background:#00ff88;}
-
-/* RULES */
-.rules {
-  font-size:10px;
-  opacity:0.7;
-  margin-top:10px;
-}
-
-/* GAME */
+/* BOARD */
 #gameBoard {
   width:90vw;
   max-width:600px;
   height:600px;
   margin:auto;
-  background:url("board.jpg") center/cover;
+  background:url("board.jpg");
   position:relative;
   border-radius:20px;
-  box-shadow:0 0 40px #ff8800;
+  box-shadow:0 0 30px orange;
 }
 
-/* PLAYERS */
+/* PLAYER */
 .player {
   position:absolute;
-  width:18px;
-  height:18px;
+  width:20px;
+  height:20px;
   border-radius:50%;
-  box-shadow:0 0 15px currentColor;
 }
 
-/* CONTROLS */
-#controls {
-  text-align:center;
-  margin-top:10px;
+/* SHAKE */
+.shake {
+  animation: shake 0.3s;
 }
 
-/* MODAL */
-.modal {
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,0.7);
+@keyframes shake {
+  0%{transform:translate(0,0)}
+  25%{transform:translate(-5px,5px)}
+  50%{transform:translate(5px,-5px)}
+  75%{transform:translate(-5px,-5px)}
+  100%{transform:translate(0,0)}
 }
 
-.modalBox {
-  background:#111;
-  padding:20px;
-  border-radius:15px;
+/* BAR */
+#hypeBar {
+  width:80%;
+  height:20px;
+  background:#222;
+  margin:10px auto;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+#hypeBar div {
+  height:100%;
+  background:linear-gradient(90deg,#00eaff,#00ff88);
 }
