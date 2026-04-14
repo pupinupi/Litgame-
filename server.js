@@ -28,27 +28,24 @@ io.on('connection', socket => {
       return;
     }
 
-    const player = {
+    room.players.push({
       id: socket.id,
       username,
       color,
       position: 0,
       hype: 0,
       skipNext: false
-    };
+    });
 
-    room.players.push(player);
     socket.join(roomCode);
-
     io.to(roomCode).emit('updatePlayers', room.players);
   });
 
   socket.on('startGame', roomCode => {
     const room = rooms[roomCode];
-    if (!room) return;
+    if (!room || !room.players.length) return;
 
     room.turnIndex = 0;
-
     io.to(roomCode).emit('gameStarted');
     io.to(roomCode).emit('nextTurn', room.players[0].id);
   });
@@ -58,9 +55,7 @@ io.on('connection', socket => {
     if (!room) return;
 
     const player = room.players[room.turnIndex];
-    if (!player) return;
-
-    if (socket.id !== player.id) return;
+    if (!player || player.id !== socket.id) return;
 
     if (player.skipNext) {
       player.skipNext = false;
@@ -89,23 +84,17 @@ io.on('connection', socket => {
     player.skipNext = skipNext;
 
     io.to(roomCode).emit('updatePlayers', room.players);
-
     nextTurn(roomCode);
   });
 
-  function nextTurn(roomCode){
+  function nextTurn(roomCode) {
     const room = rooms[roomCode];
-    if (!room) return;
+    if (!room || !room.players.length) return;
 
     room.turnIndex = (room.turnIndex + 1) % room.players.length;
-
     io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   }
-
 });
 
 const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-  console.log("🚀 Server running on " + PORT);
-});
+server.listen(PORT, () => console.log("🚀 RUN " + PORT));
