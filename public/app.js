@@ -5,7 +5,7 @@ let roomCode, username, color;
 let currentTurnId = null;
 let isAnimating = false;
 
-/* 🎯 ТВОИ КООРДИНАТЫ */
+/* координаты */
 const cells = [
   {x:0.0933,y:0.5733},
   {x:0.0833,y:0.4467},
@@ -73,20 +73,7 @@ document.getElementById('rollBtn').onclick=()=>{
 };
 
 socket.on('diceRolled',({playerId,dice})=>{
-
-  let i=0;
-  const el=document.getElementById('diceResult');
-
-  const anim=setInterval(()=>{
-    el.innerText=Math.floor(Math.random()*6)+1;
-
-    if(++i>10){
-      clearInterval(anim);
-      el.innerText=dice;
-
-      if(playerId===socket.id) move(dice);
-    }
-  },70);
+  if(playerId===socket.id) move(dice);
 });
 
 /* движение */
@@ -100,6 +87,10 @@ function move(steps){
   function step(){
     if(i>=steps){
       isAnimating=false;
+
+      if(me.position===3) return showScandal(me);
+      if(me.position===5) return showRisk(me);
+
       finish(me);
       return;
     }
@@ -108,19 +99,47 @@ function move(steps){
     render();
 
     i++;
-    setTimeout(step,130);
+    setTimeout(step,120);
   }
 
   step();
 }
 
-/* конец хода */
+/* события */
+function showScandal(p){
+  p.hype = Math.max(0, p.hype - 5);
+  document.getElementById('scandalText').innerText="-5 хайпа";
+  document.getElementById('scandalModal').style.display="flex";
+}
+
+function closeScandal(){
+  document.getElementById('scandalModal').style.display="none";
+  finish(players.find(p=>p.id===socket.id));
+}
+
+function showRisk(p){
+  document.getElementById('riskModal').style.display="flex";
+}
+
+function rollRisk(){
+  const me=players.find(p=>p.id===socket.id);
+  const val=Math.random()>0.5?5:-5;
+  me.hype+=val;
+  document.getElementById('riskText').innerText=val;
+}
+
+function closeRisk(){
+  document.getElementById('riskModal').style.display="none";
+  finish(players.find(p=>p.id===socket.id));
+}
+
+/* конец */
 function finish(p){
   socket.emit('playerMoved',{
     roomCode,
     position:p.position,
     hype:p.hype,
-    skipNext:p.skipNext
+    skipNext:false
   });
 }
 
@@ -146,97 +165,12 @@ function render(){
   });
 }
 
-/* хайп */
 function renderHype(){
   const box=document.getElementById('hypeBars');
   box.innerHTML="";
 
   players.forEach(p=>{
-    const percent=(p.hype/70)*100;
-
-    box.innerHTML+=`
-      <div style="margin:5px;">
-        ${p.username}
-        <div style="height:10px;background:#222;">
-          <div style="width:${percent}%;height:100%;background:#00ffcc"></div>
-        </div>
-      </div>
-    `;
+    box.innerHTML+=`${p.username}: ${p.hype}<br>`;
   });
 }
-
-/* 💡 ПОДСКАЗКИ */
-function showHint(text){
-  const el = document.getElementById('hint');
-  el.innerText = text;
-  el.style.display = "block";
-
-  setTimeout(()=> el.style.display="none",2000);
-}
-
-/* 💥 SHAKE */
-function shakeBoard(){
-  const board = document.getElementById('gameBoard');
-  board.classList.add('shake');
-
-  setTimeout(()=>{
-    board.classList.remove('shake');
-  },300);
-}
-
-/* 💥 СКАНДАЛ */
-function showScandal(p){
-  shakeBoard();
-
-  const effects = [
-    {text:"🔥 -3 хайпа", val:-3},
-    {text:"😱 -5 хайпа", val:-5},
-    {text:"🤡 -7 хайпа", val:-7}
-  ];
-
-  const e = effects[Math.floor(Math.random()*effects.length)];
-
-  p.hype = Math.max(0, p.hype + e.val);
-
-  document.getElementById('scandalText').innerText = e.text;
-  document.getElementById('scandalModal').style.display="flex";
-
-  showHint("Скандал! " + e.text);
-}
-
-function closeScandal(){
-  document.getElementById('scandalModal').style.display="none";
-
-  const me = players.find(p=>p.id===socket.id);
-  finish(me);
-}
-
-/* ⚡ РИСК */
-function showRisk(p){
-  shakeBoard();
-
-  document.getElementById('riskModal').style.display="flex";
-  showHint("Риск! Брось кубик");
-}
-
-function rollRisk(){
-  const dice = Math.floor(Math.random()*6)+1;
-
-  const val = dice <= 3 ? -5 : 5;
-
-  const me = players.find(p=>p.id===socket.id);
-
-  me.hype = Math.max(0, me.hype + val);
-
-  document.getElementById('riskText').innerText =
-    `🎲 ${dice} → ${val}`;
-
-  showHint(val > 0 ? "Повезло!" : "Не повезло!");
-}
-
-function closeRisk(){
-  document.getElementById('riskModal').style.display="none";
-
-  const me = players.find(p=>p.id===socket.id);
-  finish(me);
-}
+  
