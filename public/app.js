@@ -2,34 +2,33 @@ const socket = io();
 
 let players = [];
 let roomCode, username, color;
-let currentTurnId = null;
-let isAnimating = false;
+let currentTurnId;
 
-/* координаты */
+/* КООРДИНАТЫ */
 const cells = [
-  {x:0.0933,y:0.5733},
-  {x:0.0833,y:0.4467},
-  {x:0.0883,y:0.3433},
-  {x:0.0983,y:0.23},
-  {x:0.085,y:0.1233},
-  {x:0.2167,y:0.0883},
-  {x:0.3483,y:0.0983},
-  {x:0.495,y:0.1017},
-  {x:0.6217,y:0.1033},
-  {x:0.785,y:0.1},
-  {x:0.9067,y:0.1317},
-  {x:0.905,y:0.2533},
-  {x:0.9067,y:0.3517},
-  {x:0.9067,y:0.465},
-  {x:0.8883,y:0.5867},
-  {x:0.7717,y:0.62},
-  {x:0.6383,y:0.6067},
-  {x:0.505,y:0.605},
-  {x:0.3533,y:0.5917},
-  {x:0.2233,y:0.605}
+  {x:0.09,y:0.57,type:'start'},
+  {x:0.08,y:0.44,type:'plus',v:3},
+  {x:0.08,y:0.33,type:'plus',v:2},
+  {x:0.09,y:0.22,type:'scandal'},
+  {x:0.08,y:0.12,type:'risk'},
+  {x:0.20,y:0.09,type:'plus',v:2},
+  {x:0.32,y:0.08,type:'scandal'},
+  {x:0.49,y:0.09,type:'plus',v:3},
+  {x:0.62,y:0.09,type:'plus',v:5},
+  {x:0.77,y:0.09,type:'minus',v:8},
+  {x:0.89,y:0.12,type:'skip'},
+  {x:0.90,y:0.24,type:'plus',v:3},
+  {x:0.90,y:0.34,type:'risk'},
+  {x:0.90,y:0.45,type:'plus',v:3},
+  {x:0.88,y:0.55,type:'skip'},
+  {x:0.77,y:0.58,type:'plus',v:2},
+  {x:0.63,y:0.59,type:'scandal'},
+  {x:0.49,y:0.58,type:'plus',v:8},
+  {x:0.35,y:0.58,type:'minus',v:10},
+  {x:0.21,y:0.58,type:'plus',v:4}
 ];
 
-/* выбор цвета */
+/* выбор */
 document.querySelectorAll('.chip').forEach(c=>{
   c.onclick=()=>{
     document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));
@@ -39,20 +38,20 @@ document.querySelectorAll('.chip').forEach(c=>{
 });
 
 /* вход */
-document.getElementById('joinBtn').onclick=()=>{
-  username=document.getElementById('username').value;
-  roomCode=document.getElementById('roomCode').value;
+joinBtn.onclick=()=>{
+  username=username.value;
+  roomCode=roomCode.value;
   socket.emit('joinRoom',{username,roomCode,color});
 };
 
 /* старт */
-document.getElementById('startBtn').onclick=()=>{
+startBtn.onclick=()=>{
   socket.emit('startGame',roomCode);
 };
 
 socket.on('gameStarted',()=>{
-  document.getElementById('lobby').style.display='none';
-  document.getElementById('game').style.display='block';
+  lobby.style.display="none";
+  game.style.display="block";
 });
 
 socket.on('updatePlayers',p=>{
@@ -66,31 +65,25 @@ socket.on('nextTurn',id=>{
 });
 
 /* кубик */
-document.getElementById('rollBtn').onclick=()=>{
-  if(currentTurnId!==socket.id || isAnimating) return;
+rollBtn.onclick=()=>{
+  if(currentTurnId!==socket.id) return;
   socket.emit('rollDice',roomCode);
 };
 
 socket.on('diceRolled',({playerId,dice})=>{
+  diceText.innerText = `Выпало ${dice}`;
+
   if(playerId===socket.id) move(dice);
 });
 
-/* движение (медленнее) */
+/* движение */
 function move(steps){
   const me=players.find(p=>p.id===socket.id);
-  if(!me) return;
-
-  isAnimating=true;
   let i=0;
 
   function step(){
     if(i>=steps){
-      isAnimating=false;
-
-      if(me.position===3) return showScandal(me);
-      if(me.position===5) return showRisk(me);
-
-      finish(me);
+      handleCell(me);
       return;
     }
 
@@ -98,79 +91,90 @@ function move(steps){
     render();
 
     i++;
-    setTimeout(step,220); // МЕДЛЕННЕЕ
+    setTimeout(step,200);
   }
 
   step();
 }
 
-/* 💥 СКАНДАЛ (ТВОИ КАРТОЧКИ) */
-function showScandal(p){
+/* ЛОГИКА */
+function handleCell(p){
+  const c=cells[p.position];
 
-  const list = [
-    {text:"🔥 -1", val:-1},
-    {text:"🫣 -2", val:-2},
-    {text:"😱 -3", val:-3},
-    {text:"#️⃣ всем -3", val:-3, all:true},
-    {text:"😮 -4", val:-4},
-    {text:"🤫 -5", val:-5},
-    {text:"🙄 -5 + пропуск", val:-5}
+  if(c.type==='plus') p.hype+=c.v;
+  if(c.type==='minus') p.hype=Math.max(0,p.hype-c.v);
+
+  if(c.type==='skip') p.skip=true;
+
+  if(c.type==='scandal') return showScandal(p);
+  if(c.type==='risk') return showRisk(p);
+
+  finish(p);
+}
+
+/* СКАНДАЛ */
+function showScandal(p){
+  const list=[
+    {t:"🔥 -1",v:-1},
+    {t:"🫣 -2",v:-2},
+    {t:"😱 -3",v:-3},
+    {t:"#️⃣ всем -3",v:-3,all:true},
+    {t:"😮 -4",v:-4},
+    {t:"🤫 -5",v:-5},
+    {t:"🙄 -5 + пропуск",v:-5,skip:true}
   ];
 
-  const e = list[Math.floor(Math.random()*list.length)];
+  const e=list[Math.floor(Math.random()*list.length)];
 
   if(e.all){
-    players.forEach(pl=>{
-      pl.hype = Math.max(0, pl.hype + e.val);
-    });
+    players.forEach(pl=>pl.hype=Math.max(0,pl.hype+e.v));
   } else {
-    p.hype = Math.max(0, p.hype + e.val);
+    p.hype=Math.max(0,p.hype+e.v);
   }
 
-  document.getElementById('scandalText').innerText = e.text;
-  document.getElementById('scandalModal').style.display="flex";
+  if(e.skip) p.skip=true;
+
+  scandalText.innerText=e.t;
+  scandalModal.style.display="flex";
 }
 
 function closeScandal(){
-  document.getElementById('scandalModal').style.display="none";
+  scandalModal.style.display="none";
   finish(players.find(p=>p.id===socket.id));
 }
 
-/* ⚡ РИСК */
+/* РИСК */
 function showRisk(){
-  document.getElementById('riskModal').style.display="flex";
+  riskModal.style.display="flex";
 }
 
 function rollRisk(){
   const me=players.find(p=>p.id===socket.id);
+  const d=Math.floor(Math.random()*6)+1;
+  const val=d<=3?-5:5;
 
-  const dice=Math.floor(Math.random()*6)+1;
-  const val=dice<=3?-5:5;
+  me.hype=Math.max(0,me.hype+val);
 
-  me.hype = Math.max(0, me.hype + val);
-
-  document.getElementById('riskText').innerText =
-    `🎲 ${dice} → ${val}`;
+  riskResult.innerText=`🎲 ${d} → ${val}`;
 }
 
 function closeRisk(){
-  document.getElementById('riskModal').style.display="none";
+  riskModal.style.display="none";
   finish(players.find(p=>p.id===socket.id));
 }
 
 /* конец */
 function finish(p){
-  socket.emit('playerMoved',{
-    roomCode,
-    position:p.position,
-    hype:p.hype,
-    skipNext:false
-  });
+  if(p.hype>=70){
+    alert("🏆 Победа: "+p.username);
+  }
+
+  socket.emit('updatePlayer',{roomCode,player:p});
 }
 
 /* рендер */
 function render(){
-  const board=document.getElementById('gameBoard');
+  const board=gameBoard;
 
   players.forEach(p=>{
     let el=document.getElementById(p.id);
@@ -190,20 +194,16 @@ function render(){
   });
 }
 
-/* 📊 ХАЙП */
 function renderHype(){
-  const box=document.getElementById('hypeBars');
-  box.innerHTML="";
+  hypeBars.innerHTML="";
 
   players.forEach(p=>{
-    const percent = Math.min(p.hype,70)/70*100;
+    const percent=Math.min(p.hype,70)/70*100;
 
-    box.innerHTML += `
-      <div class="hypeItem">
-        <div>${p.username} (${p.hype})</div>
-        <div class="hypeBar">
-          <div class="hypeFill" style="width:${percent}%"></div>
-        </div>
+    hypeBars.innerHTML+=`
+      <div>${p.username} (${p.hype})</div>
+      <div class="hypeBar">
+        <div class="fill" style="width:${percent}%"></div>
       </div>
     `;
   });
