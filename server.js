@@ -17,15 +17,19 @@ io.on('connection', socket => {
     if (!rooms[roomCode]) {
       rooms[roomCode] = {
         players: [],
-        hostId: socket.id,
         turnIndex: 0
       };
     }
 
     const room = rooms[roomCode];
 
+    if (room.players.length >= 4) {
+      socket.emit('errorMsg', 'Комната заполнена');
+      return;
+    }
+
     if (room.players.find(p => p.color === color)) {
-      socket.emit('joinError', 'Цвет занят');
+      socket.emit('errorMsg', 'Цвет занят');
       return;
     }
 
@@ -35,16 +39,11 @@ io.on('connection', socket => {
       color,
       position: 0,
       hype: 0,
-      skipNext: false
+      skip: false
     };
 
     room.players.push(player);
     socket.join(roomCode);
-
-    socket.emit('joinedRoom', {
-      roomCode,
-      hostId: room.hostId
-    });
 
     io.to(roomCode).emit('updatePlayers', room.players);
   });
@@ -53,10 +52,10 @@ io.on('connection', socket => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    if (socket.id !== room.hostId) return;
+    room.turnIndex = Math.floor(Math.random() * room.players.length);
 
     io.to(roomCode).emit('gameStarted');
-    io.to(roomCode).emit('nextTurn', room.players[0].id);
+    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   });
 
   socket.on('rollDice', roomCode => {
@@ -64,7 +63,14 @@ io.on('connection', socket => {
     if (!room) return;
 
     const player = room.players[room.turnIndex];
-    if (!player || player.id !== socket.id) return;
+
+    if (player.id !== socket.id) return;
+
+    if (player.skip) {
+      player.skip = false;
+      nextTurn(roomCode);
+      return;
+    }
 
     const dice = Math.floor(Math.random() * 6) + 1;
 
@@ -74,22 +80,24 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('playerMoved', ({ roomCode, position, hype, skipNext }) => {
+  socket.on('updatePlayer', ({ roomCode, player }) => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    const p = room.players.find(x => x.id === socket.id);
-    if (!p) return;
-
-    p.position = position;
-    p.hype = hype;
-    p.skipNext = skipNext;
-
-    room.turnIndex = (room.turnIndex + 1) % room.players.length;
+    const p = room.players.find(x => x.id === player.id);
+    Object.assign(p, player);
 
     io.to(roomCode).emit('updatePlayers', room.players);
-    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
+
+    nextTurn(roomCode);
   });
+
+  function nextTurn(roomCode){
+    const room = rooms[roomCode];
+    room.turnIndex = (room.turnIndex + 1) % room.players.length;
+
+    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
+  }
 
 });
 
