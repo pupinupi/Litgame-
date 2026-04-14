@@ -133,3 +133,33 @@ button {
 .hidden {
   display:none;
 }
+
+#coordPanel {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 90%;
+  max-width: 400px;
+
+  background: rgba(0,0,0,0.8);
+  border-radius: 15px;
+  padding: 10px;
+
+  z-index: 9999;
+}
+
+#coordsOutput {
+  font-size: 10px;
+  max-height: 120px;
+  overflow: auto;
+  margin-bottom: 5px;
+  color: #00eaff;
+}
+
+#coordPanel button {
+  width: 48%;
+  margin: 2px 1%;
+  padding: 8px;
+}
