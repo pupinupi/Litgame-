@@ -1,49 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Литвин Game</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<!-- ВНУТРИ #game ДОБАВЬ -->
 
-<body>
-
-<div id="lobby">
-  <div class="card">
-
-    <h2>🔥 ЛИТВИН: ХАЙП</h2>
-
-    <input id="username" placeholder="Имя">
-    <input id="roomCode" placeholder="Комната">
-
-    <div class="chips">
-      <div class="chip red" data-color="red"></div>
-      <div class="chip blue" data-color="blue"></div>
-      <div class="chip green" data-color="green"></div>
-      <div class="chip yellow" data-color="yellow"></div>
-    </div>
-
-    <button id="joinBtn">Войти</button>
-    <button id="startBtn">Старт</button>
-
-    <div id="playersList"></div>
-
+<div id="scandalModal" class="modal">
+  <div class="modalBox">
+    <h2>💥 СКАНДАЛ</h2>
+    <p id="scandalText"></p>
+    <button onclick="closeScandal()">OK</button>
   </div>
 </div>
 
-<div id="game" style="display:none">
-
-  <div id="hypeBars"></div>
-
-  <div id="gameBoard"></div>
-
-  <button id="rollBtn">🎲</button>
-  <div id="diceResult"></div>
-
+<div id="riskModal" class="modal">
+  <div class="modalBox">
+    <h2>⚡ РИСК</h2>
+    <p id="riskText"></p>
+    <button onclick="rollRisk()">🎲</button>
+    <button onclick="closeRisk()">OK</button>
+  </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="app.js"></script>
-
-</body>
-</html>
+<div id="hint"></div>
