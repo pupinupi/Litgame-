@@ -291,10 +291,8 @@ function closeRisk(){
 // =========================
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
-  const rect = board.getBoundingClientRect();
 
   players.forEach((p,i)=>{
-
     let el = document.getElementById(p.id);
 
     if(!el){
@@ -304,19 +302,11 @@ function renderPlayers(){
       board.appendChild(el);
     }
 
-    el.className = `player ${p.color}`;
-
-    if (p.id === currentTurnId){
-      el.classList.add("activePlayer");
-    }
-
     const c = cells[p.position];
 
-    const angle = (i / players.length) * Math.PI * 2;
-    const offset = 12;
-
-    el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
-    el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
+    // 💡 ВАЖНО: используем % вместо пикселей
+    el.style.left = (c.x * 100) + '%';
+    el.style.top  = (c.y * 100) + '%';
   });
 }
 
