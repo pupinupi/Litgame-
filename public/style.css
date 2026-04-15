@@ -70,3 +70,19 @@ input{width:100%;margin:5px 0;padding:10px;}
   padding:20px;
   border-radius:15px;
 }
+
+#rollBtn{
+  display:block;
+  margin:15px auto;
+  padding:14px 25px;
+  font-size:18px;
+  border-radius:15px;
+}
+
+.player{
+  width:18px;
+  height:18px;
+  position:absolute;
+  border-radius:50%;
+  box-shadow:0 0 10px white;
+}
