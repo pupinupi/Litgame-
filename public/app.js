@@ -5,139 +5,159 @@ let currentTurnId = null;
 
 let username, roomCode, color;
 
-// координаты (твои)
-const cells = [
-  {x:0.0933,y:0.5733},
-  {x:0.0833,y:0.4467},
-  {x:0.0883,y:0.3433},
-  {x:0.0983,y:0.23},
-  {x:0.085,y:0.1233},
-  {x:0.2167,y:0.0883},
-  {x:0.3483,y:0.0983},
-  {x:0.495,y:0.1017},
-  {x:0.6217,y:0.1033},
-  {x:0.785,y:0.1},
-  {x:0.9067,y:0.1317},
-  {x:0.905,y:0.2533},
-  {x:0.9067,y:0.3517},
-  {x:0.9067,y:0.465},
-  {x:0.8883,y:0.5867},
-  {x:0.7717,y:0.62},
-  {x:0.6383,y:0.6067},
-  {x:0.505,y:0.605},
-  {x:0.3533,y:0.5917},
-  {x:0.2233,y:0.605}
-];
+let isAnimating = false;
+let gameOver = false;
 
-// выбор цвета
-document.querySelectorAll('.chip').forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
-    btn.classList.add('selected');
-    color = btn.dataset.color;
-  };
-});
+let currentRisk = null;
+let currentScandal = null;
 
-// вход
-document.getElementById('joinBtn').onclick = ()=>{
-  username = document.getElementById('username').value;
-  roomCode = document.getElementById('roomCode').value;
+// 🔊 ЗВУКИ
+const diceSound = new Audio("dice.mp3");
+const scandalSound = new Audio("scandal.mp3");
 
-  socket.emit('joinRoom',{username,roomCode,color});
-};
+diceSound.volume = 0.5;
+scandalSound.volume = 0.6;
 
-// старт
-document.getElementById('startBtn').onclick = ()=>{
-  socket.emit('startGame',roomCode);
-};
+// =========================
+// 🔥 УНИВЕРСАЛЬНЫЕ МОДАЛКИ
+// =========================
+function openModal(id){
+  const el = document.getElementById(id);
+  el.style.display = "flex";
+}
 
-// кубик
-document.getElementById('rollBtn').onclick = ()=>{
-  if(currentTurnId !== socket.id) return;
-  socket.emit('rollDice',roomCode);
-};
+function closeModal(id){
+  document.getElementById(id).style.display = "none";
+}
 
-// socket
-socket.on('updatePlayers',pl=>{
-  players = pl;
-  renderPlayers();
-  renderHype();
-});
+// =========================
+// ЗАПУСК
+// =========================
+window.onload = () => {
 
-socket.on('gameStarted',()=>{
-  document.getElementById('lobby').style.display='none';
-  document.getElementById('game').style.display='block';
-});
+  document.body.addEventListener('click', () => {
+    diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
+  }, { once: true });
 
-socket.on('nextTurn',id=>{
-  currentTurnId = id;
-});
+  document.querySelectorAll('.chip').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      color = btn.dataset.color;
+    };
+  });
 
-socket.on('diceRolled',({playerId,dice})=>{
-  document.getElementById('diceResult').innerText = "🎲 " + dice;
+  document.getElementById('joinBtn').onclick = () => {
+    username = document.getElementById('username').value.trim();
+    roomCode = document.getElementById('roomCode').value.trim();
 
-  if(playerId === socket.id){
-    movePlayer(dice);
-  }
-});
-
-// движение
-function movePlayer(steps){
-  const me = players.find(p=>p.id===socket.id);
-  let i = 0;
-
-  function step(){
-    if(i >= steps){
-      finishTurn(me);
+    if (!username || !roomCode || !color) {
+      alert("Заполни всё");
       return;
     }
 
-    me.position = (me.position + 1) % cells.length;
-    renderPlayers();
+    socket.emit('joinRoom', { username, roomCode, color });
+  };
 
+  document.getElementById('startBtn').onclick = () => {
+    socket.emit('startGame', roomCode);
+  };
+
+  document.getElementById('rollBtn').onclick = () => {
+    if (gameOver || isAnimating) return;
+    if (currentTurnId !== socket.id) return;
+
+    socket.emit('rollDice', roomCode);
+  };
+};
+
+// =========================
+// SOCKET
+// =========================
+socket.on('updatePlayers', pl => {
+  players = pl;
+
+  players.forEach(p => {
+    if (p.position === undefined) p.position = 0;
+  });
+
+  renderPlayers();
+  renderHypeBars();
+  renderLobbyPlayers();
+});
+
+socket.on('gameStarted', () => {
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+});
+
+socket.on('nextTurn', id => {
+  currentTurnId = id;
+  document.getElementById('rollBtn').disabled =
+    id !== socket.id || gameOver;
+
+  renderPlayers();
+});
+
+// =========================
+// 🎲 КУБИК
+// =========================
+socket.on('diceRolled', ({ playerId, dice }) => {
+
+  diceSound.currentTime = 0;
+  diceSound.play();
+
+  const el = document.getElementById('diceResult');
+
+  let i = 0;
+
+  const anim = setInterval(() => {
+    el.innerText = "🎲 " + (Math.floor(Math.random() * 6) + 1);
     i++;
-    setTimeout(step,200);
-  }
+    if (i > 10) {
+      clearInterval(anim);
+      el.innerText = "🎲 " + dice;
 
-  step();
-}
-
-// конец хода
-function finishTurn(p){
-  socket.emit('playerMoved',{
-    roomCode,
-    position:p.position,
-    hype:p.hype,
-    skipNext:p.skipNext
-  });
-}
-
-// рендер
-function renderPlayers(){
-  const board = document.getElementById('gameBoard');
-
-  players.forEach(p=>{
-    let el = document.getElementById(p.id);
-
-    if(!el){
-      el = document.createElement('div');
-      el.className = 'player';
-      el.id = p.id;
-      board.appendChild(el);
+      if (playerId === socket.id) movePlayer(dice);
     }
+  }, 80);
+});
 
-    const c = cells[p.position];
+// =========================
+// КООРДИНАТЫ
+// =========================
+const cells = [
+  { x:0.1057,y:0.5857,type:'start'},
+  { x:0.1071,y:0.4557,type:'plus',value:3},
+  { x:0.1029,y:0.3486,type:'plus',value:2},
+  { x:0.1057,y:0.2357,type:'scandal'},
+  { x:0.1014,y:0.13,type:'risk'},
+  { x:0.2214,y:0.0843,type:'plus',value:2},
+  { x:0.3471,y:0.09,type:'scandal'},
+  { x:0.5043,y:0.0886,type:'plus',value:3},
+  { x:0.6514,y:0.0857,type:'plus',value:5},
+  { x:0.77,y:0.1,type:'minus',value:10},
+  { x:0.9157,y:0.1129,type:'minusSkip',value:8},
+  { x:0.9043,y:0.2471,type:'plus',value:3},
+  { x:0.91,y:0.3429,type:'risk'},
+  { x:0.9029,y:0.4486,type:'plus',value:3},
+  { x:0.89,y:0.5786,type:'skip'},
+  { x:0.7886,y:0.6,type:'plus',value:2},
+  { x:0.6329,y:0.6014,type:'scandal'},
+  { x:0.4929,y:0.6014,type:'plus',value:8},
+  { x:0.3571,y:0.6,type:'minus',value:10},
+  { x:0.2143,y:0.6014,type:'plus',value:4}
+];
 
-    el.style.left = (c.x * 100) + '%';
-    el.style.top = (c.y * 100) + '%';
-    el.style.background = p.color;
-  });
-}
+// =========================
+// ДВИЖЕНИЕ
+// =========================
+function movePlayer(steps){
+  const me = players.find(p => p.id === socket.id);
+  if (!me) return;
 
-// хайп
-function renderHype(){
-  const box = document.getElementById('hypeBars');
-  box.innerHTML = players.map(p =>
-    `<div>${p.username}: ${p.hype}</div>`
-  ).join('');
-}
+  isAnimating = true;
+  let i = 0;
+
+  function step(){
+    if (i >= steps){
