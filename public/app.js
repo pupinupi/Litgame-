@@ -322,7 +322,6 @@ function closeRisk(){
 // =========================
 function renderPlayers(){
   const board = document.getElementById('gameBoard');
-  const rect = board.getBoundingClientRect();
 
   players.forEach((p,i)=>{
 
@@ -335,22 +334,26 @@ function renderPlayers(){
       board.appendChild(el);
     }
 
+    // цвет + сброс классов
     el.className = `player ${p.color}`;
 
+    // активный игрок
     if (p.id === currentTurnId){
       el.classList.add("activePlayer");
     }
 
     const c = cells[p.position];
 
-    const angle = (i / players.length) * Math.PI * 2;
-    const offset = 12;
+    // 🔥 правильное раздвижение фишек
+    const spread = 0.015; // расстояние между фишками
 
-    el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
-    el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
+    const dx = Math.cos(i * 2 * Math.PI / players.length) * spread;
+    const dy = Math.sin(i * 2 * Math.PI / players.length) * spread;
+
+    el.style.left = ( (c.x + dx) * 100 ) + '%';
+    el.style.top  = ( (c.y + dy) * 100 ) + '%';
   });
 }
-
 function renderHypeBars(){
   const box = document.getElementById('hypeBars');
   box.innerHTML = '';
