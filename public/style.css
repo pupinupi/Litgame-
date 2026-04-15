@@ -225,3 +225,145 @@ body::before {
   75% { transform: translate(-5px, 5px); }
   100% { transform: translate(0); }
 }
+
+/* ===== ЗАГОЛОВОК ===== */
+.title {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 20px;
+
+  background: linear-gradient(90deg,#00cfff,#ff00cc,#ff8800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 0 20px #00cfff,
+    0 0 40px #ff00cc;
+}
+
+/* ===== ЛОББИ ===== */
+.glassLobby {
+  width: 90%;
+  max-width: 800px;
+  margin: auto;
+
+  display: flex;
+  gap: 20px;
+
+  padding: 20px;
+  border-radius: 25px;
+
+  background: rgba(20,20,20,0.6);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  box-shadow:
+    0 0 40px rgba(0,255,255,0.2),
+    inset 0 0 20px rgba(255,255,255,0.05);
+}
+
+/* ===== КОЛОНКИ ===== */
+.leftPanel, .rightPanel {
+  flex: 1;
+}
+
+/* ===== INPUT ===== */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+
+  border-radius: 12px;
+  border: none;
+
+  background: #111;
+  color: white;
+
+  box-shadow: inset 0 0 10px rgba(0,255,255,0.2);
+}
+
+/* ===== ФИШКИ ===== */
+.chips {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
+}
+
+.chip {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.chip.selected {
+  transform: scale(1.3);
+  box-shadow:
+    0 0 10px white,
+    0 0 25px currentColor;
+}
+
+/* ЦВЕТА */
+.red { background: red; }
+.blue { background: #00cfff; }
+.green { background: #00ff88; }
+.yellow { background: #ffdd33; }
+
+/* ===== КНОПКИ ===== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+
+  border-radius: 15px;
+  border: none;
+
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.join {
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  box-shadow: 0 0 15px #00cfff;
+}
+
+.start {
+  background: linear-gradient(90deg,#00ff88,#00cc66);
+  color: black;
+  box-shadow: 0 0 15px #00ff88;
+}
+
+/* ===== СПИСОК ИГРОКОВ ===== */
+.playersList {
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
+  border-radius: 15px;
+
+  min-height: 100px;
+
+  box-shadow:
+    inset 0 0 10px rgba(0,255,255,0.2);
+}
+
+.playersList div {
+  margin: 6px 0;
+  font-weight: bold;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* ===== ПРАВИЛА ===== */
+.rules {
+  margin-top: 15px;
+  padding: 10px;
+
+  border-radius: 15px;
+
+  background: rgba(0,0,0,0.4);
+
+  box-shadow:
+    inset 0 0 10px rgba(255,150,0,0.2);
+}
