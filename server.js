@@ -72,14 +72,17 @@ io.on('connection', socket => {
   });
 
   socket.on('startGame', roomCode => {
-    const room = rooms[roomCode];
-    if (!room) return;
+  const room = rooms[roomCode];
+  if (!room) return;
 
-    room.turnIndex = 0;
+  // ❌ не хост — нельзя стартовать
+  if (socket.id !== room.hostId) return;
 
-    io.to(roomCode).emit('gameStarted');
-    io.to(roomCode).emit('nextTurn', room.players[0].id);
-  });
+  room.turnIndex = 0;
+
+  io.to(roomCode).emit('gameStarted');
+  io.to(roomCode).emit('nextTurn', room.players[0].id);
+});
 
   socket.on('rollDice', roomCode => {
     const room = rooms[roomCode];
