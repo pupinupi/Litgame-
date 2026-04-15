@@ -17,9 +17,37 @@ const rooms = {};
 io.on('connection', socket => {
 
   socket.on('joinRoom', ({ username, roomCode, color }) => {
-    if (!rooms[roomCode]) {
-      rooms[roomCode] = { players: [], turnIndex: 0 };
-    }
+  if (!rooms[roomCode]) {
+    rooms[roomCode] = {
+      players: [],
+      turnIndex: 0,
+      hostId: socket.id // ← первый игрок = хост
+    };
+  }
+
+  const room = rooms[roomCode];
+
+  if (room.players.find(p => p.color === color)) {
+    socket.emit('colorTaken');
+    return;
+  }
+
+  const player = {
+    id: socket.id,
+    username,
+    color,
+    position: 0,
+    hype: 0,
+    skipNext: false
+  };
+
+  room.players.push(player);
+  socket.join(roomCode);
+
+  // 🔥 отправляем всем кто хост
+  io.to(roomCode).emit('updatePlayers', room.players);
+  io.to(roomCode).emit('setHost', room.hostId);
+});
 
     const room = rooms[roomCode];
 
