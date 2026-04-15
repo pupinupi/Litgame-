@@ -10,47 +10,51 @@
 <body>
 
 <!-- ================= ЛОББИ ================= -->
+<!-- ===== ЛОББИ ===== -->
 <div id="lobby">
 
   <h1 class="title">🔥 ЛИТВИН: ПУТЬ К ХАЙПУ</h1>
 
-  <div class="lobbyBox">
+  <div class="glassLobby">
 
-    <input id="username" placeholder="Введите имя">
-    <input id="roomCode" placeholder="Код комнаты">
+    <!-- ЛЕВАЯ ЧАСТЬ -->
+    <div class="leftPanel">
 
-    <div class="chips">
-      <button class="chip" data-color="red">🔴</button>
-      <button class="chip" data-color="blue">🔵</button>
-      <button class="chip" data-color="green">🟢</button>
-      <button class="chip" data-color="yellow">🟡</button>
+      <input id="username" placeholder="Имя">
+      <input id="roomCode" placeholder="Код комнаты">
+
+      <div class="chips">
+        <div class="chip red" data-color="red"></div>
+        <div class="chip blue" data-color="blue"></div>
+        <div class="chip green" data-color="green"></div>
+        <div class="chip yellow" data-color="yellow"></div>
+      </div>
+
+      <button id="joinBtn" class="btn join">🚪 Войти</button>
+      <button id="startBtn" class="btn start">🚀 Начать игру</button>
+
     </div>
 
-    <button id="joinBtn" class="mainBtn">🚪 Войти</button>
-    <button id="startBtn" class="mainBtn start">🚀 Начать игру</button>
+    <!-- ПРАВАЯ ЧАСТЬ -->
+    <div class="rightPanel">
 
-  </div>
+      <h2>👥 Игроки</h2>
+      <div id="playersList" class="playersList"></div>
 
-  <!-- 📜 ПРАВИЛА -->
-  <div class="rulesBox">
-    <h2>📜 Правила игры</h2>
+      <div class="rules">
+        <h3>📜 Правила</h3>
+        <p>🎯 Цель: 70 хайпа</p>
+        <p>🎲 Бросай кубик</p>
+        <p>💥 Скандал = минус</p>
+        <p>⚡ Риск = ±5</p>
+        <p>⛔ Пропуск хода</p>
+      </div>
 
-    <p><b>Цель:</b> первым набрать <span class="highlight">70 хайпа</span></p>
+    </div>
 
-    <p>🎲 Бросай кубик и двигайся</p>
-    <p>➕ Бонусы дают хайп</p>
-    <p>💥 Скандал — потеря хайпа</p>
-    <p>⚡ Риск — шанс +5 или −5</p>
-    <p>🚫 Суд — пропуск хода</p>
-
-    <p>🔁 За круг: +7</p>
-    <p>🚀 Старт: +10</p>
-
-    <p class="winRule">🏆 Побеждает первый с 70 хайпа</p>
   </div>
 
 </div>
-
 <!-- ================= ИГРА ================= -->
 <div id="game" style="display:none;">
 
