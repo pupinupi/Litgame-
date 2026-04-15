@@ -433,3 +433,65 @@ input {
   from { transform: scale(0.8); opacity:0; }
   to { transform: scale(1); opacity:1; }
 }
+
+#winScreen{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+
+  display:none;
+  justify-content:center;
+  align-items:center;
+
+  background: rgba(0,0,0,0.85);
+  z-index:9999;
+}
+
+.winCard{
+  padding:40px;
+  border-radius:25px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+
+  border:1px solid rgba(255,255,255,0.2);
+
+  text-align:center;
+
+  box-shadow:
+    0 0 40px #00cfff,
+    0 0 80px #00cfff;
+
+  animation: winPop 0.4s ease;
+}
+
+.winCard h1{
+  font-size:32px;
+  margin-bottom:20px;
+
+  background: linear-gradient(90deg,#00cfff,#00ffcc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.winCard button{
+  padding:15px 25px;
+  font-size:18px;
+  border:none;
+  border-radius:15px;
+
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  color:white;
+
+  box-shadow:
+    0 0 20px #00cfff;
+
+  cursor:pointer;
+}
+
+@keyframes winPop{
+  from{transform:scale(0.7);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
