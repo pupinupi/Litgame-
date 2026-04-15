@@ -64,11 +64,14 @@ window.onload = () => {
   };
 
   document.getElementById('rollBtn').onclick = () => {
-    if (gameOver || isAnimating) return;
-    if (currentTurnId !== socket.id) return;
+  if (gameOver || isAnimating) return;
+  if (currentTurnId !== socket.id) return;
 
-    socket.emit('rollDice', roomCode);
-  };
+  // 🔥 блокируем кнопку сразу
+  document.getElementById('rollBtn').disabled = true;
+
+  socket.emit('rollDice', roomCode);
+};
 };
 
 // =========================
@@ -159,12 +162,14 @@ function movePlayer(steps){
   isAnimating = true;
   let i = 0;
 
-  function step(){
-    if (i >= steps){
-      isAnimating = false;
-      handleCell(me);
-      return;
-    }
+  if (i >= steps){
+  setTimeout(() => {
+    isAnimating = false;
+    handleCell(me);
+  }, 200); // маленькая пауза → плавность
+
+  return;
+}
 
     const prev = me.position;
     me.position = (me.position + 1) % cells.length;
