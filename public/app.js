@@ -19,11 +19,10 @@ diceSound.volume = 0.5;
 scandalSound.volume = 0.6;
 
 // =========================
-// 🔥 УНИВЕРСАЛЬНЫЕ МОДАЛКИ
+// МОДАЛКИ
 // =========================
 function openModal(id){
-  const el = document.getElementById(id);
-  el.style.display = "flex";
+  document.getElementById(id).style.display = "flex";
 }
 
 function closeModal(id){
@@ -31,7 +30,7 @@ function closeModal(id){
 }
 
 // =========================
-// ЗАПУСК
+// СТАРТ
 // =========================
 window.onload = () => {
 
@@ -39,6 +38,7 @@ window.onload = () => {
     diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
   }, { once: true });
 
+  // выбор фишки
   document.querySelectorAll('.chip').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
@@ -47,6 +47,7 @@ window.onload = () => {
     };
   });
 
+  // вход
   document.getElementById('joinBtn').onclick = () => {
     username = document.getElementById('username').value.trim();
     roomCode = document.getElementById('roomCode').value.trim();
@@ -59,19 +60,25 @@ window.onload = () => {
     socket.emit('joinRoom', { username, roomCode, color });
   };
 
+  // старт
   document.getElementById('startBtn').onclick = () => {
+    if (!roomCode) {
+      alert("Сначала войди в комнату");
+      return;
+    }
+
     socket.emit('startGame', roomCode);
   };
 
+  // кубик
   document.getElementById('rollBtn').onclick = () => {
-  if (gameOver || isAnimating) return;
-  if (currentTurnId !== socket.id) return;
+    if (gameOver || isAnimating) return;
+    if (currentTurnId !== socket.id) return;
 
-  // 🔥 блокируем кнопку сразу
-  document.getElementById('rollBtn').disabled = true;
+    document.getElementById('rollBtn').disabled = true;
 
-  socket.emit('rollDice', roomCode);
-};
+    socket.emit('rollDice', roomCode);
+  };
 };
 
 // =========================
@@ -82,6 +89,7 @@ socket.on('updatePlayers', pl => {
 
   players.forEach(p => {
     if (p.position === undefined) p.position = 0;
+    if (p.hype === undefined) p.hype = 0;
   });
 
   renderPlayers();
@@ -96,8 +104,9 @@ socket.on('gameStarted', () => {
 
 socket.on('nextTurn', id => {
   currentTurnId = id;
-  document.getElementById('rollBtn').disabled =
-    id !== socket.id || gameOver;
+
+  const btn = document.getElementById('rollBtn');
+  btn.disabled = (id !== socket.id || gameOver);
 
   renderPlayers();
 });
@@ -117,11 +126,14 @@ socket.on('diceRolled', ({ playerId, dice }) => {
   const anim = setInterval(() => {
     el.innerText = "🎲 " + (Math.floor(Math.random() * 6) + 1);
     i++;
+
     if (i > 10) {
       clearInterval(anim);
       el.innerText = "🎲 " + dice;
 
-      if (playerId === socket.id) movePlayer(dice);
+      if (playerId === socket.id) {
+        movePlayer(dice);
+      }
     }
   }, 80);
 });
@@ -153,7 +165,7 @@ const cells = [
 ];
 
 // =========================
-// ДВИЖЕНИЕ
+// ДВИЖЕНИЕ (ФИКС)
 // =========================
 function movePlayer(steps){
   const me = players.find(p => p.id === socket.id);
@@ -162,14 +174,14 @@ function movePlayer(steps){
   isAnimating = true;
   let i = 0;
 
-  if (i >= steps){
-  setTimeout(() => {
-    isAnimating = false;
-    handleCell(me);
-  }, 200); // маленькая пауза → плавность
+  function step(){
 
-  return;
-}
+    if (i >= steps){
+      isAnimating = false;
+
+      setTimeout(() => handleCell(me), 200);
+      return;
+    }
 
     const prev = me.position;
     me.position = (me.position + 1) % cells.length;
@@ -179,6 +191,7 @@ function movePlayer(steps){
     }
 
     renderPlayers();
+
     i++;
     setTimeout(step, 300);
   }
@@ -187,11 +200,9 @@ function movePlayer(steps){
 }
 
 // =========================
-// КЛЕТКА
+// ЛОГИКА КЛЕТКИ
 // =========================
 function handleCell(p){
-
-  highlightCell(p.position);
 
   const c = cells[p.position];
 
@@ -218,6 +229,13 @@ function handleCell(p){
     return;
   }
 
+  finishTurn(p);
+}
+
+// =========================
+// ФИНИШ ХОДА
+// =========================
+function finishTurn(p){
   p.hype = Math.max(0, p.hype);
 
   renderHypeBars();
@@ -238,25 +256,20 @@ function handleCell(p){
 // =========================
 // 💥 СКАНДАЛ
 // =========================
-// ===== СКАНДАЛ (ПОЛНЫЙ ФИКС) =====
-// =========================
-// 💥 СКАНДАЛ (ПОЛНЫЙ)
-// =========================
 function showScandal(p){
-
   scandalSound.currentTime = 0;
   scandalSound.play();
 
   currentScandal = p;
 
   const list = [
-    {text:"🔥 перегрел аудиторию -1", val:-1},
-    {text:"🫣 громкий заголовок -2", val:-2},
-    {text:"😱 это монтаж -3", val:-3},
-    {text:"#️⃣ всех задело -3 всем", val:-3, all:true},
-    {text:"😮 подписчики в шоке -4", val:-4},
-    {text:"🤫 удаляй пока не поздно -5", val:-5},
-    {text:"🙄 это контент -5 + пропуск", val:-5, skip:true}
+    {text:"🔥 -1", val:-1},
+    {text:"🫣 -2", val:-2},
+    {text:"😱 -3", val:-3},
+    {text:"#️⃣ всем -3", val:-3, all:true},
+    {text:"😮 -4", val:-4},
+    {text:"🤫 -5", val:-5},
+    {text:"🙄 -5 + пропуск", val:-5, skip:true}
   ];
 
   const e = list[Math.floor(Math.random()*list.length)];
@@ -267,9 +280,7 @@ function showScandal(p){
   openModal('scandalModal');
 }
 
-// 🔥 ГЛОБАЛЬНАЯ КНОПКА
 window.closeScandal = function(){
-
   const p = currentScandal;
   const e = p.effect;
 
@@ -283,69 +294,33 @@ window.closeScandal = function(){
 
   if(e.skip) p.skipNext = true;
 
-  renderHypeBars();
-
-  // 💥 лёгкая тряска поля
-  const board = document.getElementById('gameBoard');
-  board.style.animation = "shake 0.3s";
-  setTimeout(()=> board.style.animation = "", 300);
-
-  document.getElementById('scandalModal').style.display = "none";
-
-  socket.emit('playerMoved',{
-    roomCode,
-    position:p.position,
-    hype:p.hype,
-    skipNext:p.skipNext
-  });
+  closeModal('scandalModal');
+  finishTurn(p);
 };
+
+// =========================
 // ⚡ РИСК
 // =========================
 function showRisk(p){
   currentRisk = p;
-
   document.getElementById('riskResult').innerText =
-    "Брось кубик: 1-3 = -5, 4-6 = +5";
-
+    "1-3 = -5 | 4-6 = +5";
   openModal('riskModal');
 }
 
 function rollRisk(){
-
   const dice = Math.floor(Math.random()*6)+1;
   const result = dice <= 3 ? -5 : 5;
 
   currentRisk.hype = Math.max(0, currentRisk.hype + result);
 
   document.getElementById('riskResult').innerText =
-    `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result} хайпа`;
+    `🎲 ${dice} → ${result}`;
 
-  
-  renderHypeBars();
-
-  // 🔥 ВАЖНО — автоматическое завершение через 1 секунду
   setTimeout(() => {
-
     closeModal('riskModal');
-
-    socket.emit('playerMoved',{
-      roomCode,
-      position: currentRisk.position,
-      hype: currentRisk.hype,
-      skipNext: currentRisk.skipNext
-    });
-
+    finishTurn(currentRisk);
   }, 1000);
-}
-function closeRisk(){
-  closeModal('riskModal');
-
-  socket.emit('playerMoved',{
-    roomCode,
-    position: currentRisk.position,
-    hype: currentRisk.hype,
-    skipNext: currentRisk.skipNext
-  });
 }
 
 // =========================
@@ -365,19 +340,15 @@ function renderPlayers(){
       board.appendChild(el);
     }
 
-    // цвет + сброс классов
     el.className = `player ${p.color}`;
 
-    // активный игрок
     if (p.id === currentTurnId){
       el.classList.add("activePlayer");
     }
 
     const c = cells[p.position];
 
-    // 🔥 правильное раздвижение фишек
-    const spread = 0.015; // расстояние между фишками
-
+    const spread = 0.015;
     const dx = Math.cos(i * 2 * Math.PI / players.length) * spread;
     const dy = Math.sin(i * 2 * Math.PI / players.length) * spread;
 
@@ -385,6 +356,7 @@ function renderPlayers(){
     el.style.top  = ( (c.y + dy) * 100 ) + '%';
   });
 }
+
 function renderHypeBars(){
   const box = document.getElementById('hypeBars');
   box.innerHTML = '';
@@ -394,7 +366,7 @@ function renderHypeBars(){
 
     box.innerHTML += `
       <div>
-        <div class="hypeText">${p.username}: ${p.hype}/70</div>
+        <div>${p.username}: ${p.hype}/70</div>
         <div class="hypeBarBg">
           <div class="hypeFill" style="width:${percent}%"></div>
         </div>
@@ -408,25 +380,4 @@ function renderLobbyPlayers(){
   list.innerHTML = players.map(p =>
     `<div style="color:${p.color}">${p.username}</div>`
   ).join('');
-}
-
-// =========================
-// 🔥 ПОДСВЕТКА
-// =========================
-function highlightCell(index){
-  const board = document.getElementById('gameBoard');
-  const rect = board.getBoundingClientRect();
-  const c = cells[index];
-  const glow = document.createElement('div');
-  glow.style.position = 'absolute';
-  glow.style.left = (c.x * rect.width - 10) + 'px';
-  glow.style.top = (c.y * rect.height - 10) + 'px';
-  glow.style.width = '30px';
-  glow.style.height = '30px';
-  glow.style.borderRadius = '50%';
-  glow.style.boxShadow = '0 0 20px yellow';
-  glow.style.pointerEvents = 'none';
-
-  board.appendChild(glow);
-  setTimeout(()=>glow.remove(), 500);
 }
