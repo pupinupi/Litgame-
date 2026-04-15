@@ -10,27 +10,18 @@ app.use(express.static('public'));
 
 const rooms = {};
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
 
-  // ===== ВХОД В КОМНАТУ =====
   socket.on('joinRoom', ({ username, roomCode, color }) => {
 
     if (!rooms[roomCode]) {
-      rooms[roomCode] = {
-        players: [],
-        turnIndex: 0
-      };
+      rooms[roomCode] = { players: [], turnIndex: 0 };
     }
 
     const room = rooms[roomCode];
 
-    if (room.players.length >= 4) {
-      socket.emit('errorMsg', 'Комната заполнена');
-      return;
-    }
-
     if (room.players.find(p => p.color === color)) {
-      socket.emit('errorMsg', 'Цвет занят');
+      socket.emit('colorTaken');
       return;
     }
 
@@ -40,7 +31,7 @@ io.on('connection', (socket) => {
       color,
       position: 0,
       hype: 0,
-      skip: false
+      skipNext: false
     };
 
     room.players.push(player);
@@ -49,36 +40,29 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit('updatePlayers', room.players);
   });
 
-  // ===== СТАРТ ИГРЫ =====
-  socket.on('startGame', (roomCode) => {
+  socket.on('startGame', roomCode => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    room.turnIndex = Math.floor(Math.random() * room.players.length);
+    room.turnIndex = 0;
 
     io.to(roomCode).emit('gameStarted');
 
-    // первый ход
-    io.to(roomCode).emit(
-      'nextTurn',
-      room.players[room.turnIndex].id
-    );
+    // 🔥 ВАЖНО
+    io.to(roomCode).emit('nextTurn', room.players[0].id);
   });
 
-  // ===== КУБИК =====
-  socket.on('rollDice', (roomCode) => {
+  socket.on('rollDice', roomCode => {
     const room = rooms[roomCode];
     if (!room) return;
 
     const player = room.players[room.turnIndex];
     if (!player) return;
 
-    // не твой ход
-    if (player.id !== socket.id) return;
+    if (socket.id !== player.id) return;
 
-    // пропуск
-    if (player.skip) {
-      player.skip = false;
+    if (player.skipNext) {
+      player.skipNext = false;
       nextTurn(roomCode);
       return;
     }
@@ -91,38 +75,33 @@ io.on('connection', (socket) => {
     });
   });
 
-  // ===== ОБНОВЛЕНИЕ ИГРОКА =====
-  socket.on('updatePlayer', ({ roomCode, player }) => {
+  socket.on('playerMoved', ({ roomCode, position, hype, skipNext }) => {
     const room = rooms[roomCode];
     if (!room) return;
 
-    const p = room.players.find(x => x.id === player.id);
-    if (!p) return;
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
 
-    Object.assign(p, player);
+    player.position = position;
+    player.hype = hype;
+    player.skipNext = skipNext;
 
     io.to(roomCode).emit('updatePlayers', room.players);
 
     nextTurn(roomCode);
   });
 
-  // ===== СЛЕДУЮЩИЙ ХОД =====
-  function nextTurn(roomCode) {
+  function nextTurn(roomCode){
     const room = rooms[roomCode];
     if (!room) return;
 
     room.turnIndex = (room.turnIndex + 1) % room.players.length;
 
-    io.to(roomCode).emit(
-      'nextTurn',
-      room.players[room.turnIndex].id
-    );
+    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   }
 
 });
 
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-  console.log("🚀 Server running on " + PORT);
+server.listen(3000, () => {
+  console.log("🚀 server started");
 });
