@@ -161,3 +161,207 @@ function movePlayer(steps){
 
   function step(){
     if (i >= steps){
+      isAnimating = false;
+      handleCell(me);
+      return;
+    }
+
+    const prev = me.position;
+    me.position = (me.position + 1) % cells.length;
+
+    if (prev === cells.length - 1 && me.position === 0){
+      me.hype += 7;
+    }
+
+    renderPlayers();
+    i++;
+    setTimeout(step, 300);
+  }
+
+  step();
+}
+
+// =========================
+// КЛЕТКА
+// =========================
+function handleCell(p){
+
+  highlightCell(p.position);
+
+  const c = cells[p.position];
+
+  if (c.type === 'start') p.hype += 10;
+  if (c.type === 'plus') p.hype += c.value;
+  if (c.type === 'minus') p.hype = Math.max(0, p.hype - c.value);
+
+  if (c.type === 'minusSkip'){
+    p.hype = Math.max(0, p.hype - c.value);
+    p.skipNext = true;
+  }
+
+  if (c.type === 'skip'){
+    p.skipNext = true;
+  }
+
+  if (c.type === 'risk'){
+    showRisk(p);
+    return;
+  }
+
+  if (c.type === 'scandal'){
+    showScandal(p);
+    return;
+  }
+
+  p.hype = Math.max(0, p.hype);
+
+  renderHypeBars();
+
+  if (p.hype >= 70){
+    gameOver = true;
+    alert("🏆 Победа: " + p.username);
+  }
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position:p.position,
+    hype:p.hype,
+    skipNext:p.skipNext
+  });
+}
+
+// =========================
+// 💥 СКАНДАЛ
+// =========================
+function showScandal(p){
+
+  scandalSound.currentTime = 0;
+  scandalSound.play();
+
+  currentScandal = p;
+
+  document.getElementById('scandalText').innerText =
+    [
+      "🔥 перегрел аудиторию -1",
+      "🫣 громкий заголовок -2",
+      "😱 это монтаж -3",
+      "#️⃣ всем -3",
+      "😮 шок -4",
+      "🤫 удаляй -5",
+      "🙄 контент -5 + пропуск"
+    ][Math.floor(Math.random()*7)];
+
+  openModal('scandalModal');
+}
+
+// =========================
+// ⚡ РИСК
+// =========================
+function showRisk(p){
+  currentRisk = p;
+  document.getElementById('riskResult').innerText = "";
+  openModal('riskModal');
+}
+
+function rollRisk(){
+  const dice = Math.floor(Math.random()*6)+1;
+  const result = dice <= 3 ? -5 : 5;
+
+  currentRisk.hype = Math.max(0, currentRisk.hype + result);
+
+  document.getElementById('riskResult').innerText =
+    `🎲 ${dice} → ${result}`;
+
+  renderHypeBars();
+}
+
+function closeRisk(){
+  closeModal('riskModal');
+
+  socket.emit('playerMoved',{
+    roomCode,
+    position: currentRisk.position,
+    hype: currentRisk.hype,
+    skipNext: currentRisk.skipNext
+  });
+}
+
+// =========================
+// UI
+// =========================
+function renderPlayers(){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+
+  players.forEach((p,i)=>{
+
+    let el = document.getElementById(p.id);
+
+    if(!el){
+      el = document.createElement('div');
+      el.className = `player ${p.color}`;
+      el.id = p.id;
+      board.appendChild(el);
+    }
+
+    el.className = `player ${p.color}`;
+
+    if (p.id === currentTurnId){
+      el.classList.add("activePlayer");
+    }
+
+    const c = cells[p.position];
+
+    const angle = (i / players.length) * Math.PI * 2;
+    const offset = 12;
+
+    el.style.left = (c.x * rect.width + Math.cos(angle)*offset) + 'px';
+    el.style.top  = (c.y * rect.height + Math.sin(angle)*offset) + 'px';
+  });
+}
+
+function renderHypeBars(){
+  const box = document.getElementById('hypeBars');
+  box.innerHTML = '';
+
+  players.forEach(p=>{
+    const percent = Math.min(p.hype,70)/70*100;
+
+    box.innerHTML += `
+      <div>
+        <div class="hypeText">${p.username}: ${p.hype}/70</div>
+        <div class="hypeBarBg">
+          <div class="hypeFill" style="width:${percent}%"></div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderLobbyPlayers(){
+  const list = document.getElementById('playersList');
+  list.innerHTML = players.map(p =>
+    `<div style="color:${p.color}">${p.username}</div>`
+  ).join('');
+}
+
+// =========================
+// 🔥 ПОДСВЕТКА
+// =========================
+function highlightCell(index){
+  const board = document.getElementById('gameBoard');
+  const rect = board.getBoundingClientRect();
+  const c = cells[index];
+  const glow = document.createElement('div');
+  glow.style.position = 'absolute';
+  glow.style.left = (c.x * rect.width - 10) + 'px';
+  glow.style.top = (c.y * rect.height - 10) + 'px';
+  glow.style.width = '30px';
+  glow.style.height = '30px';
+  glow.style.borderRadius = '50%';
+  glow.style.boxShadow = '0 0 20px yellow';
+  glow.style.pointerEvents = 'none';
+
+  board.appendChild(glow);
+  setTimeout(()=>glow.remove(), 500);
+}
