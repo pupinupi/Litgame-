@@ -233,6 +233,7 @@ function handleCell(p){
 // =========================
 // 💥 СКАНДАЛ
 // =========================
+// ===== СКАНДАЛ (ПОЛНЫЙ ФИКС) =====
 function showScandal(p){
 
   scandalSound.currentTime = 0;
@@ -240,20 +241,50 @@ function showScandal(p){
 
   currentScandal = p;
 
-  document.getElementById('scandalText').innerText =
-    [
-      "🔥 перегрел аудиторию -1",
-      "🫣 громкий заголовок -2",
-      "😱 это монтаж -3",
-      "#️⃣ всем -3",
-      "😮 шок -4",
-      "🤫 удаляй -5",
-      "🙄 контент -5 + пропуск"
-    ][Math.floor(Math.random()*7)];
+  const list = [
+    {text:"🔥 перегрел аудиторию -1", val:-1},
+    {text:"🫣 громкий заголовок -2", val:-2},
+    {text:"😱 это монтаж -3", val:-3},
+    {text:"#️⃣ всем -3", val:-3, all:true},
+    {text:"😮 шок -4", val:-4},
+    {text:"🤫 удаляй -5", val:-5},
+    {text:"🙄 контент -5 + пропуск", val:-5, skip:true}
+  ];
+
+  const e = list[Math.floor(Math.random()*list.length)];
+  currentScandal.effect = e;
+
+  document.getElementById('scandalText').innerText = e.text;
 
   openModal('scandalModal');
 }
 
+// 👉 ДОБАВЬ ЭТУ ФУНКЦИЮ (её у тебя НЕТ)
+function closeScandal(){
+
+  const p = currentScandal;
+  const e = p.effect;
+
+  if(e.all){
+    players.forEach(pl=>{
+      pl.hype = Math.max(0, pl.hype + e.val);
+    });
+  } else {
+    p.hype = Math.max(0, p.hype + e.val);
+  }
+
+  if(e.skip) p.skipNext = true;
+
+  closeModal('scandalModal');
+
+  // 🔥 ВАЖНО — завершение хода
+  socket.emit('playerMoved',{
+    roomCode,
+    position:p.position,
+    hype:p.hype,
+    skipNext:p.skipNext
+  });
+}
 // =========================
 // ⚡ РИСК
 // =========================
