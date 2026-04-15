@@ -120,7 +120,13 @@ socket.on('nextTurn', id => {
   currentTurnId = id;
 
   const btn = document.getElementById('rollBtn');
-  btn.disabled = (id !== socket.id || gameOver);
+
+  if (id === socket.id && !gameOver) {
+    btn.disabled = false;
+    showHint("Твой ход 🎯");
+  } else {
+    btn.disabled = true;
+  }
 
   renderPlayers();
 });
@@ -186,6 +192,7 @@ function movePlayer(steps){
   if (!me) return;
 
   isAnimating = true;
+
   let i = 0;
 
   function step(){
@@ -193,7 +200,10 @@ function movePlayer(steps){
     if (i >= steps){
       isAnimating = false;
 
-      setTimeout(() => handleCell(me), 200);
+      setTimeout(() => {
+        handleCell(me);
+      }, 300);
+
       return;
     }
 
@@ -207,12 +217,11 @@ function movePlayer(steps){
     renderPlayers();
 
     i++;
-    setTimeout(step, 300);
+    setTimeout(step, 250); // 🔥 плавнее
   }
 
   step();
 }
-
 // =========================
 // ЛОГИКА КЛЕТКИ
 // =========================
