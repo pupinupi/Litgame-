@@ -234,6 +234,9 @@ function handleCell(p){
 // 💥 СКАНДАЛ
 // =========================
 // ===== СКАНДАЛ (ПОЛНЫЙ ФИКС) =====
+// =========================
+// 💥 СКАНДАЛ (ПОЛНЫЙ)
+// =========================
 function showScandal(p){
 
   scandalSound.currentTime = 0;
@@ -245,10 +248,10 @@ function showScandal(p){
     {text:"🔥 перегрел аудиторию -1", val:-1},
     {text:"🫣 громкий заголовок -2", val:-2},
     {text:"😱 это монтаж -3", val:-3},
-    {text:"#️⃣ всем -3", val:-3, all:true},
-    {text:"😮 шок -4", val:-4},
-    {text:"🤫 удаляй -5", val:-5},
-    {text:"🙄 контент -5 + пропуск", val:-5, skip:true}
+    {text:"#️⃣ всех задело -3 всем", val:-3, all:true},
+    {text:"😮 подписчики в шоке -4", val:-4},
+    {text:"🤫 удаляй пока не поздно -5", val:-5},
+    {text:"🙄 это контент -5 + пропуск", val:-5, skip:true}
   ];
 
   const e = list[Math.floor(Math.random()*list.length)];
@@ -259,8 +262,8 @@ function showScandal(p){
   openModal('scandalModal');
 }
 
-// 👉 ДОБАВЬ ЭТУ ФУНКЦИЮ (её у тебя НЕТ)
-function closeScandal(){
+// 🔥 ГЛОБАЛЬНАЯ КНОПКА
+window.closeScandal = function(){
 
   const p = currentScandal;
   const e = p.effect;
@@ -275,17 +278,22 @@ function closeScandal(){
 
   if(e.skip) p.skipNext = true;
 
-  closeModal('scandalModal');
+  renderHypeBars();
 
-  // 🔥 ВАЖНО — завершение хода
+  // 💥 лёгкая тряска поля
+  const board = document.getElementById('gameBoard');
+  board.style.animation = "shake 0.3s";
+  setTimeout(()=> board.style.animation = "", 300);
+
+  document.getElementById('scandalModal').style.display = "none";
+
   socket.emit('playerMoved',{
     roomCode,
     position:p.position,
     hype:p.hype,
     skipNext:p.skipNext
   });
-}
-// =========================
+};
 // ⚡ РИСК
 // =========================
 function showRisk(p){
