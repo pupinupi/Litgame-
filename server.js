@@ -71,28 +71,33 @@ io.on('connection', socket => {
   // КУБИК
   // =========================
   socket.on('rollDice', roomCode => {
-    const room = rooms[roomCode];
-    if (!room) return;
+  const room = rooms[roomCode];
+  if (!room) return;
 
-    const player = room.players[room.turnIndex];
-    if (!player) return;
+  const player = room.players[room.turnIndex];
+  if (!player) return;
 
-    if (socket.id !== player.id) return;
+  if (socket.id !== player.id) return;
 
-    if (player.skipNext) {
-      player.skipNext = false;
-      io.to(roomCode).emit('playerSkipped', player.id);
-      nextTurn(roomCode);
-      return;
-    }
+  // 🔥 ФИКС ПРОПУСКА
+  if (player.skipNext) {
+    player.skipNext = false;
 
-    const dice = Math.floor(Math.random() * 6) + 1;
-
-    io.to(roomCode).emit('diceRolled', {
-      playerId: player.id,
-      dice
+    io.to(roomCode).emit('showHint', {
+      text: player.username + " пропускает ход 😴"
     });
+
+    nextTurn(roomCode);
+    return;
+  }
+
+  const dice = Math.floor(Math.random() * 6) + 1;
+
+  io.to(roomCode).emit('diceRolled', {
+    playerId: player.id,
+    dice
   });
+});
 
   // =========================
   // ПОСЛЕ ХОДА
