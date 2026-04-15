@@ -49,29 +49,45 @@ io.on('connection', socket => {
   });
 
   socket.on('startGame', roomCode => {
-    const room = rooms[roomCode];
-    if (!room) return;
+  const room = rooms[roomCode];
+  if (!room) return;
 
-    room.turnIndex = Math.floor(Math.random() * room.players.length);
+  // случайный первый игрок
+  room.turnIndex = Math.floor(Math.random() * room.players.length);
 
-    io.to(roomCode).emit('gameStarted');
-    io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
-  });
+  io.to(roomCode).emit('gameStarted');
+
+  // 🔥 ВАЖНО — ПЕРВЫЙ ХОД
+  io.to(roomCode).emit(
+    'nextTurn',
+    room.players[room.turnIndex].id
+  );
+});
 
   socket.on('rollDice', roomCode => {
-    const room = rooms[roomCode];
-    if (!room) return;
+  const room = rooms[roomCode];
+  if (!room) return;
 
-    const player = room.players[room.turnIndex];
+  const player = room.players[room.turnIndex];
+  if (!player) return;
 
-    if (player.id !== socket.id) return;
+  // ❌ если не твой ход — игнор
+  if (player.id !== socket.id) return;
 
-    if (player.skip) {
-      player.skip = false;
-      nextTurn(roomCode);
-      return;
-    }
+  // ⛔ пропуск хода
+  if (player.skip) {
+    player.skip = false;
+    nextTurn(roomCode);
+    return;
+  }
 
+  const dice = Math.floor(Math.random() * 6) + 1;
+
+  io.to(roomCode).emit('diceRolled', {
+    playerId: player.id,
+    dice
+  });
+});
     const dice = Math.floor(Math.random() * 6) + 1;
 
     io.to(roomCode).emit('diceRolled', {
