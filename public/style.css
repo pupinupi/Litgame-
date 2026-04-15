@@ -91,6 +91,7 @@ body::before {
     inset 0 0 8px rgba(255,255,255,0.5);
 
   transition: all 0.25s ease;
+  transition: left 0.2s linear, top 0.2s linear;
 }
 
 /* цвета */
