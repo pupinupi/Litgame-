@@ -8,12 +8,15 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 const rooms = {};
 
 io.on('connection', socket => {
 
   socket.on('joinRoom', ({ username, roomCode, color }) => {
-
     if (!rooms[roomCode]) {
       rooms[roomCode] = { players: [], turnIndex: 0 };
     }
@@ -47,8 +50,6 @@ io.on('connection', socket => {
     room.turnIndex = 0;
 
     io.to(roomCode).emit('gameStarted');
-
-    // 🔥 ВАЖНО
     io.to(roomCode).emit('nextTurn', room.players[0].id);
   });
 
@@ -63,6 +64,7 @@ io.on('connection', socket => {
 
     if (player.skipNext) {
       player.skipNext = false;
+      io.to(roomCode).emit('playerSkipped', player.id);
       nextTurn(roomCode);
       return;
     }
@@ -102,6 +104,8 @@ io.on('connection', socket => {
 
 });
 
-server.listen(3000, () => {
-  console.log("🚀 server started");
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log("🚀 Server running on " + PORT);
 });
