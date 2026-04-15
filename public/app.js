@@ -290,22 +290,40 @@ function closeScandal(){
 // =========================
 function showRisk(p){
   currentRisk = p;
-  document.getElementById('riskResult').innerText = "";
+
+  document.getElementById('riskResult').innerText =
+    "Брось кубик: 1-3 = -5, 4-6 = +5";
+
   openModal('riskModal');
 }
 
 function rollRisk(){
+
   const dice = Math.floor(Math.random()*6)+1;
   const result = dice <= 3 ? -5 : 5;
 
   currentRisk.hype = Math.max(0, currentRisk.hype + result);
 
   document.getElementById('riskResult').innerText =
-    `🎲 ${dice} → ${result}`;
+    `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result} хайпа`;
 
+  
   renderHypeBars();
-}
 
+  // 🔥 ВАЖНО — автоматическое завершение через 1 секунду
+  setTimeout(() => {
+
+    closeModal('riskModal');
+
+    socket.emit('playerMoved',{
+      roomCode,
+      position: currentRisk.position,
+      hype: currentRisk.hype,
+      skipNext: currentRisk.skipNext
+    });
+
+  }, 1000);
+}
 function closeRisk(){
   closeModal('riskModal');
 
