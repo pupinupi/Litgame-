@@ -262,9 +262,13 @@ function finishTurn(p){
   renderHypeBars();
 
   if (p.hype >= 70){
-    gameOver = true;
-    alert("🏆 Победа: " + p.username);
-  }
+  gameOver = true;
+
+  document.getElementById('winText').innerText =
+    "🏆 Победил " + p.username;
+
+  document.getElementById('winScreen').style.display = "flex";
+}
 
   socket.emit('playerMoved',{
     roomCode,
