@@ -97,6 +97,20 @@ socket.on('updatePlayers', pl => {
   renderLobbyPlayers();
 });
 
+let hostId = null;
+
+socket.on('setHost', id => {
+  hostId = id;
+
+  const startBtn = document.getElementById('startBtn');
+
+  if (socket.id === hostId) {
+    startBtn.style.display = "block";
+  } else {
+    startBtn.style.display = "none";
+  }
+});
+
 socket.on('gameStarted', () => {
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('game').style.display = 'flex';
