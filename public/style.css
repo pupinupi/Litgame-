@@ -1,21 +1,109 @@
-body{
-  margin:0;
-  background:black;
-  color:white;
+body {
+  background: black;
+  color: white;
+  text-align: center;
+  font-family: Arial;
 }
 
-#gameBoard{
-  width:90vw;
-  max-width:600px;
-  height:600px;
-  margin:auto;
-  position:relative;
-  background:url("board.jpg") center/cover;
+/* ===== ИГРА ===== */
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.player{
-  width:18px;
-  height:18px;
-  position:absolute;
-  border-radius:50%;
+/* ===== ХАЙП ===== */
+#hypeBars {
+  width: 90vw;
+  max-width: 700px;
+  font-weight: bold;
 }
+
+.hypeBarBg {
+  background: #111;
+  height: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: 0 0 10px #00cfff;
+}
+
+.hypeFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00cfff, #00ffff);
+  box-shadow: 0 0 15px #00cfff;
+}
+
+/* ===== ПОЛЕ ===== */
+#gameBoardWrapper {
+  position: relative;
+  width: 90vw;
+  max-width: 700px;
+}
+
+#gameBoard {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: url('board.jpg') no-repeat center;
+  background-size: cover;
+  position: relative;
+}
+
+/* ===== ФИШКИ ===== */
+.player {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px white;
+}
+
+.red { background: red; }
+.blue { background: blue; }
+.green { background: green; }
+.yellow { background: yellow; }
+
+/* ===== КУБИК ===== */
+#controls {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+#diceResult {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ===== МОДАЛКИ ===== */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 1000;
+}
+
+/* ===== СКАНДАЛ ===== */
+.scandalCard {
+  background: #2a0000;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid red;
+  box-shadow: 0 0 40px red;
+}
+
+/* ===== РИСК ===== */
+.riskCard {
+  background: #001018;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #00cfff;
+  box-shadow: 0 0 40px #00cfff;
+}
+
