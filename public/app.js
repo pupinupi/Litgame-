@@ -398,6 +398,17 @@ function renderHypeBars(){
   });
 }
 
+function showHint(text){
+  const el = document.getElementById('hint');
+
+  el.innerText = text;
+  el.style.opacity = 1;
+
+  setTimeout(()=>{
+    el.style.opacity = 0;
+  },2000);
+}
+
 function renderLobbyPlayers(){
   const list = document.getElementById('playersList');
   list.innerHTML = players.map(p =>
