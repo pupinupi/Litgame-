@@ -324,17 +324,48 @@ window.closeScandal = function(){
 // =========================
 // ⚡ РИСК
 // =========================
+// =========================
+// ⚡ РИСК (100% РАБОЧИЙ)
+// =========================
 function showRisk(p){
-
-  showHint("Риск! 🎲"); // 👈 СЮДА
-
   currentRisk = p;
 
-  document.getElementById('riskResult').innerText =
-    "Брось кубик: 1-3 = -5, 4-6 = +5";
+  const modal = document.getElementById('riskModal');
+  const text = document.getElementById('riskResult');
 
-  openModal('riskModal');
+  text.innerText = "🎲 Нажми кнопку: 1-3 = -5 | 4-6 = +5";
+
+  modal.style.display = "flex";
 }
+
+// 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
+window.rollRisk = function(){
+  showHint("Риск! 🎲");
+
+  const dice = Math.floor(Math.random()*6)+1;
+  const result = dice <= 3 ? -5 : 5;
+
+  currentRisk.hype = Math.max(0, currentRisk.hype + result);
+
+  document.getElementById('riskResult').innerText =
+    `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result}`;
+
+  renderHypeBars();
+
+  // 🔥 через секунду закрываем и передаём ход
+  setTimeout(() => {
+
+    document.getElementById('riskModal').style.display = "none";
+
+    socket.emit('playerMoved',{
+      roomCode,
+      position: currentRisk.position,
+      hype: currentRisk.hype,
+      skipNext: currentRisk.skipNext
+    });
+
+  }, 1000);
+};
 // =========================
 // UI
 // =========================
