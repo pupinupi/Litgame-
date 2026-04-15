@@ -388,3 +388,11 @@ input {
   opacity: 0;
   transition: 0.3s;
 }
+
+.activePlayer {
+  box-shadow:
+    0 0 15px white,
+    0 0 25px #00cfff,
+    0 0 40px #00cfff;
+  transform: scale(1.3);
+}
