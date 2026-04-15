@@ -98,13 +98,15 @@ socket.on('nextTurn',id=>{
   rollBtn.disabled = (id !== socket.id);
 });
 
-socket.on('diceRolled',({playerId,dice})=>{
+socket.on('diceRolled', ({playerId, dice}) => {
+
   document.getElementById('diceText').innerText =
     `🎲 Выпало ${dice}`;
 
-  if(playerId === socket.id){
+  if (playerId === socket.id) {
     move(dice);
   }
+
 });
 
 // ===== ДВИЖЕНИЕ =====
