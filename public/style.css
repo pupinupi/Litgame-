@@ -1,82 +1,16 @@
 body{
   margin:0;
-  font-family:Arial;
   background:black;
   color:white;
 }
-
-/* ЛОББИ */
-.card{
-  width:300px;
-  margin:auto;
-  margin-top:80px;
-  padding:20px;
-  border-radius:20px;
-  background:#111;
-}
-
-input{width:100%;margin:5px 0;padding:10px;}
-
-.chips{display:flex;justify-content:space-between;}
-
-.chip{
-  width:45px;height:45px;border-radius:50%;
-}
-
-.yellow{background:gold;}
-.red{background:red;}
-.blue{background:blue;}
-.purple{background:purple;}
-
-.chip.selected{box-shadow:0 0 15px white;}
 
 #gameBoard{
   width:90vw;
   max-width:600px;
   height:600px;
   margin:auto;
-  background:url("board.jpg") center/cover;
   position:relative;
-}
-
-/* ФИШКИ */
-.player{
-  position:absolute;
-  width:18px;height:18px;
-  border-radius:50%;
-}
-
-/* ХАЙП */
-.hypeBar{
-  height:12px;background:#222;margin:5px;
-}
-.fill{
-  height:100%;
-  background:#00eaff;
-}
-
-/* МОДАЛКИ */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,0.8);
-}
-
-.modalBox{
-  background:#222;
-  padding:20px;
-  border-radius:15px;
-}
-
-#rollBtn{
-  display:block;
-  margin:15px auto;
-  padding:14px 25px;
-  font-size:18px;
-  border-radius:15px;
+  background:url("board.jpg") center/cover;
 }
 
 .player{
@@ -84,5 +18,4 @@ input{width:100%;margin:5px 0;padding:10px;}
   height:18px;
   position:absolute;
   border-radius:50%;
-  box-shadow:0 0 10px white;
 }
