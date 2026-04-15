@@ -16,38 +16,18 @@ const rooms = {};
 
 io.on('connection', socket => {
 
+  // =========================
+  // ВХОД В КОМНАТУ
+  // =========================
   socket.on('joinRoom', ({ username, roomCode, color }) => {
-  if (!rooms[roomCode]) {
-    rooms[roomCode] = {
-      players: [],
-      turnIndex: 0,
-      hostId: socket.id // ← первый игрок = хост
-    };
-  }
 
-  const room = rooms[roomCode];
-
-  if (room.players.find(p => p.color === color)) {
-    socket.emit('colorTaken');
-    return;
-  }
-
-  const player = {
-    id: socket.id,
-    username,
-    color,
-    position: 0,
-    hype: 0,
-    skipNext: false
-  };
-
-  room.players.push(player);
-  socket.join(roomCode);
-
-  // 🔥 отправляем всем кто хост
-  io.to(roomCode).emit('updatePlayers', room.players);
-  io.to(roomCode).emit('setHost', room.hostId);
-});
+    if (!rooms[roomCode]) {
+      rooms[roomCode] = {
+        players: [],
+        turnIndex: 0,
+        hostId: socket.id // 👑 первый = хост
+      };
+    }
 
     const room = rooms[roomCode];
 
@@ -69,21 +49,27 @@ io.on('connection', socket => {
     socket.join(roomCode);
 
     io.to(roomCode).emit('updatePlayers', room.players);
+    io.to(roomCode).emit('setHost', room.hostId);
   });
 
+  // =========================
+  // СТАРТ ИГРЫ (ТОЛЬКО ХОСТ)
+  // =========================
   socket.on('startGame', roomCode => {
-  const room = rooms[roomCode];
-  if (!room) return;
+    const room = rooms[roomCode];
+    if (!room) return;
 
-  // ❌ не хост — нельзя стартовать
-  if (socket.id !== room.hostId) return;
+    if (socket.id !== room.hostId) return;
 
-  room.turnIndex = 0;
+    room.turnIndex = 0;
 
-  io.to(roomCode).emit('gameStarted');
-  io.to(roomCode).emit('nextTurn', room.players[0].id);
-});
+    io.to(roomCode).emit('gameStarted');
+    io.to(roomCode).emit('nextTurn', room.players[0].id);
+  });
 
+  // =========================
+  // КУБИК
+  // =========================
   socket.on('rollDice', roomCode => {
     const room = rooms[roomCode];
     if (!room) return;
@@ -108,6 +94,9 @@ io.on('connection', socket => {
     });
   });
 
+  // =========================
+  // ПОСЛЕ ХОДА
+  // =========================
   socket.on('playerMoved', ({ roomCode, position, hype, skipNext }) => {
     const room = rooms[roomCode];
     if (!room) return;
@@ -124,6 +113,9 @@ io.on('connection', socket => {
     nextTurn(roomCode);
   });
 
+  // =========================
+  // СМЕНА ХОДА
+  // =========================
   function nextTurn(roomCode){
     const room = rooms[roomCode];
     if (!room) return;
@@ -133,8 +125,11 @@ io.on('connection', socket => {
     io.to(roomCode).emit('nextTurn', room.players[room.turnIndex].id);
   }
 
-});
+}); // ← ВАЖНО: только ОДНА закрывающая
 
+// =========================
+// СЕРВЕР
+// =========================
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
