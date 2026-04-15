@@ -136,6 +136,8 @@ socket.on('nextTurn', id => {
 // =========================
 socket.on('diceRolled', ({ playerId, dice }) => {
 
+  showHint("Выпало " + dice); // 👈 ВОТ СЮДА
+
   diceSound.currentTime = 0;
   diceSound.play();
 
@@ -146,18 +148,14 @@ socket.on('diceRolled', ({ playerId, dice }) => {
   const anim = setInterval(() => {
     el.innerText = "🎲 " + (Math.floor(Math.random() * 6) + 1);
     i++;
-
     if (i > 10) {
       clearInterval(anim);
       el.innerText = "🎲 " + dice;
 
-      if (playerId === socket.id) {
-        movePlayer(dice);
-      }
+      if (playerId === socket.id) movePlayer(dice);
     }
   }, 80);
 });
-
 // =========================
 // КООРДИНАТЫ
 // =========================
@@ -280,6 +278,8 @@ function finishTurn(p){
 // 💥 СКАНДАЛ
 // =========================
 function showScandal(p){
+
+showHint("Скандал! 🔥");
   scandalSound.currentTime = 0;
   scandalSound.play();
 
@@ -325,27 +325,16 @@ window.closeScandal = function(){
 // ⚡ РИСК
 // =========================
 function showRisk(p){
+
+  showHint("Риск! 🎲"); // 👈 СЮДА
+
   currentRisk = p;
+
   document.getElementById('riskResult').innerText =
-    "1-3 = -5 | 4-6 = +5";
+    "Брось кубик: 1-3 = -5, 4-6 = +5";
+
   openModal('riskModal');
 }
-
-function rollRisk(){
-  const dice = Math.floor(Math.random()*6)+1;
-  const result = dice <= 3 ? -5 : 5;
-
-  currentRisk.hype = Math.max(0, currentRisk.hype + result);
-
-  document.getElementById('riskResult').innerText =
-    `🎲 ${dice} → ${result}`;
-
-  setTimeout(() => {
-    closeModal('riskModal');
-    finishTurn(currentRisk);
-  }, 1000);
-}
-
 // =========================
 // UI
 // =========================
