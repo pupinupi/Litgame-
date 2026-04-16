@@ -717,6 +717,10 @@ body::before {
     0 0 60px rgba(0,200,255,0.5);
 }
 
+#scandalText {
+  white-space: pre-line;
+}
+
 /* ТРЯСКА */
 @keyframes shake {
   0% { transform: translate(0); }
