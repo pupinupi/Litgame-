@@ -495,3 +495,501 @@ input {
   from{transform:scale(0.7);opacity:0;}
   to{transform:scale(1);opacity:1;}
 }
+
+/* ===== ФОН ===== */
+body {
+  margin: 0;
+  font-family: Arial;
+  color: white;
+  text-align: center;
+
+  background: radial-gradient(circle at top, #0a0a0a, #000);
+  overflow-x: hidden;
+}
+
+/* НЕОНОВЫЙ ФОН */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, #00cfff33, transparent 40%),
+    radial-gradient(circle at 80% 30%, #ff00cc33, transparent 40%),
+    radial-gradient(circle at 50% 80%, #ff880033, transparent 40%);
+  z-index: -1;
+}
+
+/* ===== ИГРА ===== */
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===== ХАЙП ШКАЛА ===== */
+#hypeBars {
+  width: 90vw;
+  max-width: 700px;
+}
+
+.hypeText {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.hypeBarBg {
+  background: #111;
+  height: 18px;
+  border-radius: 12px;
+  overflow: hidden;
+
+  box-shadow:
+    inset 0 0 10px #00cfff55,
+    0 0 15px #00cfff55;
+}
+
+.hypeFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00cfff, #00ffff);
+
+  box-shadow:
+    0 0 10px #00cfff,
+    0 0 20px #00ffff;
+
+  transition: width 0.4s ease;
+}
+
+/* ===== ПОЛЕ ===== */
+#gameBoardWrapper {
+  position: relative;
+  width: 90vw;
+  max-width: 700px;
+}
+
+/* САМО ПОЛЕ */
+#gameBoard {
+  width: 100%;
+  aspect-ratio: 1/1;
+  position: relative;
+
+  background: url('board.jpg') no-repeat center;
+  background-size: cover;
+
+  border-radius: 20px;
+
+  #gameBoard {
+  box-shadow:
+    0 0 40px rgba(0,200,255,0.4),
+    0 0 80px rgba(0,200,255,0.2),
+    inset 0 0 30px rgba(0,200,255,0.15);
+}
+
+  animation: boardGlow 4s infinite alternate;
+}
+
+/* СВЕЧЕНИЕ ПОЛЯ */
+@keyframes boardGlow {
+  from {
+    box-shadow:
+      0 0 20px rgba(0,255,255,0.2),
+      0 0 40px rgba(255,0,150,0.1),
+      inset 0 0 20px rgba(255,120,0,0.1);
+  }
+  to {
+    box-shadow:
+      0 0 40px rgba(0,255,255,0.5),
+      0 0 80px rgba(255,0,150,0.3),
+      inset 0 0 60px rgba(255,120,0,0.3);
+  }
+}
+
+/* ===== ФИШКИ ===== */
+.player {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+
+  background: radial-gradient(circle at 30% 30%, white, currentColor);
+
+  box-shadow:
+    0 0 6px currentColor,
+    0 0 12px currentColor,
+    0 0 20px currentColor;
+
+  transition: all 0.25s linear;
+}
+
+/* АКТИВНЫЙ ИГРОК */
+.activePlayer {
+  transform: translate(-50%, -50%) scale(1.5);
+
+  box-shadow:
+    0 0 10px white,
+    0 0 25px currentColor,
+    0 0 40px currentColor;
+
+  animation: pulse 0.8s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: translate(-50%, -50%) scale(1.3); }
+  to { transform: translate(-50%, -50%) scale(1.6); }
+}
+
+/* ЦВЕТА */
+.red { color: red; }
+.blue { color: #00cfff; }
+.green { color: #00ff88; }
+.yellow { color: #ffdd33; }
+
+/* ===== КНОПКИ ===== */
+#rollBtn {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 20px;
+
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  color: white;
+  border: none;
+
+  box-shadow:
+    0 0 15px #00cfff,
+    0 0 30px #007bff;
+
+  transition: 0.2s;
+}
+
+#rollBtn:active {
+  transform: scale(0.9);
+}
+
+/* ===== КУБИК ===== */
+#diceResult {
+  font-size: 22px;
+  font-weight: bold;
+
+  text-shadow:
+    0 0 10px #00cfff,
+    0 0 20px #00ffff;
+}
+
+/* ===== МОДАЛКИ ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0,0,0,0.7);
+}
+
+/* СКАНДАЛ */
+.scandalCard {
+  background: rgba(50,0,0,0.9);
+  padding: 25px;
+  border-radius: 20px;
+
+  border: 2px solid red;
+
+  box-shadow:
+    0 0 30px red,
+    0 0 60px rgba(255,0,0,0.5);
+
+  animation: shake 0.3s;
+}
+
+/* РИСК */
+.riskCard {
+  background: rgba(0,20,40,0.9);
+  padding: 25px;
+  border-radius: 20px;
+
+  border: 2px solid #00cfff;
+
+  box-shadow:
+    0 0 30px #00cfff,
+    0 0 60px rgba(0,200,255,0.5);
+}
+
+/* ТРЯСКА */
+@keyframes shake {
+  0% { transform: translate(0); }
+  25% { transform: translate(-5px, 5px); }
+  50% { transform: translate(5px, -5px); }
+  75% { transform: translate(-5px, 5px); }
+  100% { transform: translate(0); }
+}
+
+/* ===== ЗАГОЛОВОК ===== */
+.title {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 20px;
+
+  background: linear-gradient(90deg,#00cfff,#ff00cc,#ff8800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 0 20px #00cfff,
+    0 0 40px #ff00cc;
+}
+
+/* ===== ЛОББИ ===== */
+.glassLobby {
+  width: 90%;
+  max-width: 800px;
+  margin: auto;
+
+  display: flex;
+  gap: 20px;
+
+  padding: 20px;
+  border-radius: 25px;
+
+  background: rgba(20,20,20,0.6);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  box-shadow:
+    0 0 40px rgba(0,255,255,0.2),
+    inset 0 0 20px rgba(255,255,255,0.05);
+}
+
+/* ===== КОЛОНКИ ===== */
+.leftPanel, .rightPanel {
+  flex: 1;
+}
+
+/* ===== INPUT ===== */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+
+  border-radius: 12px;
+  border: none;
+
+  background: #111;
+  color: white;
+
+  box-shadow: inset 0 0 10px rgba(0,255,255,0.2);
+}
+
+/* ===== ФИШКИ ===== */
+.chips {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
+}
+
+.chip {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.chip.selected {
+  transform: scale(1.3);
+  box-shadow:
+    0 0 10px white,
+    0 0 25px currentColor;
+}
+
+/* ЦВЕТА */
+.red { background: red; }
+.blue { background: #00cfff; }
+.green { background: #00ff88; }
+.yellow { background: #ffdd33; }
+
+/* ===== КНОПКИ ===== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+
+  border-radius: 15px;
+  border: none;
+
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.join {
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  box-shadow: 0 0 15px #00cfff;
+}
+
+.start {
+  background: linear-gradient(90deg,#00ff88,#00cc66);
+  color: black;
+  box-shadow: 0 0 15px #00ff88;
+}
+
+/* ===== СПИСОК ИГРОКОВ ===== */
+.playersList {
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
+  border-radius: 15px;
+
+  min-height: 100px;
+
+  box-shadow:
+    inset 0 0 10px rgba(0,255,255,0.2);
+}
+
+.playersList div {
+  margin: 6px 0;
+  font-weight: bold;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* ===== ПРАВИЛА ===== */
+.rules {
+  margin-top: 15px;
+  padding: 10px;
+
+  border-radius: 15px;
+
+  background: rgba(0,0,0,0.4);
+
+  box-shadow:
+    inset 0 0 10px rgba(255,150,0,0.2);
+}
+
+#startBtn {
+  display: none;
+}
+
+#hint{
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+
+  background: rgba(0,0,0,0.8);
+  border-radius: 15px;
+
+  box-shadow: 0 0 20px #00cfff;
+
+  font-size: 16px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.activePlayer {
+  box-shadow:
+    0 0 15px white,
+    0 0 25px #00cfff,
+    0 0 40px #00cfff;
+  transform: scale(1.3);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0,0,0,0.6);
+}
+
+.scandalCard, .riskCard {
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.05);
+
+  border-radius: 20px;
+  padding: 25px;
+
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+    0 0 30px rgba(255,0,0,0.5),
+    inset 0 0 20px rgba(255,255,255,0.1);
+
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.8); opacity:0; }
+  to { transform: scale(1); opacity:1; }
+}
+
+#winScreen{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+
+  display:none;
+  justify-content:center;
+  align-items:center;
+
+  background: rgba(0,0,0,0.85);
+  z-index:9999;
+}
+
+.winCard{
+  padding:40px;
+  border-radius:25px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+
+  border:1px solid rgba(255,255,255,0.2);
+
+  text-align:center;
+
+  box-shadow:
+    0 0 40px #00cfff,
+    0 0 80px #00cfff;
+
+  animation: winPop 0.4s ease;
+}
+
+.winCard h1{
+  font-size:32px;
+  margin-bottom:20px;
+
+  background: linear-gradient(90deg,#00cfff,#00ffcc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.winCard button{
+  padding:15px 25px;
+  font-size:18px;
+  border:none;
+  border-radius:15px;
+
+  background: linear-gradient(90deg,#00cfff,#007bff);
+  color:white;
+
+  box-shadow:
+    0 0 20px #00cfff;
+
+  cursor:pointer;
+}
+
+@keyframes winPop{
+  from{transform:scale(0.7);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
