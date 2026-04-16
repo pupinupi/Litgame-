@@ -299,56 +299,40 @@ function finishTurn(p){
 // =========================
 function showScandal(p){
 
-showHint("Скандал! 🔥");
+  showHint("Скандал! 🔥");
+
   scandalSound.currentTime = 0;
   scandalSound.play();
 
   currentScandal = p;
 
-  const text = `
-1) перегрел аудиторию 🔥 -1 хайп
+  const list = [
+    {text:"🔥 перегрел аудиторию -1", val:-1},
+    {text:"🫣 громкий заголовок -2", val:-2},
+    {text:"😱 это монтаж -3", val:-3},
+    {text:"#️⃣ меня взломали -3 всем", val:-3, all:true},
+    {text:"😮 подписчики в шоке -4", val:-4},
+    {text:"🤫 удаляй пока не поздно -5", val:-5},
+    {text:"🙄 это контент -5 + пропуск", val:-5, skip:true}
+  ];
+
+  const e = list[Math.floor(Math.random()*list.length)];
+  currentScandal.effect = e;
+
+  // 👉 красивый текст (как ты хотела)
+  document.getElementById('scandalText').innerText =
+    `1) перегрел аудиторию 🔥 -1 хайп
 2) громкий заголовок 🫣 -2 хайп
 3) это монтаж 😱 -3 хайп
 4) меня взломали #️⃣ -3 хайп у всех игроков
 5) подписчики в шоке 😮 -4 хайп
 6) удаляй пока не поздно 🤫 -5 хайп
-7) это контент, вы не понимаете 🙄 -5 хайп и пропусти ход
-`;
+7) это контент 🙄 -5 хайп и пропуск хода
 
-document.getElementById('scandalText').innerText = text;
-
-  const e = list[Math.floor(Math.random()*list.length)];
-  currentScandal.effect = e;
-
-  document.getElementById('scandalText').innerText = e.text;
+👉 Тебе выпало: ${e.text}`;
 
   openModal('scandalModal');
 }
-
-window.closeScandal = function(){
-  const p = currentScandal;
-  const e = p.effect;
-
-  if(e.all){
-    players.forEach(pl=>{
-      pl.hype = Math.max(0, pl.hype + e.val);
-      showHypeChange(pl, e.val);
-    });
-  } else {
-    p.hype = Math.max(0, p.hype + e.val);
-    showHypeChange(p, e.val);
-  }
-
-  if(e.skip) p.skipNext = true;
-
-  closeModal('scandalModal');
-
-  finishTurn(p);
-};
-
-// =========================
-// ⚡ РИСК
-// =========================
 // =========================
 // ⚡ РИСК (100% РАБОЧИЙ)
 // =========================
