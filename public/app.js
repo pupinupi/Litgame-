@@ -329,6 +329,28 @@ function showScandal(p){
   openModal('scandalModal');
 }
 
+window.closeScandal = function(){
+
+  const p = currentScandal;
+  const e = p.effect;
+
+  if(e.all){
+    players.forEach(pl=>{
+      pl.hype = Math.max(0, pl.hype + e.val);
+      showHypeChange(pl, e.val);
+    });
+  } else {
+    p.hype = Math.max(0, p.hype + e.val);
+    showHypeChange(p, e.val);
+  }
+
+  if(e.skip) p.skipNext = true;
+
+  closeModal('scandalModal');
+
+  finishTurn(p);
+};
+
 // 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
 
 // =========================
