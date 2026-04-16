@@ -351,6 +351,42 @@ window.closeScandal = function(){
   finishTurn(p);
 };
 
+// =========================
+// ⚡ РИСК (ВОССТАНОВЛЕН)
+// =========================
+function showRisk(p){
+  showHint("Риск! 🎲");
+
+  currentRisk = p;
+
+  const modal = document.getElementById('riskModal');
+  const text = document.getElementById('riskResult');
+
+  text.innerText = "🎲 Нажми кнопку: 1-3 = -5 | 4-6 = +5";
+
+  modal.style.display = "flex";
+}
+
+// 🔥 КНОПКА В МОДАЛКЕ
+window.rollRisk = function(){
+
+  const dice = Math.floor(Math.random()*6)+1;
+  const result = dice <= 3 ? -5 : 5;
+
+  currentRisk.hype = Math.max(0, currentRisk.hype + result);
+
+  document.getElementById('riskResult').innerText =
+    `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result}`;
+
+  renderHypeBars();
+  showHypeChange(currentRisk, result);
+
+  setTimeout(() => {
+    closeModal('riskModal');
+    finishTurn(currentRisk); // 🔥 ВАЖНО
+  }, 1000);
+};
+
 // 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
 
 // =========================
