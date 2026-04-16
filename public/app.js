@@ -297,15 +297,17 @@ showHint("Скандал! 🔥");
 
   currentScandal = p;
 
-  const list = [
-    {text:"🔥 -1", val:-1},
-    {text:"🫣 -2", val:-2},
-    {text:"😱 -3", val:-3},
-    {text:"#️⃣ всем -3", val:-3, all:true},
-    {text:"😮 -4", val:-4},
-    {text:"🤫 -5", val:-5},
-    {text:"🙄 -5 + пропуск", val:-5, skip:true}
-  ];
+  const text = `
+1) перегрел аудиторию 🔥 -1 хайп
+2) громкий заголовок 🫣 -2 хайп
+3) это монтаж 😱 -3 хайп
+4) меня взломали #️⃣ -3 хайп у всех игроков
+5) подписчики в шоке 😮 -4 хайп
+6) удаляй пока не поздно 🤫 -5 хайп
+7) это контент, вы не понимаете 🙄 -5 хайп и пропусти ход
+`;
+
+document.getElementById('scandalText').innerText = text;
 
   const e = list[Math.floor(Math.random()*list.length)];
   currentScandal.effect = e;
