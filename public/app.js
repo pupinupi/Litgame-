@@ -34,6 +34,14 @@ function closeModal(id){
 // =========================
 window.onload = () => {
 
+const music = document.getElementById("bgMusic");
+
+// 🔥 включаем при первом клике (обход блокировки iPhone)
+document.body.addEventListener('click', () => {
+  music.volume = 0.3;
+  music.play().catch(()=>{});
+}, { once: true });
+  
   document.body.addEventListener('click', () => {
     diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
   }, { once: true });
