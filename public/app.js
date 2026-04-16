@@ -322,25 +322,18 @@ window.closeScandal = function(){
   if(e.all){
     players.forEach(pl=>{
       pl.hype = Math.max(0, pl.hype + e.val);
+      showHypeChange(pl, e.val);
     });
   } else {
     p.hype = Math.max(0, p.hype + e.val);
+    showHypeChange(p, e.val);
   }
 
   if(e.skip) p.skipNext = true;
 
   closeModal('scandalModal');
-  finishTurn(p);
 
-  if(e.all){
-  players.forEach(pl=>{
-    pl.hype = Math.max(0, pl.hype + e.val);
-    showHypeChange(pl, e.val);
-  });
-} else {
-  p.hype = Math.max(0, p.hype + e.val);
-  showHypeChange(p, e.val);
-}
+  finishTurn(p);
 };
 
 // =========================
@@ -360,7 +353,6 @@ function showRisk(p){
   modal.style.display = "flex";
 }
 
-// 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
 window.rollRisk = function(){
   showHint("Риск! 🎲");
 
@@ -373,21 +365,16 @@ window.rollRisk = function(){
     `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result}`;
 
   renderHypeBars();
+  showHypeChange(currentRisk, result);
 
-  // 🔥 через секунду закрываем и передаём ход
   setTimeout(() => {
-showHypeChange(currentRisk, result);
-    document.getElementById('riskModal').style.display = "none";
-
-    socket.emit('playerMoved',{
-      roomCode,
-      position: currentRisk.position,
-      hype: currentRisk.hype,
-      skipNext: currentRisk.skipNext
-    });
-
+    closeModal('riskModal');
+    finishTurn(currentRisk); // 🔥 ВАЖНО
   }, 1000);
 };
+
+// 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
+
 // =========================
 // UI
 // =========================
