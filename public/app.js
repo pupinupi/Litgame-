@@ -269,7 +269,7 @@ function finishTurn(p){
 
   renderHypeBars();
 
-  if (p.hype >= 70){
+  if (p.hype >= 140){
   gameOver = true;
 
   document.getElementById('winText').innerText =
@@ -414,11 +414,11 @@ function renderHypeBars(){
   box.innerHTML = '';
 
   players.forEach(p=>{
-    const percent = Math.min(p.hype,70)/70*100;
+    const percent = Math.min(p.hype,140)/140*100;
 
     box.innerHTML += `
       <div>
-        <div>${p.username}: ${p.hype}/70</div>
+        <div>${p.username}: ${p.hype}/140</div>
         <div class="hypeBarBg">
           <div class="hypeFill" style="width:${percent}%"></div>
         </div>
