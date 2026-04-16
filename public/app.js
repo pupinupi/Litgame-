@@ -38,9 +38,11 @@ const music = document.getElementById("bgMusic");
 
 // 🔥 включаем при первом клике (обход блокировки iPhone)
 document.body.addEventListener('click', () => {
-  music.volume = 0.3;
-  music.play().catch(()=>{});
-}, { once: true });
+  if (music.paused){
+    music.volume = 0.3;
+    music.play().catch(()=>{});
+  }
+});
   
   document.body.addEventListener('click', () => {
     diceSound.play().then(()=> diceSound.pause()).catch(()=>{});
