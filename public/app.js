@@ -228,13 +228,21 @@ function handleCell(p){
   const c = cells[p.position];
 
   if (c.type === 'start') p.hype += 10;
-  if (c.type === 'plus') p.hype += c.value;
-  if (c.type === 'minus') p.hype = Math.max(0, p.hype - c.value);
+  if (c.type === 'plus'){
+  p.hype += c.value;
+  showHypeChange(p, c.value);
+}
+  if (c.type === 'minus'){
+  p.hype = Math.max(0, p.hype - c.value);
+  showHypeChange(p, -c.value);
+}
 
   if (c.type === 'minusSkip'){
-    p.hype = Math.max(0, p.hype - c.value);
-    p.skipNext = true;
-  }
+  p.hype = Math.max(0, p.hype - c.value);
+  p.skipNext = true;
+
+  showHypeChange(p, -c.value);
+}
 
   if (c.type === 'skip'){
     p.skipNext = true;
@@ -323,6 +331,16 @@ window.closeScandal = function(){
 
   closeModal('scandalModal');
   finishTurn(p);
+
+  if(e.all){
+  players.forEach(pl=>{
+    pl.hype = Math.max(0, pl.hype + e.val);
+    showHypeChange(pl, e.val);
+  });
+} else {
+  p.hype = Math.max(0, p.hype + e.val);
+  showHypeChange(p, e.val);
+}
 };
 
 // =========================
@@ -358,7 +376,7 @@ window.rollRisk = function(){
 
   // 🔥 через секунду закрываем и передаём ход
   setTimeout(() => {
-
+showHypeChange(currentRisk, result);
     document.getElementById('riskModal').style.display = "none";
 
     socket.emit('playerMoved',{
