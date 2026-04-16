@@ -319,53 +319,13 @@ function showScandal(p){
   const e = list[Math.floor(Math.random()*list.length)];
   currentScandal.effect = e;
 
-  // 👉 красивый текст (как ты хотела)
   document.getElementById('scandalText').innerText =
-    `1) перегрел аудиторию 🔥 -1 хайп
-2) громкий заголовок 🫣 -2 хайп
-3) это монтаж 😱 -3 хайп
-4) меня взломали #️⃣ -3 хайп у всех игроков
-5) подписчики в шоке 😮 -4 хайп
-6) удаляй пока не поздно 🤫 -5 хайп
-7) это контент 🙄 -5 хайп и пропуск хода
+    `💥 Случился скандал!
 
-👉 Тебе выпало: ${e.text}`;
+👉 ${e.text}`;
 
   openModal('scandalModal');
 }
-// =========================
-// ⚡ РИСК (100% РАБОЧИЙ)
-// =========================
-function showRisk(p){
-  currentRisk = p;
-
-  const modal = document.getElementById('riskModal');
-  const text = document.getElementById('riskResult');
-
-  text.innerText = "🎲 Нажми кнопку: 1-3 = -5 | 4-6 = +5";
-
-  modal.style.display = "flex";
-}
-
-window.rollRisk = function(){
-  showHint("Риск! 🎲");
-
-  const dice = Math.floor(Math.random()*6)+1;
-  const result = dice <= 3 ? -5 : 5;
-
-  currentRisk.hype = Math.max(0, currentRisk.hype + result);
-
-  document.getElementById('riskResult').innerText =
-    `🎲 Выпало ${dice} → ${result > 0 ? '+' : ''}${result}`;
-
-  renderHypeBars();
-  showHypeChange(currentRisk, result);
-
-  setTimeout(() => {
-    closeModal('riskModal');
-    finishTurn(currentRisk); // 🔥 ВАЖНО
-  }, 1000);
-};
 
 // 🔥 ДЕЛАЕМ ГЛОБАЛЬНОЙ (ВАЖНО)
 
