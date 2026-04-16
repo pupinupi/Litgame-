@@ -993,3 +993,56 @@ input {
   from{transform:scale(0.7);opacity:0;}
   to{transform:scale(1);opacity:1;}
 }
+
+/* ===== 💥 POPUP ХАЙПА ===== */
+.hypePopup {
+  position: absolute;
+  font-weight: bold;
+  font-size: 18px;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  animation: hypeFloat 1s ease-out forwards;
+  z-index: 999;
+}
+
+/* ➕ ПЛЮС */
+.plusHype {
+  color: #00ffff;
+  text-shadow:
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00cfff,
+    0 0 30px #00cfff;
+}
+
+/* ➖ МИНУС */
+.minusHype {
+  color: #ff3b3b;
+  text-shadow:
+    0 0 5px #ff3b3b,
+    0 0 10px #ff0000,
+    0 0 20px #ff0000,
+    0 0 30px #ff0000;
+}
+
+/* ✨ АНИМАЦИЯ ВСПЛЫТИЯ */
+@keyframes hypeFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 0px) scale(1.2);
+  }
+
+  60% {
+    transform: translate(-50%, -15px) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -35px) scale(0.9);
+  }
+}
