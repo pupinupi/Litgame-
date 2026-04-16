@@ -439,3 +439,26 @@ function renderLobbyPlayers(){
     `<div style="color:${p.color}">${p.username}</div>`
   ).join('');
 }
+
+function showHypeChange(player, value){
+
+  const board = document.getElementById('gameBoard');
+  const el = document.getElementById(player.id);
+
+  if (!el) return;
+
+  const rect = el.getBoundingClientRect();
+  const boardRect = board.getBoundingClientRect();
+
+  const popup = document.createElement('div');
+
+  popup.className = 'hypePopup ' + (value >= 0 ? 'plusHype' : 'minusHype');
+  popup.innerText = (value > 0 ? '+' : '') + value;
+
+  popup.style.left = (rect.left - boardRect.left + rect.width/2) + 'px';
+  popup.style.top  = (rect.top - boardRect.top) + 'px';
+
+  board.appendChild(popup);
+
+  setTimeout(()=> popup.remove(), 1000);
+}
